@@ -184,6 +184,96 @@
         "total_carbon": "Rough estimate of total aboveground carbon stock in megatonnes"
       },
       "extracted_at": "2026-01-03T10:54:47.604007"
+    },
+    "climate_projections": {
+      "source": "NASA NEX-GDDP-CMIP6",
+      "resolution": "0.25 degrees (~27km)",
+      "baseline_period": "2000-2014",
+      "future_period": "2050-2064",
+      "models_used": 3,
+      "model_list": [
+        "ACCESS-CM2",
+        "GFDL-ESM4",
+        "MRI-ESM2-0"
+      ],
+      "scenarios": {
+        "ssp245": {
+          "temperature": {
+            "baseline_mean_c": 26.19,
+            "future_mean_c": 27.67,
+            "change_c": 1.48,
+            "spatial_variation": {
+              "baseline_min_c": 25.62,
+              "baseline_max_c": 26.99,
+              "future_min_c": 27.12,
+              "future_max_c": 28.42
+            }
+          },
+          "precipitation": {
+            "baseline_annual_mm": 1260.7,
+            "future_annual_mm": 1171.8,
+            "change_mm": -88.9,
+            "change_percent": -7.1
+          },
+          "heat_stress": {
+            "mean_min_temp_baseline_c": 20.27,
+            "mean_min_temp_future_c": 21.44,
+            "tropical_nights_baseline_estimate": 127,
+            "tropical_nights_future_estimate": 157,
+            "change_days_estimate": 30,
+            "note": "Tropical nights estimated from mean minimum temperature"
+          },
+          "drought_indicators": {
+            "mean_daily_precip_baseline_mm": 3.45,
+            "mean_daily_precip_future_mm": 3.21,
+            "consecutive_dry_days_baseline_estimate": 45,
+            "consecutive_dry_days_future_estimate": 47,
+            "change_days_estimate": 2,
+            "drought_risk_baseline": "Medium",
+            "drought_risk_future": "Medium",
+            "note": "Drought indicators estimated from mean precipitation patterns"
+          }
+        },
+        "ssp585": {
+          "temperature": {
+            "baseline_mean_c": 26.19,
+            "future_mean_c": 28.22,
+            "change_c": 2.03,
+            "spatial_variation": {
+              "baseline_min_c": 25.62,
+              "baseline_max_c": 26.99,
+              "future_min_c": 27.66,
+              "future_max_c": 28.96
+            }
+          },
+          "precipitation": {
+            "baseline_annual_mm": 1260.7,
+            "future_annual_mm": 1107.9,
+            "change_mm": -152.8,
+            "change_percent": -12.1
+          },
+          "heat_stress": {
+            "mean_min_temp_baseline_c": 20.27,
+            "mean_min_temp_future_c": 21.89,
+            "tropical_nights_baseline_estimate": 127,
+            "tropical_nights_future_estimate": 169,
+            "change_days_estimate": 42,
+            "note": "Tropical nights estimated from mean minimum temperature"
+          },
+          "drought_indicators": {
+            "mean_daily_precip_baseline_mm": 3.45,
+            "mean_daily_precip_future_mm": 3.04,
+            "consecutive_dry_days_baseline_estimate": 45,
+            "consecutive_dry_days_future_estimate": 49,
+            "change_days_estimate": 4,
+            "drought_risk_baseline": "Medium",
+            "drought_risk_future": "Medium",
+            "note": "Drought indicators estimated from mean precipitation patterns"
+          }
+        }
+      },
+      "extracted_at": "2026-01-03T15:13:31.741412",
+      "data_available": true
     }
   },
   "external_data": {
