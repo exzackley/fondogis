@@ -1,0 +1,462 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-01-03T12:00:00Z",
+  "description": "Field-level documentation for all data fields in ANP data files",
+  "sections": {
+    "metadata": {
+      "description": "Basic information about the protected area from WDPA",
+      "fields": {
+        "name": {
+          "description": "Official name of the protected area",
+          "data_type": "string",
+          "source": "WDPA"
+        },
+        "designation": {
+          "description": "Type of protected area designation (e.g., 'Reserva de la Biosfera', 'Parque Nacional')",
+          "data_type": "string",
+          "source": "WDPA",
+          "common_values": ["Reserva de la Biosfera", "Parque Nacional", "Area de Proteccion de Flora y Fauna", "Santuario"]
+        },
+        "designation_type": {
+          "description": "Whether the designation is national or international",
+          "data_type": "string",
+          "source": "WDPA",
+          "common_values": ["National", "International"]
+        },
+        "iucn_category": {
+          "description": "IUCN protected area management category (Ia-VI)",
+          "data_type": "string",
+          "source": "WDPA",
+          "interpretation": "Ia=Strict Nature Reserve, Ib=Wilderness Area, II=National Park, III=Natural Monument, IV=Habitat Management, V=Protected Landscape, VI=Sustainable Use"
+        },
+        "status": {
+          "description": "Current legal status of the protected area",
+          "data_type": "string",
+          "source": "WDPA",
+          "common_values": ["Designated", "Proposed", "Inscribed"]
+        },
+        "status_year": {
+          "description": "Year the current status was established",
+          "data_type": "integer",
+          "source": "WDPA"
+        },
+        "governance": {
+          "description": "Type of governance/management authority",
+          "data_type": "string",
+          "source": "WDPA"
+        },
+        "management_authority": {
+          "description": "Organization responsible for management",
+          "data_type": "string",
+          "source": "WDPA"
+        },
+        "reported_area_km2": {
+          "description": "Officially reported area in square kilometers",
+          "data_type": "number",
+          "unit": "km2",
+          "source": "WDPA"
+        },
+        "country": {
+          "description": "ISO 3-letter country code",
+          "data_type": "string",
+          "source": "WDPA",
+          "value": "MEX"
+        },
+        "extracted_at": {
+          "description": "Timestamp when GEE data was extracted",
+          "data_type": "datetime",
+          "format": "ISO 8601"
+        }
+      }
+    },
+    "geometry": {
+      "description": "Geographic extent of the protected area",
+      "fields": {
+        "centroid": {
+          "description": "Center point of the protected area [longitude, latitude]",
+          "data_type": "array",
+          "unit": "decimal degrees (WGS84)",
+          "format": "[lon, lat]"
+        },
+        "bounds": {
+          "description": "Bounding box coordinates as polygon ring",
+          "data_type": "array",
+          "unit": "decimal degrees (WGS84)",
+          "format": "[[lon,lat], [lon,lat], ...]"
+        }
+      }
+    },
+    "datasets.population": {
+      "description": "Human population estimates within the ANP boundary",
+      "source": "WorldPop",
+      "fields": {
+        "year_2020.population": {
+          "description": "Estimated total population within ANP boundary for 2020",
+          "data_type": "number",
+          "unit": "persons",
+          "interpretation": "Sum of 100m grid cell population estimates. Values may be fractional due to interpolation."
+        }
+      }
+    },
+    "datasets.elevation": {
+      "description": "Terrain elevation statistics from SRTM",
+      "source": "SRTM",
+      "fields": {
+        "elevation_max": {
+          "description": "Maximum elevation within the ANP",
+          "data_type": "integer",
+          "unit": "meters above sea level"
+        },
+        "elevation_mean": {
+          "description": "Mean elevation across the ANP",
+          "data_type": "number",
+          "unit": "meters above sea level"
+        },
+        "elevation_min": {
+          "description": "Minimum elevation within the ANP",
+          "data_type": "integer",
+          "unit": "meters above sea level"
+        }
+      }
+    },
+    "datasets.land_cover": {
+      "description": "Land cover classification from ESA WorldCover",
+      "source": "ESA WorldCover 2021",
+      "fields": {
+        "classes": {
+          "description": "Object with land cover classes and their areas",
+          "data_type": "object",
+          "nested_fields": {
+            "class_name.class_id": {
+              "description": "WorldCover class identifier",
+              "data_type": "integer",
+              "values": {
+                "10": "Tree cover",
+                "20": "Shrubland",
+                "30": "Grassland",
+                "40": "Cropland",
+                "50": "Built-up",
+                "60": "Bare/sparse vegetation",
+                "70": "Snow and ice",
+                "80": "Permanent water bodies",
+                "90": "Herbaceous wetland",
+                "95": "Mangroves",
+                "100": "Moss and lichen"
+              }
+            },
+            "class_name.area_km2": {
+              "description": "Area covered by this land cover class",
+              "data_type": "number",
+              "unit": "km2"
+            }
+          }
+        }
+      }
+    },
+    "datasets.forest": {
+      "description": "Forest cover and loss from Hansen Global Forest Change",
+      "source": "Hansen GFC v1.11",
+      "fields": {
+        "tree_cover_2000_percent": {
+          "description": "Percentage of ANP with >25% tree canopy cover in year 2000",
+          "data_type": "number",
+          "unit": "percent (0-100)",
+          "interpretation": "Baseline forest cover before loss detection began"
+        },
+        "total_loss_km2": {
+          "description": "Total forest area lost from 2001-2023",
+          "data_type": "number",
+          "unit": "km2"
+        },
+        "loss_by_year": {
+          "description": "Annual forest loss by year",
+          "data_type": "object",
+          "format": "{year: area_km2}",
+          "unit": "km2 per year",
+          "interpretation": "Higher values indicate years with more deforestation events"
+        }
+      }
+    },
+    "datasets.climate": {
+      "description": "Climate normals from WorldClim (1970-2000 averages)",
+      "source": "WorldClim v1",
+      "fields": {
+        "annual_precipitation_mm": {
+          "description": "Mean annual precipitation",
+          "data_type": "number",
+          "unit": "mm/year"
+        },
+        "mean_max_temp_c": {
+          "description": "Mean daily maximum temperature",
+          "data_type": "number",
+          "unit": "degrees Celsius"
+        },
+        "mean_min_temp_c": {
+          "description": "Mean daily minimum temperature",
+          "data_type": "number",
+          "unit": "degrees Celsius"
+        }
+      }
+    },
+    "datasets.vegetation": {
+      "description": "Vegetation health from MODIS NDVI",
+      "source": "MODIS MOD13A2",
+      "fields": {
+        "NDVI_max": {
+          "description": "Maximum NDVI value observed (greenest period)",
+          "data_type": "number",
+          "unit": "unitless (-1 to 1)",
+          "interpretation": "Higher values indicate denser, healthier vegetation. Values >0.6 typically indicate forests."
+        },
+        "NDVI_mean": {
+          "description": "Mean NDVI value",
+          "data_type": "number",
+          "unit": "unitless (-1 to 1)"
+        },
+        "NDVI_min": {
+          "description": "Minimum NDVI value observed (driest/least green period)",
+          "data_type": "number",
+          "unit": "unitless (-1 to 1)"
+        }
+      }
+    },
+    "datasets.night_lights": {
+      "description": "Nighttime light radiance from VIIRS",
+      "source": "VIIRS DNB",
+      "fields": {
+        "avg_rad_max": {
+          "description": "Maximum average radiance within the ANP",
+          "data_type": "number",
+          "unit": "nW/cm2/sr",
+          "interpretation": "Higher values indicate more intense artificial lighting (urban areas, infrastructure)"
+        },
+        "avg_rad_mean": {
+          "description": "Mean average radiance across the ANP",
+          "data_type": "number",
+          "unit": "nW/cm2/sr",
+          "interpretation": "Low values (<0.5) indicate minimal light pollution; values >10 indicate significant development"
+        }
+      }
+    },
+    "datasets.fire": {
+      "description": "Burned area from MODIS fire products",
+      "source": "MODIS MCD64A1",
+      "fields": {
+        "burned_area_km2_by_year": {
+          "description": "Annual burned area by year",
+          "data_type": "object",
+          "format": "{year: area_km2}",
+          "unit": "km2 per year",
+          "interpretation": "Non-zero values indicate fire activity. Zero may indicate no fires OR masked data."
+        }
+      }
+    },
+    "datasets.biodiversity": {
+      "description": "Ecological classification from RESOLVE Ecoregions",
+      "source": "RESOLVE Ecoregions 2017",
+      "fields": {
+        "ecoregions": {
+          "description": "List of RESOLVE ecoregion names within the ANP",
+          "data_type": "array",
+          "interpretation": "ANPs spanning multiple ecoregions have higher ecological diversity"
+        },
+        "biomes": {
+          "description": "List of biome names (higher-level ecological classification)",
+          "data_type": "array",
+          "common_values": ["Tropical & Subtropical Moist Broadleaf Forests", "Deserts & Xeric Shrublands", "Tropical & Subtropical Dry Broadleaf Forests"]
+        }
+      }
+    },
+    "datasets.human_modification": {
+      "description": "Human modification index from Conservation Science Partners",
+      "source": "gHM (Global Human Modification)",
+      "fields": {
+        "gHM_max": {
+          "description": "Maximum human modification index within the ANP",
+          "data_type": "number",
+          "unit": "unitless (0-1)",
+          "interpretation": "0=pristine, 1=completely modified. Values >0.5 indicate significant human impact."
+        },
+        "gHM_mean": {
+          "description": "Mean human modification index across the ANP",
+          "data_type": "number",
+          "unit": "unitless (0-1)",
+          "interpretation": "Lower is better for conservation. Well-protected ANPs typically have mean <0.1"
+        }
+      }
+    },
+    "external_data.gbif_species": {
+      "description": "Species occurrence data from GBIF",
+      "source": "GBIF API",
+      "fields": {
+        "source": {
+          "description": "Data source identifier",
+          "data_type": "string"
+        },
+        "query_date": {
+          "description": "When GBIF was queried",
+          "data_type": "datetime"
+        },
+        "total_occurrences": {
+          "description": "Total number of occurrence records in GBIF for this area",
+          "data_type": "integer",
+          "interpretation": "Higher values indicate better-surveyed areas. This is a count of records, not species."
+        },
+        "unique_species": {
+          "description": "Count of unique species names in the sample",
+          "data_type": "integer",
+          "interpretation": "Note: Currently limited to 500-record sample. True species count may be higher."
+        },
+        "bounding_box": {
+          "description": "Bounding box used for GBIF query",
+          "data_type": "object"
+        },
+        "species_by_class": {
+          "description": "Count of species per taxonomic class",
+          "data_type": "object",
+          "format": "{class_name: count}",
+          "interpretation": "Shows taxonomic composition. High Aves counts common due to birding observations."
+        },
+        "top_species": {
+          "description": "Array of most frequently observed species with taxonomy",
+          "data_type": "array",
+          "nested_fields": {
+            "scientific_name": "Binomial species name",
+            "kingdom": "Taxonomic kingdom",
+            "phylum": "Taxonomic phylum",
+            "class": "Taxonomic class",
+            "order": "Taxonomic order",
+            "family": "Taxonomic family",
+            "genus": "Taxonomic genus",
+            "taxon_key": "GBIF taxon identifier",
+            "occurrences": "Number of occurrence records"
+          }
+        }
+      }
+    },
+    "external_data.iucn_threatened": {
+      "description": "IUCN Red List threatened species from GBIF",
+      "source": "GBIF API (IUCN Red List categories)",
+      "fields": {
+        "source": {
+          "description": "Data source identifier",
+          "data_type": "string"
+        },
+        "critically_endangered": {
+          "description": "List of Critically Endangered (CR) species names",
+          "data_type": "array",
+          "interpretation": "Species facing extremely high extinction risk"
+        },
+        "endangered": {
+          "description": "List of Endangered (EN) species names",
+          "data_type": "array",
+          "interpretation": "Species facing very high extinction risk"
+        },
+        "vulnerable": {
+          "description": "List of Vulnerable (VU) species names",
+          "data_type": "array",
+          "interpretation": "Species facing high extinction risk"
+        },
+        "total_threatened": {
+          "description": "Total count of CR+EN+VU species",
+          "data_type": "integer"
+        }
+      }
+    },
+    "external_data.simec_nom059": {
+      "description": "Mexican NOM-059 protected species from CONANP SIMEC",
+      "source": "CONANP SIMEC",
+      "fields": {
+        "source": {
+          "description": "Data source identifier",
+          "data_type": "string"
+        },
+        "matched_simec_name": {
+          "description": "ANP name as listed in SIMEC (may differ from WDPA)",
+          "data_type": "string"
+        },
+        "endangered_P": {
+          "description": "Species in 'Peligro de extincion' (Endangered) category",
+          "data_type": "array",
+          "interpretation": "Highest protection level under Mexican law"
+        },
+        "threatened_A": {
+          "description": "Species in 'Amenazada' (Threatened) category",
+          "data_type": "array"
+        },
+        "special_protection_Pr": {
+          "description": "Species in 'Proteccion especial' (Special Protection) category",
+          "data_type": "array"
+        },
+        "probably_extinct_E": {
+          "description": "Species in 'Probablemente extinta' (Probably Extinct) category",
+          "data_type": "array",
+          "interpretation": "Species that may no longer exist in the wild"
+        },
+        "total_species": {
+          "description": "Total count of NOM-059 listed species",
+          "data_type": "integer"
+        }
+      }
+    },
+    "external_data.inegi_census": {
+      "description": "Socioeconomic data from INEGI Census 2020",
+      "source": "INEGI Censo 2020 (ITER)",
+      "fields": {
+        "source": {
+          "description": "Data source identifier",
+          "data_type": "string"
+        },
+        "localities_in_area": {
+          "description": "Number of census localities within ANP bounding box",
+          "data_type": "integer"
+        },
+        "total_population": {
+          "description": "Total population in localities within the ANP",
+          "data_type": "integer",
+          "unit": "persons"
+        },
+        "indigenous_speakers_3plus": {
+          "description": "Population 3+ years speaking indigenous language",
+          "data_type": "integer",
+          "unit": "persons"
+        },
+        "indigenous_speakers_5plus": {
+          "description": "Population 5+ years speaking indigenous language",
+          "data_type": "integer",
+          "unit": "persons"
+        },
+        "indigenous_households_pop": {
+          "description": "Population in indigenous households",
+          "data_type": "integer",
+          "unit": "persons"
+        },
+        "illiterate_15plus": {
+          "description": "Population 15+ years who cannot read/write",
+          "data_type": "integer",
+          "unit": "persons"
+        },
+        "no_health_services": {
+          "description": "Population without access to health services",
+          "data_type": "integer",
+          "unit": "persons"
+        },
+        "avg_schooling_years": {
+          "description": "Average years of schooling for population 15+",
+          "data_type": "number",
+          "unit": "years",
+          "interpretation": "Higher values indicate better educational attainment"
+        },
+        "sample_localities": {
+          "description": "Names of some localities in the ANP area",
+          "data_type": "array"
+        }
+      }
+    },
+    "external_data.extracted_at": {
+      "description": "Timestamp when external data was extracted",
+      "data_type": "datetime",
+      "format": "ISO 8601"
+    }
+  }
+}

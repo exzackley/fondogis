@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMCN ANP Data Admin</title>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --card-hover: #263244;
+            --border: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --accent: #10b981;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        .container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
+        
+        header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        h1 { font-size: 1.75rem; font-weight: 600; }
+        .subtitle { color: var(--text-muted); font-size: 0.9rem; }
+        
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.95rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover { color: var(--text); }
+        .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value { font-size: 1.5rem; font-weight: 700; }
+        .stat-value.success { color: var(--success); }
+        .stat-value.error { color: var(--error); }
+        .stat-value.warning { color: var(--warning); }
+        .stat-value.info { color: var(--info); }
+        
+        /* Source Cards Grid */
+        .source-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1rem;
+        }
+        
+        .source-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .source-card:hover { background: var(--card-hover); border-color: var(--accent); }
+        .source-card.expanded { grid-column: 1 / -1; }
+        
+        .source-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+        .source-name { font-weight: 600; font-size: 1rem; }
+        .source-provider { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem; }
+        
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge.high { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+        .badge.medium { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .badge.low { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+        .badge.category { background: rgba(59, 130, 246, 0.2); color: var(--info); }
+        
+        .source-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+        
+        .source-summary { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-top: 0.75rem; }
+        
+        .source-details {
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .source-card.expanded .source-details { display: block; }
+        
+        .detail-section { margin-bottom: 1rem; }
+        .detail-section h4 { font-size: 0.85rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .detail-section p, .detail-section li { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+        .detail-section ul { padding-left: 1.25rem; }
+        
+        /* Freshness Table */
+        .freshness-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .freshness-table th, .freshness-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .freshness-table th {
+            background: rgba(0,0,0,0.2);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+        
+        .freshness-bar {
+            width: 100px;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .freshness-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .freshness-fill.fresh { background: var(--success); }
+        .freshness-fill.aging { background: var(--warning); }
+        .freshness-fill.stale { background: var(--error); }
+        
+        /* Coverage Table */
+        .table-container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .table-scroll { overflow-x: auto; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        
+        th {
+            background: rgba(0,0,0,0.2);
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:hover { background: rgba(255,255,255,0.02); }
+        
+        .anp-name { max-width: 250px; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+        
+        .status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            position: relative;
+        }
+        
+        .status.success { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+        .status.error { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+        .status.na { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); }
+        
+        .status[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 100;
+            color: var(--text);
+        }
+        
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+        
+        .search-box:focus { outline: none; border-color: var(--accent); }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover { background: var(--card-hover); }
+        .filter-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+        
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .legend-item { display: flex; align-items: center; gap: 0.5rem; }
+        
+        .category-header { background: rgba(59, 130, 246, 0.1); color: var(--info); }
+        
+        .char-badges { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+        .char-badge {
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--text-muted);
+        }
+        .char-badge.marine { background: rgba(59, 130, 246, 0.2); color: var(--info); }
+        .char-badge.island { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
+        .char-badge.playa { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .char-badge.simec { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+        
+        .loading { text-align: center; padding: 4rem; color: var(--text-muted); }
+        
+        /* Category sections */
+        .category-section { margin-bottom: 2rem; }
+        .category-title {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        /* Export tab styles */
+        .export-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .export-info h3 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+        .export-info .subtitle { color: var(--text-muted); font-size: 0.9rem; }
+        
+        .export-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        #exportSelectedCount {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .export-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 6px;
+            color: var(--bg);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .export-btn:hover:not(:disabled) { background: #0d9668; }
+        .export-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .export-icon { font-size: 1.1rem; }
+        
+        .checkbox-col { width: 40px; text-align: center; }
+        .checkbox-col input { cursor: pointer; width: 16px; height: 16px; }
+        
+        #exportTable tbody tr { cursor: pointer; }
+        #exportTable tbody tr:hover { background: var(--card-hover); }
+        #exportTable tbody tr.selected { background: rgba(16, 185, 129, 0.1); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>ANP Data Admin</h1>
+                <p class="subtitle">Data source management and monitoring for FMCN protected areas</p>
+            </div>
+            <a href="dashboard.html" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none;">&larr; Back to Dashboard</a>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="overview">Overview</button>
+            <button class="tab" data-tab="sources">Data Sources</button>
+            <button class="tab" data-tab="freshness">Data Freshness</button>
+            <button class="tab" data-tab="coverage">ANP Coverage</button>
+            <button class="tab" data-tab="export">Export Data</button>
+        </div>
+        
+        <!-- Overview Tab -->
+        <div class="tab-content active" id="overview">
+            <div class="stats-grid" id="overviewStats">
+                <div class="stat-card">
+                    <div class="stat-label">Total ANPs</div>
+                    <div class="stat-value info" id="statTotalAnps">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Data Sources</div>
+                    <div class="stat-value info" id="statTotalSources">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">GEE Complete</div>
+                    <div class="stat-value success" id="statGeeComplete">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">GBIF Coverage</div>
+                    <div class="stat-value success" id="statGbifCoverage">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">SIMEC Registered</div>
+                    <div class="stat-value warning" id="statSimecRegistered">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Marine ANPs</div>
+                    <div class="stat-value info" id="statMarineAnps">-</div>
+                </div>
+            </div>
+            
+            <div class="category-section">
+                <h3 class="category-title">ANP Characteristics Summary</h3>
+                <div class="stats-grid" id="characteristicsStats"></div>
+            </div>
+            
+            <div class="category-section">
+                <h3 class="category-title">Recent Activity</h3>
+                <div id="recentActivity" class="loading">Loading extraction log...</div>
+            </div>
+        </div>
+        
+        <!-- Data Sources Tab -->
+        <div class="tab-content" id="sources">
+            <div class="filters" style="margin-bottom: 1.5rem;">
+                <input type="text" class="search-box" id="sourceSearch" placeholder="Search data sources...">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="environmental">Environmental</button>
+                <button class="filter-btn" data-category="biodiversity">Biodiversity</button>
+                <button class="filter-btn" data-category="human_pressure">Human Pressure</button>
+                <button class="filter-btn" data-category="socioeconomic">Socioeconomic</button>
+            </div>
+            <div id="sourceGrid" class="source-grid">
+                <div class="loading">Loading data sources...</div>
+            </div>
+        </div>
+        
+        <!-- Data Freshness Tab -->
+        <div class="tab-content" id="freshness">
+            <div class="table-container">
+                <table class="freshness-table">
+                    <thead>
+                        <tr>
+                            <th>Data Source</th>
+                            <th>Last Extracted</th>
+                            <th>Days Ago</th>
+                            <th>Freshness</th>
+                            <th>Stale Threshold</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="freshnessBody">
+                        <tr><td colspan="6" class="loading">Loading freshness data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- ANP Coverage Tab -->
+        <div class="tab-content" id="coverage">
+            <div class="legend">
+                <div class="legend-item"><span class="status success">&#10003;</span> Data present</div>
+                <div class="legend-item"><span class="status error">&#10007;</span> Missing (expected)</div>
+                <div class="legend-item"><span class="status na">&mdash;</span> N/A (excluded)</div>
+            </div>
+            
+            <div class="filters">
+                <input type="text" class="search-box" id="anpSearch" placeholder="Search ANP name...">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="complete">Complete</button>
+                <button class="filter-btn" data-filter="partial">Partial</button>
+                <button class="filter-btn" data-filter="missing">Missing</button>
+                <button class="filter-btn" data-filter="marine">Marine</button>
+                <button class="filter-btn" data-filter="terrestrial">Terrestrial</button>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-scroll">
+                    <table id="coverageTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ANP Name</th>
+                                <th>Characteristics</th>
+                                <th colspan="4" class="category-header">GEE Data</th>
+                                <th colspan="4" class="category-header">External Data</th>
+                                <th>Status</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th>Pop</th>
+                                <th>Land</th>
+                                <th>Forest</th>
+                                <th>Climate</th>
+                                <th>GBIF</th>
+                                <th>IUCN</th>
+                                <th>NOM-059</th>
+                                <th>Census</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="coverageBody">
+                            <tr><td colspan="12" class="loading">Loading coverage data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Export Data Tab -->
+        <div class="tab-content" id="export">
+            <div class="export-header">
+                <div class="export-info">
+                    <h3>Export ANP Data to Excel</h3>
+                    <p class="subtitle">Select ANPs to export. The Excel file will include all available data with a data dictionary sheet.</p>
+                </div>
+                <div class="export-actions">
+                    <span id="exportSelectedCount">0 selected</span>
+                    <button class="export-btn" id="exportBtn" disabled>
+                        <span class="export-icon">&#128196;</span> Export to Excel
+                    </button>
+                </div>
+            </div>
+            
+            <div class="filters">
+                <input type="text" class="search-box" id="exportSearch" placeholder="Search ANP name...">
+                <button class="filter-btn" id="selectAllBtn">Select All</button>
+                <button class="filter-btn" id="selectNoneBtn">Select None</button>
+                <button class="filter-btn" id="selectCompleteBtn">Select Complete</button>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-scroll" style="max-height: 600px;">
+                    <table id="exportTable">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-col"><input type="checkbox" id="selectAllCheckbox" title="Select all visible"></th>
+                                <th>#</th>
+                                <th>ANP Name</th>
+                                <th>Designation</th>
+                                <th>Area (km²)</th>
+                                <th>Data Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="exportBody">
+                            <tr><td colspan="6" class="loading">Loading ANP data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global data stores
+        let dataSources = [];
+        let anpExpectations = [];
+        let extractionLog = {};
+        let anpIndex = [];
+        let allAnpData = [];
+        
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+        
+        // Load all data
+        async function loadAllData() {
+            try {
+                const [sourcesRes, expectationsRes, logRes, indexRes] = await Promise.all([
+                    fetch('data_sources.json'),
+                    fetch('anp_expectations.json'),
+                    fetch('extraction_log.json'),
+                    fetch('anp_index.json')
+                ]);
+                
+                const sourcesData = await sourcesRes.json();
+                dataSources = sourcesData.sources || [];
+                
+                const expectationsData = await expectationsRes.json();
+                anpExpectations = expectationsData.anp_expectations || [];
+                
+                extractionLog = await logRes.json();
+                
+                const indexData = await indexRes.json();
+                anpIndex = indexData.anps || [];
+                
+                // Load individual ANP data
+                const anpPromises = anpIndex.map(async (anp) => {
+                    try {
+                        const res = await fetch(anp.data_file);
+                        const data = await res.json();
+                        return { ...anp, data, expectations: anpExpectations.find(e => e.anp_id === anp.id) };
+                    } catch (e) {
+                        return { ...anp, data: null, error: true };
+                    }
+                });
+                
+                allAnpData = await Promise.all(anpPromises);
+                
+                renderOverview();
+                renderSources();
+                renderFreshness();
+                renderCoverage();
+                renderExportTable();
+                
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+        }
+        
+        // Render Overview
+        function renderOverview() {
+            document.getElementById('statTotalAnps').textContent = allAnpData.length;
+            document.getElementById('statTotalSources').textContent = dataSources.length;
+            
+            // Count GEE complete
+            let geeComplete = 0;
+            let gbifHas = 0;
+            let simecRegistered = 0;
+            let marineCount = 0;
+            
+            allAnpData.forEach(anp => {
+                const ds = anp.data?.datasets || {};
+                if (ds.population && ds.land_cover && ds.forest && ds.climate) geeComplete++;
+                
+                const ext = anp.data?.external_data || {};
+                if (ext.gbif_species?.unique_species > 0) gbifHas++;
+                
+                if (anp.expectations?.characteristics?.has_simec_registration) simecRegistered++;
+                if (anp.expectations?.characteristics?.is_marine) marineCount++;
+            });
+            
+            document.getElementById('statGeeComplete').textContent = `${geeComplete}/${allAnpData.length}`;
+            document.getElementById('statGbifCoverage').textContent = `${gbifHas}/${allAnpData.length}`;
+            document.getElementById('statSimecRegistered').textContent = simecRegistered;
+            document.getElementById('statMarineAnps').textContent = marineCount;
+            
+            // Characteristics summary
+            const charStats = document.getElementById('characteristicsStats');
+            const summary = anpExpectations.length > 0 ? {
+                terrestrial: anpExpectations.filter(e => e.characteristics?.is_terrestrial).length,
+                coastal: anpExpectations.filter(e => e.characteristics?.is_coastal).length,
+                island: anpExpectations.filter(e => e.characteristics?.is_island).length,
+                playa: anpExpectations.filter(e => e.characteristics?.is_playa_sanctuary).length
+            } : {};
+            
+            charStats.innerHTML = `
+                <div class="stat-card"><div class="stat-label">Terrestrial</div><div class="stat-value">${summary.terrestrial || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Coastal</div><div class="stat-value">${summary.coastal || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Islands</div><div class="stat-value">${summary.island || 0}</div></div>
+                <div class="stat-card"><div class="stat-label">Playa Sanctuaries</div><div class="stat-value">${summary.playa || 0}</div></div>
+            `;
+            
+            // Recent activity
+            const activityDiv = document.getElementById('recentActivity');
+            const runs = extractionLog.extraction_runs || [];
+            if (runs.length > 0) {
+                activityDiv.innerHTML = runs.slice(-3).reverse().map(run => `
+                    <div class="stat-card" style="margin-bottom: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>${run.run_id}</strong>
+                            <span class="badge ${run.anps_failed === 0 ? 'high' : 'medium'}">${run.anps_succeeded}/${run.anps_processed} success</span>
+                        </div>
+                        <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">
+                            ${new Date(run.completed_at).toLocaleString()} &bull; Sources: ${run.sources?.slice(0,3).join(', ')}${run.sources?.length > 3 ? '...' : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                activityDiv.innerHTML = '<p style="color: var(--text-muted);">No extraction runs logged yet.</p>';
+            }
+        }
+        
+        // Render Data Sources
+        function renderSources() {
+            const grid = document.getElementById('sourceGrid');
+            const searchInput = document.getElementById('sourceSearch');
+            let currentCategory = 'all';
+            
+            function render() {
+                const search = searchInput.value.toLowerCase();
+                const filtered = dataSources.filter(s => {
+                    const matchesSearch = s.name.toLowerCase().includes(search) || 
+                                         s.provider.toLowerCase().includes(search);
+                    const matchesCategory = currentCategory === 'all' || s.category === currentCategory;
+                    return matchesSearch && matchesCategory;
+                });
+                
+                // Group by category
+                const grouped = {};
+                filtered.forEach(s => {
+                    const cat = s.category || 'other';
+                    if (!grouped[cat]) grouped[cat] = [];
+                    grouped[cat].push(s);
+                });
+                
+                grid.innerHTML = Object.entries(grouped).map(([cat, sources]) => `
+                    <div class="category-section" style="grid-column: 1 / -1;">
+                        <h3 class="category-title">${cat.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h3>
+                        <div class="source-grid">
+                            ${sources.map(s => renderSourceCard(s)).join('')}
+                        </div>
+                    </div>
+                `).join('') || '<p class="loading">No sources match your search.</p>';
+                
+                // Add click handlers for expand
+                grid.querySelectorAll('.source-card').forEach(card => {
+                    card.addEventListener('click', () => card.classList.toggle('expanded'));
+                });
+            }
+            
+            function renderSourceCard(s) {
+                const doc = s.documentation || {};
+                return `
+                    <div class="source-card" data-id="${s.id}">
+                        <div class="source-header">
+                            <div>
+                                <div class="source-name">${s.name}</div>
+                                <div class="source-provider">${s.provider}</div>
+                            </div>
+                            <span class="badge ${s.reliability || 'medium'}">${s.reliability || 'medium'}</span>
+                        </div>
+                        <div class="source-meta">
+                            <span class="badge category">${s.category || 'other'}</span>
+                            <span class="badge" style="background: rgba(148,163,184,0.15); color: var(--text-muted);">${s.update_frequency || 'unknown'}</span>
+                        </div>
+                        <div class="source-summary">${doc.summary || s.documentation?.summary || 'No description available.'}</div>
+                        <div class="source-details">
+                            ${doc.description ? `<div class="detail-section"><h4>Description</h4><p>${doc.description}</p></div>` : ''}
+                            ${doc.methodology ? `<div class="detail-section"><h4>Methodology</h4>
+                                <p><strong>Collection:</strong> ${doc.methodology.data_collection || 'N/A'}</p>
+                                <p><strong>Processing:</strong> ${doc.methodology.processing || 'N/A'}</p>
+                            </div>` : ''}
+                            ${doc.limitations?.length ? `<div class="detail-section"><h4>Limitations</h4><ul>${doc.limitations.map(l => `<li>${l}</li>`).join('')}</ul></div>` : ''}
+                            ${doc.conservation_applications?.length ? `<div class="detail-section"><h4>Conservation Applications</h4><ul>${doc.conservation_applications.map(a => `<li>${a}</li>`).join('')}</ul></div>` : ''}
+                            ${doc.citation ? `<div class="detail-section"><h4>Citation</h4><p style="font-style: italic;">${doc.citation}</p></div>` : ''}
+                            <div class="detail-section">
+                                <h4>Technical Details</h4>
+                                <p><strong>API:</strong> ${s.api_endpoint || 'N/A'}</p>
+                                <p><strong>License:</strong> ${s.license || 'See provider'}</p>
+                                <p><strong>Coverage:</strong> ${s.coverage?.notes || s.coverage?.applies_to || 'All ANPs'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            searchInput.addEventListener('input', render);
+            
+            document.querySelectorAll('#sources .filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#sources .filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCategory = btn.dataset.category;
+                    render();
+                });
+            });
+            
+            render();
+        }
+        
+        // Render Freshness
+        function renderFreshness() {
+            const tbody = document.getElementById('freshnessBody');
+            const freshness = extractionLog.data_freshness || {};
+            
+            const rows = Object.entries(freshness).map(([sourceId, info]) => {
+                const source = dataSources.find(s => s.id === sourceId) || { name: sourceId };
+                const lastDate = new Date(info.last_extracted);
+                const daysAgo = Math.floor((Date.now() - lastDate) / (1000 * 60 * 60 * 24));
+                const threshold = info.stale_after_days || 30;
+                const pct = Math.min(100, (daysAgo / threshold) * 100);
+                const status = pct < 50 ? 'fresh' : pct < 100 ? 'aging' : 'stale';
+                
+                return `
+                    <tr>
+                        <td><strong>${source.name || sourceId}</strong></td>
+                        <td>${lastDate.toLocaleDateString()}</td>
+                        <td>${daysAgo}</td>
+                        <td>
+                            <div class="freshness-bar">
+                                <div class="freshness-fill ${status}" style="width: ${pct}%"></div>
+                            </div>
+                        </td>
+                        <td>${threshold} days</td>
+                        <td><span class="badge ${status === 'fresh' ? 'high' : status === 'aging' ? 'medium' : 'low'}">${status}</span></td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = rows.length > 0 ? rows.join('') : '<tr><td colspan="6" class="loading">No freshness data available</td></tr>';
+        }
+        
+        // Render Coverage
+        function renderCoverage() {
+            const tbody = document.getElementById('coverageBody');
+            const searchInput = document.getElementById('anpSearch');
+            let currentFilter = 'all';
+            
+            function render() {
+                const search = searchInput.value.toLowerCase();
+                let filtered = allAnpData.filter(anp => anp.name.toLowerCase().includes(search));
+                
+                // Apply filter
+                if (currentFilter === 'marine') {
+                    filtered = filtered.filter(a => a.expectations?.characteristics?.is_marine);
+                } else if (currentFilter === 'terrestrial') {
+                    filtered = filtered.filter(a => a.expectations?.characteristics?.is_terrestrial && !a.expectations?.characteristics?.is_marine);
+                } else if (currentFilter !== 'all') {
+                    filtered = filtered.filter(a => getAnpStatus(a) === currentFilter);
+                }
+                
+                tbody.innerHTML = filtered.map((anp, i) => renderCoverageRow(anp, i)).join('') ||
+                    '<tr><td colspan="12" class="loading">No ANPs match your filter</td></tr>';
+            }
+            
+            function getAnpStatus(anp) {
+                if (!anp.data) return 'missing';
+                const ds = anp.data.datasets || {};
+                const ext = anp.data.external_data || {};
+                const hasGee = ds.population || ds.land_cover;
+                const hasExternal = ext.gbif_species || ext.simec_nom059;
+                if (hasGee && hasExternal) return 'complete';
+                if (hasGee || hasExternal) return 'partial';
+                return 'missing';
+            }
+            
+            function checkField(anp, path, sourceId) {
+                const parts = path.split('.');
+                let val = anp.data;
+                for (const p of parts) {
+                    if (!val) return { present: false };
+                    val = val[p];
+                }
+                
+                if (val === null || val === undefined) return { present: false };
+                if (typeof val === 'object' && val.error) return { present: false };
+                if (typeof val === 'number' && val === 0 && sourceId === 'inegi_census') return { present: false };
+                return { present: true, value: val };
+            }
+            
+            function isExcluded(anp, sourceId) {
+                const excluded = anp.expectations?.excluded_sources || [];
+                const match = excluded.find(e => e.source === sourceId);
+                return match ? match.reason : null;
+            }
+            
+            function statusIcon(check, excludeReason) {
+                if (excludeReason) return `<span class="status na" data-tooltip="${excludeReason}">&mdash;</span>`;
+                if (check.present) return '<span class="status success">&#10003;</span>';
+                return '<span class="status error">&#10007;</span>';
+            }
+            
+            function renderCoverageRow(anp, i) {
+                const chars = anp.expectations?.characteristics || {};
+                const charBadges = [];
+                if (chars.is_marine) charBadges.push('<span class="char-badge marine">Marine</span>');
+                if (chars.is_island) charBadges.push('<span class="char-badge island">Island</span>');
+                if (chars.is_playa_sanctuary) charBadges.push('<span class="char-badge playa">Playa</span>');
+                if (chars.has_simec_registration) charBadges.push('<span class="char-badge simec">SIMEC</span>');
+                if (chars.size_category) charBadges.push(`<span class="char-badge">${chars.size_category}</span>`);
+                
+                const pop = checkField(anp, 'datasets.population');
+                const land = checkField(anp, 'datasets.land_cover');
+                const forest = checkField(anp, 'datasets.forest');
+                const climate = checkField(anp, 'datasets.climate');
+                const gbif = checkField(anp, 'external_data.gbif_species.unique_species');
+                const iucn = checkField(anp, 'external_data.iucn_threatened.total_threatened');
+                const nom059 = checkField(anp, 'external_data.simec_nom059.total_species', 'simec_nom059');
+                const census = checkField(anp, 'external_data.inegi_census.total_population', 'inegi_census');
+                
+                const status = getAnpStatus(anp);
+                const statusClass = status === 'complete' ? 'success' : status === 'partial' ? 'warning' : 'error';
+                const statusSymbol = status === 'complete' ? '&#10003;' : status === 'partial' ? '&#9680;' : '&#10007;';
+                
+                return `
+                    <tr data-status="${status}">
+                        <td>${i + 1}</td>
+                        <td class="anp-name" title="${anp.name}">${anp.name}</td>
+                        <td><div class="char-badges">${charBadges.join('') || '<span class="char-badge">Terrestrial</span>'}</div></td>
+                        <td>${statusIcon(pop, isExcluded(anp, 'gee_worldpop'))}</td>
+                        <td>${statusIcon(land, isExcluded(anp, 'gee_worldcover'))}</td>
+                        <td>${statusIcon(forest, isExcluded(anp, 'gee_hansen'))}</td>
+                        <td>${statusIcon(climate, isExcluded(anp, 'gee_worldclim'))}</td>
+                        <td>${statusIcon(gbif, isExcluded(anp, 'gbif_species'))}</td>
+                        <td>${statusIcon(iucn, isExcluded(anp, 'gbif_iucn'))}</td>
+                        <td>${statusIcon(nom059, isExcluded(anp, 'simec_nom059'))}</td>
+                        <td>${statusIcon(census, isExcluded(anp, 'inegi_census'))}</td>
+                        <td><span class="status ${statusClass}">${statusSymbol}</span></td>
+                    </tr>
+                `;
+            }
+            
+            searchInput.addEventListener('input', render);
+            
+            document.querySelectorAll('#coverage .filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#coverage .filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    render();
+                });
+            });
+            
+            render();
+        }
+        
+        // ========== EXPORT TAB FUNCTIONALITY ==========
+        
+        let selectedAnpIds = new Set();
+        
+        function renderExportTable() {
+            const tbody = document.getElementById('exportBody');
+            const searchInput = document.getElementById('exportSearch');
+            
+            function render() {
+                const search = searchInput.value.toLowerCase();
+                const filtered = allAnpData.filter(anp => anp.name.toLowerCase().includes(search));
+                
+                tbody.innerHTML = filtered.map((anp, i) => {
+                    const checked = selectedAnpIds.has(anp.id) ? 'checked' : '';
+                    const selectedClass = selectedAnpIds.has(anp.id) ? 'selected' : '';
+                    const designation = anp.data?.metadata?.designation || '-';
+                    const area = anp.data?.metadata?.reported_area_km2;
+                    const areaStr = area != null ? area.toLocaleString(undefined, {maximumFractionDigits: 1}) : '-';
+                    const status = getDataStatus(anp);
+                    const statusClass = status === 'Complete' ? 'success' : status === 'Partial' ? 'warning' : 'error';
+                    
+                    return `
+                        <tr class="${selectedClass}" data-id="${anp.id}">
+                            <td class="checkbox-col"><input type="checkbox" ${checked} data-anp-id="${anp.id}"></td>
+                            <td>${i + 1}</td>
+                            <td class="anp-name">${anp.name}</td>
+                            <td>${designation}</td>
+                            <td>${areaStr}</td>
+                            <td><span class="badge ${statusClass.toLowerCase()}">${status}</span></td>
+                        </tr>
+                    `;
+                }).join('') || '<tr><td colspan="6" class="loading">No ANPs match your search</td></tr>';
+                
+                attachCheckboxListeners();
+                updateExportButton();
+            }
+            
+            function getDataStatus(anp) {
+                if (!anp.data) return 'Missing';
+                const ds = anp.data.datasets || {};
+                const ext = anp.data.external_data || {};
+                const hasGee = ds.population || ds.land_cover;
+                const hasExternal = ext.gbif_species || ext.simec_nom059;
+                if (hasGee && hasExternal) return 'Complete';
+                if (hasGee || hasExternal) return 'Partial';
+                return 'Missing';
+            }
+            
+            function attachCheckboxListeners() {
+                tbody.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.addEventListener('change', (e) => {
+                        e.stopPropagation();
+                        const anpId = cb.dataset.anpId;
+                        if (cb.checked) {
+                            selectedAnpIds.add(anpId);
+                            cb.closest('tr').classList.add('selected');
+                        } else {
+                            selectedAnpIds.delete(anpId);
+                            cb.closest('tr').classList.remove('selected');
+                        }
+                        updateExportButton();
+                    });
+                });
+                
+                tbody.querySelectorAll('tr').forEach(row => {
+                    row.addEventListener('click', (e) => {
+                        if (e.target.type === 'checkbox') return;
+                        const cb = row.querySelector('input[type="checkbox"]');
+                        if (cb) {
+                            cb.checked = !cb.checked;
+                            cb.dispatchEvent(new Event('change'));
+                        }
+                    });
+                });
+            }
+            
+            searchInput.addEventListener('input', render);
+            render();
+        }
+        
+        function updateExportButton() {
+            const btn = document.getElementById('exportBtn');
+            const countSpan = document.getElementById('exportSelectedCount');
+            const count = selectedAnpIds.size;
+            countSpan.textContent = `${count} selected`;
+            btn.disabled = count === 0;
+        }
+        
+        document.getElementById('selectAllCheckbox')?.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('#exportBody input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.checked = this.checked;
+                const anpId = cb.dataset.anpId;
+                if (this.checked) {
+                    selectedAnpIds.add(anpId);
+                    cb.closest('tr').classList.add('selected');
+                } else {
+                    selectedAnpIds.delete(anpId);
+                    cb.closest('tr').classList.remove('selected');
+                }
+            });
+            updateExportButton();
+        });
+        
+        document.getElementById('selectAllBtn')?.addEventListener('click', () => {
+            allAnpData.forEach(anp => selectedAnpIds.add(anp.id));
+            renderExportTable();
+        });
+        
+        document.getElementById('selectNoneBtn')?.addEventListener('click', () => {
+            selectedAnpIds.clear();
+            renderExportTable();
+        });
+        
+        document.getElementById('selectCompleteBtn')?.addEventListener('click', () => {
+            selectedAnpIds.clear();
+            allAnpData.forEach(anp => {
+                const ds = anp.data?.datasets || {};
+                const ext = anp.data?.external_data || {};
+                if ((ds.population || ds.land_cover) && (ext.gbif_species || ext.simec_nom059)) {
+                    selectedAnpIds.add(anp.id);
+                }
+            });
+            renderExportTable();
+        });
+        
+        document.getElementById('exportBtn')?.addEventListener('click', exportToExcel);
+        
+        function flattenAnpData(anp) {
+            const d = anp.data || {};
+            const m = d.metadata || {};
+            const ds = d.datasets || {};
+            const ext = d.external_data || {};
+            const geo = d.geometry || {};
+            
+            const row = {};
+            
+            // Metadata Group
+            row['ANP Name'] = m.name || anp.name;
+            row['Designation'] = m.designation || '';
+            row['Designation Type'] = m.designation_type || '';
+            row['IUCN Category'] = m.iucn_category || '';
+            row['Status'] = m.status || '';
+            row['Status Year'] = m.status_year || '';
+            row['Governance'] = m.governance || '';
+            row['Management Authority'] = m.management_authority || '';
+            row['Reported Area (km²)'] = m.reported_area_km2 || '';
+            row['Country'] = m.country || '';
+            row['Data Extracted At'] = m.extracted_at || '';
+            
+            // Geometry Group
+            row['Centroid Longitude'] = geo.centroid?.[0] || '';
+            row['Centroid Latitude'] = geo.centroid?.[1] || '';
+            
+            // Population Group
+            row['Population 2020'] = ds.population?.year_2020?.population || '';
+            
+            // Elevation Group
+            row['Elevation Min (m)'] = ds.elevation?.elevation_min ?? '';
+            row['Elevation Mean (m)'] = ds.elevation?.elevation_mean ?? '';
+            row['Elevation Max (m)'] = ds.elevation?.elevation_max ?? '';
+            
+            // Climate Group
+            row['Annual Precipitation (mm)'] = ds.climate?.annual_precipitation_mm ?? '';
+            row['Mean Max Temp (°C)'] = ds.climate?.mean_max_temp_c ?? '';
+            row['Mean Min Temp (°C)'] = ds.climate?.mean_min_temp_c ?? '';
+            
+            // Vegetation Group
+            row['NDVI Min'] = ds.vegetation?.NDVI_min ?? '';
+            row['NDVI Mean'] = ds.vegetation?.NDVI_mean ?? '';
+            row['NDVI Max'] = ds.vegetation?.NDVI_max ?? '';
+            
+            // Land Cover - Top 5 classes
+            const lcClasses = ds.land_cover?.classes || {};
+            const sortedLC = Object.entries(lcClasses)
+                .map(([name, data]) => ({ name, area: data.area_km2 || 0 }))
+                .sort((a, b) => b.area - a.area)
+                .slice(0, 5);
+            for (let i = 0; i < 5; i++) {
+                const lc = sortedLC[i];
+                row[`Land Cover Class ${i + 1}`] = lc?.name || '';
+                row[`Land Cover Area ${i + 1} (km²)`] = lc?.area ?? '';
+            }
+            
+            // Forest Group
+            row['Tree Cover 2000 (%)'] = ds.forest?.tree_cover_2000_percent ?? '';
+            row['Total Forest Loss (km²)'] = ds.forest?.total_loss_km2 ?? '';
+            
+            // Forest Loss by Year (each year as column)
+            const lossYears = ds.forest?.loss_by_year || {};
+            for (let year = 2001; year <= 2023; year++) {
+                row[`Forest Loss ${year} (km²)`] = lossYears[year] ?? '';
+            }
+            
+            // Fire Group - by year
+            const fireYears = ds.fire?.burned_area_km2_by_year || {};
+            const fireYearKeys = Object.keys(fireYears).sort();
+            fireYearKeys.forEach(year => {
+                row[`Burned Area ${year} (km²)`] = fireYears[year] ?? '';
+            });
+            if (fireYearKeys.length === 0) {
+                for (let year = 2019; year <= 2023; year++) {
+                    row[`Burned Area ${year} (km²)`] = '';
+                }
+            }
+            
+            // Night Lights Group
+            row['Night Lights Mean Radiance'] = ds.night_lights?.avg_rad_mean ?? '';
+            row['Night Lights Max Radiance'] = ds.night_lights?.avg_rad_max ?? '';
+            
+            // Human Modification Group
+            row['Human Modification Index Mean'] = ds.human_modification?.gHM_mean ?? '';
+            row['Human Modification Index Max'] = ds.human_modification?.gHM_max ?? '';
+            
+            // Water Stress Group
+            row['Water Stress Available'] = ds.water_stress?.data_available ? 'Yes' : 'No';
+            row['Baseline Water Stress'] = ds.water_stress?.baseline_water_stress ?? '';
+            row['Water Stress Category'] = ds.water_stress?.baseline_water_stress_category || '';
+            row['Drought Risk'] = ds.water_stress?.drought_risk ?? '';
+            row['Drought Risk Category'] = ds.water_stress?.drought_risk_category || '';
+            
+            // GEDI Biomass Group
+            row['GEDI Biomass Available'] = ds.gedi_biomass?.data_available ? 'Yes' : 'No';
+            row['GEDI AGBD Mean (Mg/ha)'] = ds.gedi_biomass?.agbd_mean_mg_ha ?? '';
+            row['GEDI AGBD Max (Mg/ha)'] = ds.gedi_biomass?.agbd_max_mg_ha ?? '';
+            row['GEDI Total Carbon (Mt)'] = ds.gedi_biomass?.total_carbon_estimate_mt ?? '';
+            
+            // Biodiversity - Ecoregions Group
+            row['Ecoregions'] = (ds.biodiversity?.ecoregions || []).join(', ');
+            row['Biomes'] = (ds.biodiversity?.biomes || []).join(', ');
+            
+            // GBIF Species Group
+            row['GBIF Total Occurrences'] = ext.gbif_species?.total_occurrences ?? '';
+            row['GBIF Unique Species'] = ext.gbif_species?.unique_species ?? '';
+            const gbifByClass = ext.gbif_species?.species_by_class || {};
+            row['GBIF Aves Count'] = gbifByClass.Aves ?? '';
+            row['GBIF Mammalia Count'] = gbifByClass.Mammalia ?? '';
+            row['GBIF Insecta Count'] = gbifByClass.Insecta ?? '';
+            row['GBIF Reptilia Count'] = gbifByClass.Reptilia ?? '';
+            row['GBIF Amphibia Count'] = gbifByClass.Amphibia ?? '';
+            row['GBIF Plantae Count'] = (gbifByClass.Magnoliopsida || 0) + (gbifByClass.Liliopsida || 0);
+            
+            // GBIF Top Species (comma list)
+            const gbifTop = (ext.gbif_species?.top_species || []).slice(0, 20);
+            row['GBIF Top Species'] = gbifTop.map(s => s.scientific_name).join(', ');
+            
+            // IUCN Threatened Group
+            row['IUCN Total Threatened'] = ext.iucn_threatened?.total_threatened ?? '';
+            row['IUCN Critically Endangered'] = (ext.iucn_threatened?.critically_endangered || []).join(', ');
+            row['IUCN Endangered'] = (ext.iucn_threatened?.endangered || []).join(', ');
+            row['IUCN Vulnerable'] = (ext.iucn_threatened?.vulnerable || []).join(', ');
+            
+            // SIMEC NOM-059 Group
+            row['SIMEC Total NOM-059 Species'] = ext.simec_nom059?.total_species ?? '';
+            row['SIMEC Endangered (P)'] = (ext.simec_nom059?.endangered_P || []).join(', ');
+            row['SIMEC Threatened (A)'] = (ext.simec_nom059?.threatened_A || []).join(', ');
+            row['SIMEC Special Protection (Pr)'] = (ext.simec_nom059?.special_protection_Pr || []).join(', ');
+            row['SIMEC Probably Extinct (E)'] = (ext.simec_nom059?.probably_extinct_E || []).join(', ');
+            
+            // INEGI Census Group
+            row['Census Localities Count'] = ext.inegi_census?.localities_in_area ?? '';
+            row['Census Total Population'] = ext.inegi_census?.total_population ?? '';
+            row['Census Female Population'] = ext.inegi_census?.female_population ?? '';
+            row['Census Male Population'] = ext.inegi_census?.male_population ?? '';
+            row['Census Female Percent'] = ext.inegi_census?.female_percent ?? '';
+            row['Census Indigenous Speakers (3+)'] = ext.inegi_census?.indigenous_speakers_3plus ?? '';
+            row['Census Indigenous Speakers (5+)'] = ext.inegi_census?.indigenous_speakers_5plus ?? '';
+            row['Census Indigenous Household Pop'] = ext.inegi_census?.indigenous_households_pop ?? '';
+            row['Census Afro-Mexican Population'] = ext.inegi_census?.afromexican_population ?? '';
+            row['Census Population 60+'] = ext.inegi_census?.population_60plus ?? '';
+            row['Census Economically Active'] = ext.inegi_census?.economically_active ?? '';
+            row['Census Employed'] = ext.inegi_census?.employed ?? '';
+            row['Census Unemployed'] = ext.inegi_census?.unemployed ?? '';
+            row['Census Illiterate (15+)'] = ext.inegi_census?.illiterate_15plus ?? '';
+            row['Census No Schooling (15+)'] = ext.inegi_census?.no_schooling_15plus ?? '';
+            row['Census Post-Basic Education (18+)'] = ext.inegi_census?.post_basic_education_18plus ?? '';
+            row['Census Avg Years Schooling'] = ext.inegi_census?.avg_schooling_years ?? '';
+            row['Census No Health Services'] = ext.inegi_census?.no_health_services ?? '';
+            row['Census With Health Services'] = ext.inegi_census?.with_health_services ?? '';
+            row['Census With Disability'] = ext.inegi_census?.with_disability ?? '';
+            row['Census Homes Dirt Floor'] = ext.inegi_census?.homes_dirt_floor ?? '';
+            row['Census Homes No Electricity'] = ext.inegi_census?.homes_no_electricity ?? '';
+            row['Census Homes No Water'] = ext.inegi_census?.homes_no_water ?? '';
+            row['Census Homes No Drainage'] = ext.inegi_census?.homes_no_drainage ?? '';
+            row['Census Homes No Services'] = ext.inegi_census?.homes_no_services ?? '';
+            row['Census Total Households'] = ext.inegi_census?.total_households ?? '';
+            row['Census Female-Headed Households'] = ext.inegi_census?.female_headed_households ?? '';
+            
+            // CONEVAL IRS Group
+            row['CONEVAL Data Available'] = ext.coneval_irs?.data_available ? 'Yes' : 'No';
+            row['CONEVAL IRS Weighted Mean'] = ext.coneval_irs?.irs_weighted_mean ?? '';
+            row['CONEVAL IRS Category'] = ext.coneval_irs?.irs_predominant_category || '';
+            row['CONEVAL Municipalities Count'] = ext.coneval_irs?.municipalities_count ?? '';
+            row['CONEVAL Total Population'] = ext.coneval_irs?.total_population ?? '';
+            
+            // iNaturalist Group
+            row['iNaturalist Total Observations'] = ext.inaturalist?.total_observations ?? '';
+            row['iNaturalist Unique Species'] = ext.inaturalist?.unique_species ?? '';
+            const inatByGroup = ext.inaturalist?.species_by_group || {};
+            row['iNaturalist Aves Count'] = inatByGroup.Aves ?? '';
+            row['iNaturalist Mammalia Count'] = inatByGroup.Mammalia ?? '';
+            row['iNaturalist Reptilia Count'] = inatByGroup.Reptilia ?? '';
+            row['iNaturalist Amphibia Count'] = inatByGroup.Amphibia ?? '';
+            row['iNaturalist Plantae Count'] = inatByGroup.Plantae ?? '';
+            row['iNaturalist Insecta Count'] = inatByGroup.Insecta ?? '';
+            
+            // iNaturalist Top Species (comma list)
+            const inatTop = (ext.inaturalist?.top_species || []).slice(0, 20);
+            row['iNaturalist Top Species'] = inatTop.map(s => `${s.scientific_name} (${s.common_name || 'no common name'})`).join(', ');
+            
+            return row;
+        }
+        
+        function getDataDictionary() {
+            return [
+                { Field: 'ANP Name', Description: 'Official name of the protected area', Source: 'WDPA', Category: 'Metadata' },
+                { Field: 'Designation', Description: 'Type of protected area (e.g., Reserva de la Biósfera, Parque Nacional)', Source: 'WDPA', Category: 'Metadata' },
+                { Field: 'Designation Type', Description: 'National or international designation', Source: 'WDPA', Category: 'Metadata' },
+                { Field: 'IUCN Category', Description: 'IUCN protected area management category (Ia, Ib, II-VI)', Source: 'WDPA', Category: 'Metadata' },
+                { Field: 'Status', Description: 'Legal status of the protected area', Source: 'WDPA', Category: 'Metadata' },
+                { Field: 'Status Year', Description: 'Year the current status was established', Source: 'WDPA', Category: 'Metadata' },
+                { Field: 'Governance', Description: 'Governance type (federal, state, private, etc.)', Source: 'WDPA', Category: 'Metadata' },
+                { Field: 'Management Authority', Description: 'Organization responsible for management', Source: 'WDPA', Category: 'Metadata' },
+                { Field: 'Reported Area (km²)', Description: 'Official reported area in square kilometers', Source: 'WDPA', Category: 'Metadata' },
+                { Field: 'Country', Description: 'Country code (MEX)', Source: 'WDPA', Category: 'Metadata' },
+                { Field: 'Data Extracted At', Description: 'Timestamp when data was extracted', Source: 'System', Category: 'Metadata' },
+                { Field: 'Centroid Longitude', Description: 'Longitude of ANP centroid (WGS84)', Source: 'WDPA', Category: 'Geometry' },
+                { Field: 'Centroid Latitude', Description: 'Latitude of ANP centroid (WGS84)', Source: 'WDPA', Category: 'Geometry' },
+                { Field: 'Population 2020', Description: 'Estimated population inside ANP boundary (WorldPop 100m grid)', Source: 'WorldPop', Category: 'Demographics' },
+                { Field: 'Elevation Min (m)', Description: 'Minimum elevation in meters', Source: 'SRTM', Category: 'Topography' },
+                { Field: 'Elevation Mean (m)', Description: 'Mean elevation in meters', Source: 'SRTM', Category: 'Topography' },
+                { Field: 'Elevation Max (m)', Description: 'Maximum elevation in meters', Source: 'SRTM', Category: 'Topography' },
+                { Field: 'Annual Precipitation (mm)', Description: 'Mean annual precipitation (1970-2000 baseline)', Source: 'WorldClim', Category: 'Climate' },
+                { Field: 'Mean Max Temp (°C)', Description: 'Mean maximum temperature (1970-2000 baseline)', Source: 'WorldClim', Category: 'Climate' },
+                { Field: 'Mean Min Temp (°C)', Description: 'Mean minimum temperature (1970-2000 baseline)', Source: 'WorldClim', Category: 'Climate' },
+                { Field: 'NDVI Min', Description: 'Minimum Normalized Difference Vegetation Index (annual)', Source: 'MODIS', Category: 'Vegetation' },
+                { Field: 'NDVI Mean', Description: 'Mean Normalized Difference Vegetation Index (annual)', Source: 'MODIS', Category: 'Vegetation' },
+                { Field: 'NDVI Max', Description: 'Maximum Normalized Difference Vegetation Index (annual)', Source: 'MODIS', Category: 'Vegetation' },
+                { Field: 'Land Cover Class 1-5', Description: 'Top 5 land cover classes by area', Source: 'ESA WorldCover', Category: 'Land Cover' },
+                { Field: 'Land Cover Area 1-5 (km²)', Description: 'Area in km² for each land cover class', Source: 'ESA WorldCover', Category: 'Land Cover' },
+                { Field: 'Tree Cover 2000 (%)', Description: 'Percent tree cover in year 2000 baseline', Source: 'Hansen GFC', Category: 'Forest' },
+                { Field: 'Total Forest Loss (km²)', Description: 'Cumulative forest loss 2001-2023 in km²', Source: 'Hansen GFC', Category: 'Forest' },
+                { Field: 'Forest Loss YYYY (km²)', Description: 'Annual forest loss for each year 2001-2023', Source: 'Hansen GFC', Category: 'Forest' },
+                { Field: 'Burned Area YYYY (km²)', Description: 'Annual burned area for each year', Source: 'MODIS Burned Area', Category: 'Fire' },
+                { Field: 'Night Lights Mean Radiance', Description: 'Mean nighttime light radiance (proxy for human activity)', Source: 'VIIRS', Category: 'Human Pressure' },
+                { Field: 'Night Lights Max Radiance', Description: 'Maximum nighttime light radiance', Source: 'VIIRS', Category: 'Human Pressure' },
+                { Field: 'Human Modification Index Mean', Description: 'Mean Global Human Modification index (0-1 scale)', Source: 'CSP gHM', Category: 'Human Pressure' },
+                { Field: 'Human Modification Index Max', Description: 'Maximum Global Human Modification index', Source: 'CSP gHM', Category: 'Human Pressure' },
+                { Field: 'Water Stress Available', Description: 'Whether water stress data is available', Source: 'WRI Aqueduct', Category: 'Water' },
+                { Field: 'Baseline Water Stress', Description: 'Ratio of water withdrawals to supply (0-1)', Source: 'WRI Aqueduct', Category: 'Water' },
+                { Field: 'Water Stress Category', Description: 'Categorical water stress level', Source: 'WRI Aqueduct', Category: 'Water' },
+                { Field: 'Drought Risk', Description: 'Probability-weighted drought severity (0-1)', Source: 'WRI Aqueduct', Category: 'Water' },
+                { Field: 'Drought Risk Category', Description: 'Categorical drought risk level', Source: 'WRI Aqueduct', Category: 'Water' },
+                { Field: 'GEDI Biomass Available', Description: 'Whether GEDI biomass data is available', Source: 'NASA GEDI', Category: 'Biomass' },
+                { Field: 'GEDI AGBD Mean (Mg/ha)', Description: 'Mean Aboveground Biomass Density in Megagrams/hectare', Source: 'NASA GEDI', Category: 'Biomass' },
+                { Field: 'GEDI AGBD Max (Mg/ha)', Description: 'Maximum Aboveground Biomass Density', Source: 'NASA GEDI', Category: 'Biomass' },
+                { Field: 'GEDI Total Carbon (Mt)', Description: 'Estimated total aboveground carbon in Megatonnes', Source: 'NASA GEDI', Category: 'Biomass' },
+                { Field: 'Ecoregions', Description: 'RESOLVE ecoregions intersecting the ANP', Source: 'RESOLVE', Category: 'Biodiversity' },
+                { Field: 'Biomes', Description: 'Biomes present in the ANP', Source: 'RESOLVE', Category: 'Biodiversity' },
+                { Field: 'GBIF Total Occurrences', Description: 'Total species occurrence records from GBIF', Source: 'GBIF', Category: 'Biodiversity' },
+                { Field: 'GBIF Unique Species', Description: 'Count of unique species in GBIF sample', Source: 'GBIF', Category: 'Biodiversity' },
+                { Field: 'GBIF [Class] Count', Description: 'Species count by taxonomic class (Aves, Mammalia, etc.)', Source: 'GBIF', Category: 'Biodiversity' },
+                { Field: 'GBIF Top Species', Description: 'Top 20 species by occurrence count', Source: 'GBIF', Category: 'Biodiversity' },
+                { Field: 'IUCN Total Threatened', Description: 'Total IUCN Red List threatened species (CR+EN+VU)', Source: 'GBIF/IUCN', Category: 'Conservation' },
+                { Field: 'IUCN Critically Endangered', Description: 'List of Critically Endangered species', Source: 'GBIF/IUCN', Category: 'Conservation' },
+                { Field: 'IUCN Endangered', Description: 'List of Endangered species', Source: 'GBIF/IUCN', Category: 'Conservation' },
+                { Field: 'IUCN Vulnerable', Description: 'List of Vulnerable species', Source: 'GBIF/IUCN', Category: 'Conservation' },
+                { Field: 'SIMEC Total NOM-059 Species', Description: 'Total species under Mexican NOM-059 protection', Source: 'CONANP SIMEC', Category: 'Conservation' },
+                { Field: 'SIMEC Endangered (P)', Description: 'Species in Danger of Extinction (Peligro de extinción)', Source: 'CONANP SIMEC', Category: 'Conservation' },
+                { Field: 'SIMEC Threatened (A)', Description: 'Threatened species (Amenazada)', Source: 'CONANP SIMEC', Category: 'Conservation' },
+                { Field: 'SIMEC Special Protection (Pr)', Description: 'Species under Special Protection (Protección especial)', Source: 'CONANP SIMEC', Category: 'Conservation' },
+                { Field: 'SIMEC Probably Extinct (E)', Description: 'Probably Extinct in Wild species', Source: 'CONANP SIMEC', Category: 'Conservation' },
+                { Field: 'Census Localities Count', Description: 'Number of INEGI census localities within ANP', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Total Population', Description: 'Total population in census localities within ANP', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Female/Male Population', Description: 'Population by gender', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Female Percent', Description: 'Percentage of female population', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Indigenous Speakers (3+)', Description: 'Indigenous language speakers age 3+', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Indigenous Speakers (5+)', Description: 'Indigenous language speakers age 5+', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Indigenous Household Pop', Description: 'Population in indigenous households', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Afro-Mexican Population', Description: 'Self-identified Afro-Mexican/Afrodescendant population', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Population 60+', Description: 'Elderly population age 60 and over', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Economically Active', Description: 'Economically active population (employed + seeking work)', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Employed', Description: 'Population that is employed', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Unemployed', Description: 'Population seeking work but unemployed', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Illiterate (15+)', Description: 'Illiterate population age 15+', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census No Schooling (15+)', Description: 'Population 15+ with no formal schooling', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Post-Basic Education (18+)', Description: 'Population 18+ with education beyond secondary', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Avg Years Schooling', Description: 'Average years of schooling for population 15+', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census No Health Services', Description: 'Population without health service affiliation', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census With Health Services', Description: 'Population affiliated to health services', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census With Disability', Description: 'Population with some form of disability', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Homes Dirt Floor', Description: 'Homes with dirt floor (poverty indicator)', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Homes No Electricity', Description: 'Homes without electricity', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Homes No Water', Description: 'Homes without piped water', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Homes No Drainage', Description: 'Homes without drainage/sewerage', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Homes No Services', Description: 'Homes without electricity, water, OR drainage (extreme poverty)', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Total Households', Description: 'Total number of households', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'Census Female-Headed Households', Description: 'Households headed by women', Source: 'INEGI Census 2020', Category: 'Socioeconomic' },
+                { Field: 'CONEVAL Data Available', Description: 'Whether CONEVAL poverty data is available', Source: 'CONEVAL', Category: 'Socioeconomic' },
+                { Field: 'CONEVAL IRS Weighted Mean', Description: 'Population-weighted Social Lag Index (negative=better)', Source: 'CONEVAL', Category: 'Socioeconomic' },
+                { Field: 'CONEVAL IRS Category', Description: 'Predominant social lag category (Muy bajo to Muy alto)', Source: 'CONEVAL', Category: 'Socioeconomic' },
+                { Field: 'CONEVAL Municipalities Count', Description: 'Number of municipalities intersecting ANP', Source: 'CONEVAL', Category: 'Socioeconomic' },
+                { Field: 'CONEVAL Total Population', Description: 'Total municipal population (broader than census)', Source: 'CONEVAL', Category: 'Socioeconomic' },
+                { Field: 'iNaturalist Total Observations', Description: 'Total research-grade observations from iNaturalist', Source: 'iNaturalist', Category: 'Citizen Science' },
+                { Field: 'iNaturalist Unique Species', Description: 'Unique species identified by community', Source: 'iNaturalist', Category: 'Citizen Science' },
+                { Field: 'iNaturalist [Taxon] Count', Description: 'Species count by taxonomic group', Source: 'iNaturalist', Category: 'Citizen Science' },
+                { Field: 'iNaturalist Top Species', Description: 'Top 20 species with common names', Source: 'iNaturalist', Category: 'Citizen Science' },
+            ];
+        }
+        
+        function exportToExcel() {
+            const selectedAnps = allAnpData.filter(anp => selectedAnpIds.has(anp.id));
+            if (selectedAnps.length === 0) {
+                alert('Please select at least one ANP to export.');
+                return;
+            }
+            
+            const rows = selectedAnps.map(flattenAnpData);
+            const ws = XLSX.utils.json_to_sheet(rows);
+            
+            const colWidths = Object.keys(rows[0] || {}).map(key => ({
+                wch: Math.max(key.length, 15)
+            }));
+            ws['!cols'] = colWidths;
+            
+            const dictData = getDataDictionary();
+            const wsDict = XLSX.utils.json_to_sheet(dictData);
+            wsDict['!cols'] = [
+                { wch: 35 },
+                { wch: 60 },
+                { wch: 20 },
+                { wch: 15 }
+            ];
+            
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'ANP Data');
+            XLSX.utils.book_append_sheet(wb, wsDict, 'Data Dictionary');
+            
+            const date = new Date().toISOString().slice(0, 10);
+            const filename = `FMCN_ANP_Export_${selectedAnps.length}_areas_${date}.xlsx`;
+            
+            XLSX.writeFile(wb, filename);
+        }
+        
+        // Initialize
+        loadAllData();
+    </script>
+</body>
+</html>

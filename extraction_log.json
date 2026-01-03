@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "description": "Log of data extraction operations for auditing and debugging",
+  "last_updated": "2026-01-03T12:00:00Z",
+  "extraction_runs": [
+    {
+      "run_id": "initial_gee_extraction",
+      "started_at": "2026-01-02T12:00:00Z",
+      "completed_at": "2026-01-02T14:30:00Z",
+      "type": "batch",
+      "sources": ["gee_worldpop", "gee_srtm", "gee_worldcover", "gee_hansen", "gee_worldclim", "gee_modis_ndvi", "gee_viirs", "gee_modis_fire", "gee_resolve_ecoregions", "gee_ghm"],
+      "anps_processed": 212,
+      "anps_succeeded": 212,
+      "anps_failed": 0,
+      "notes": "Initial batch extraction of all GEE datasets for all ANPs"
+    },
+    {
+      "run_id": "initial_external_extraction",
+      "started_at": "2026-01-02T20:00:00Z",
+      "completed_at": "2026-01-02T23:30:00Z",
+      "type": "batch",
+      "sources": ["gbif_species", "gbif_iucn", "simec_nom059", "enciclovida_nom059", "inegi_census"],
+      "anps_processed": 212,
+      "anps_succeeded": 202,
+      "anps_failed": 10,
+      "failed_anps": [
+        {"anp_id": "cenote_aerolito", "error": "GBIF returned no results for tiny boundary"},
+        {"anp_id": "costa_occ_de_i_mujeres_pta_cancun_y_pta_nizuc", "error": "GBIF timeout on complex geometry"}
+      ],
+      "notes": "Initial extraction of GBIF, SIMEC, and INEGI data"
+    }
+  ],
+  "error_summary": {
+    "total_errors": 10,
+    "by_source": {
+      "gbif_species": 9,
+      "inegi_census": 32
+    },
+    "common_issues": [
+      {
+        "issue": "GBIF no results",
+        "count": 5,
+        "typical_cause": "Very small ANP boundaries or remote marine areas",
+        "resolution": "Expected for tiny playas and deep marine areas"
+      },
+      {
+        "issue": "INEGI no localities",
+        "count": 32,
+        "typical_cause": "ANP has no permanent human settlements within bounds",
+        "resolution": "Expected for marine, island, and remote terrestrial ANPs"
+      }
+    ]
+  },
+  "data_freshness": {
+    "gee_datasets": {
+      "last_extracted": "2026-01-02T14:30:00Z",
+      "stale_after_days": 30,
+      "is_stale": false
+    },
+    "gbif_species": {
+      "last_extracted": "2026-01-02T23:30:00Z",
+      "stale_after_days": 90,
+      "is_stale": false
+    },
+    "simec_nom059": {
+      "last_extracted": "2026-01-02T22:00:00Z",
+      "stale_after_days": 365,
+      "is_stale": false,
+      "notes": "SIMEC data updated infrequently by CONANP"
+    },
+    "inegi_census": {
+      "last_extracted": "2026-01-02T23:30:00Z",
+      "stale_after_days": 3650,
+      "is_stale": false,
+      "notes": "Census conducted every 10 years (next: 2030)"
+    }
+  }
+}

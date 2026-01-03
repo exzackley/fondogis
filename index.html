@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mexican Protected Areas - Environmental Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="translations.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --accent: #10b981;
+            --accent-light: #34d399;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #475569;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .toolbar {
+            display: flex;
+            align-items: center;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 4px;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .anp-selector {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .anp-selector select {
+            background: transparent;
+            color: var(--text-primary);
+            border: none;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .anp-selector select:focus {
+            outline: none;
+        }
+        
+        .divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+        }
+        
+        .lang-selector {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .lang-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .lang-btn.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+        
+        .lang-btn:hover:not(.active) {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .admin-link {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-decoration: none;
+            padding: 0 10px;
+            white-space: nowrap;
+        }
+
+        .admin-link:hover {
+            color: var(--accent);
+        }
+        .hero {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            opacity: 0.1;
+        }
+        
+        .hero-content { position: relative; z-index: 1; }
+        
+        .badge {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 30px; }
+        
+        .key-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-item {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+        .stat-label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 5px; }
+        .stat-source { font-size: 0.65rem; color: var(--text-muted); margin-top: 8px; }
+        
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+        
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .source { font-size: 0.75rem; color: var(--text-muted); }
+        
+        .map-card { grid-column: span 8; min-height: 400px; }
+        #map { height: 350px; border-radius: 12px; overflow: hidden; }
+        
+        .side-panel { grid-column: span 4; display: flex; flex-direction: column; gap: 20px; }
+        
+        .land-cover-card { grid-column: span 6; }
+        .land-cover-chart { height: 250px; }
+        
+        .forest-card { grid-column: span 6; }
+        .forest-chart { height: 250px; }
+        
+        .small-cards {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .mini-card {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .mini-value { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+        .mini-label { font-size: 0.8rem; color: var(--text-secondary); margin-top: 5px; }
+        .mini-source { font-size: 0.65rem; color: var(--text-muted); margin-top: 8px; }
+        
+        .progress-container { margin-top: 15px; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; }
+        .progress-bar { height: 8px; background: var(--bg-primary); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%); border-radius: 4px; transition: width 1s ease; }
+        .progress-fill.warning { background: linear-gradient(90deg, var(--warning) 0%, #fbbf24 100%); }
+        
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .tag { background: var(--bg-primary); color: var(--accent); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; border: 1px solid var(--accent); }
+        
+        .fire-card { grid-column: span 6; }
+        .fire-chart { height: 200px; }
+        
+        .climate-card { grid-column: span 6; }
+        .climate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .climate-item { background: var(--bg-tertiary); padding: 20px; border-radius: 12px; text-align: center; }
+        .climate-icon { font-size: 2rem; margin-bottom: 10px; }
+        
+        .water-stress-card { grid-column: span 6; }
+        .water-stress-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .water-stress-item { background: var(--bg-tertiary); padding: 20px; border-radius: 12px; text-align: center; }
+        .water-stress-icon { font-size: 2rem; margin-bottom: 10px; }
+        .bws-indicator { 
+            display: inline-block; 
+            padding: 6px 14px; 
+            border-radius: 20px; 
+            font-size: 0.85rem; 
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .bws-low { background: #065f46; color: #6ee7b7; }
+        .bws-low-medium { background: #1e40af; color: #93c5fd; }
+        .bws-medium-high { background: #92400e; color: #fcd34d; }
+        .bws-high { background: #9a3412; color: #fdba74; }
+        .bws-extreme { background: #7f1d1d; color: #fca5a5; }
+        
+        footer {
+            margin-top: 40px;
+            padding: 30px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        footer a { color: var(--accent); text-decoration: none; }
+        
+        @media (max-width: 1024px) {
+            .map-card, .side-panel, .land-cover-card, .forest-card, .fire-card, .climate-card, .water-stress-card { grid-column: span 12; }
+            h1 { font-size: 1.8rem; }
+            .top-bar { flex-direction: column; gap: 15px; }
+        }
+        
+        .loading { display: flex; align-items: center; justify-content: center; height: 200px; color: var(--text-secondary); }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--bg-tertiary); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .fade-in { animation: fadeIn 0.6s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .species-stats { display: flex; gap: 20px; margin-bottom: 15px; }
+        .species-stat { background: var(--bg-tertiary); padding: 15px 25px; border-radius: 10px; text-align: center; flex: 1; }
+        .species-by-class { display: flex; flex-wrap: wrap; gap: 8px; }
+        .class-tag { background: var(--bg-primary); color: var(--text-secondary); padding: 6px 12px; border-radius: 15px; font-size: 0.8rem; border: 1px solid var(--border); }
+        .class-tag .count { color: var(--accent); font-weight: 600; margin-left: 5px; }
+        
+        .threatened-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .threatened-category { padding: 15px; border-radius: 10px; text-align: center; }
+        .threatened-category.critical { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; }
+        .threatened-category.endangered { background: rgba(249, 115, 22, 0.2); border: 1px solid #f97316; }
+        .threatened-category.vulnerable { background: rgba(234, 179, 8, 0.2); border: 1px solid #eab308; }
+        .category-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 5px; }
+        .category-count { font-size: 1.5rem; font-weight: 700; }
+        .critical .category-count { color: #ef4444; }
+        .endangered .category-count { color: #f97316; }
+        .vulnerable .category-count { color: #eab308; }
+        
+        .nom059-header { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; }
+        .nom059-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .nom059-tag { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; }
+        .nom059-tag.P { background: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+        .nom059-tag.A { background: rgba(249, 115, 22, 0.3); color: #fdba74; }
+        .nom059-tag.Pr { background: rgba(234, 179, 8, 0.3); color: #fde047; }
+        
+        .threatened-list { max-height: 120px; overflow-y: auto; }
+        .threatened-species { font-size: 0.8rem; color: var(--text-secondary); padding: 3px 0; font-style: italic; }
+        
+        .demographics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .demo-stat { background: var(--bg-tertiary); padding: 12px; border-radius: 8px; text-align: center; }
+        .demo-stat .mini-value { font-size: 1.3rem; }
+        .demo-indicators { background: var(--bg-tertiary); padding: 12px; border-radius: 8px; }
+        .indicator-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.85rem; }
+        .indicator-label { color: var(--text-secondary); }
+        .indicator-value { color: var(--accent); font-weight: 500; }
+        
+        .biomass-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .biomass-item { background: var(--bg-tertiary); padding: 20px; border-radius: 12px; text-align: center; }
+        .biomass-icon { font-size: 2rem; margin-bottom: 10px; }
+        
+        .poverty-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .poverty-item { background: var(--bg-tertiary); padding: 20px; border-radius: 12px; text-align: center; }
+        .irs-indicator { 
+            display: inline-block; 
+            padding: 6px 14px; 
+            border-radius: 20px; 
+            font-size: 0.85rem; 
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .irs-muy-bajo { background: #065f46; color: #6ee7b7; }
+        .irs-bajo { background: #1e40af; color: #93c5fd; }
+        .irs-medio { background: #92400e; color: #fcd34d; }
+        .irs-alto { background: #9a3412; color: #fdba74; }
+        .irs-muy-alto { background: #7f1d1d; color: #fca5a5; }
+        
+        .inat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .inat-stat { background: var(--bg-tertiary); padding: 15px 25px; border-radius: 10px; text-align: center; }
+        .inat-species-list { max-height: 150px; overflow-y: auto; }
+        .inat-species { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.8rem; border-bottom: 1px solid var(--border); }
+        .inat-species:last-child { border-bottom: none; }
+        .inat-species .name { color: var(--text-secondary); font-style: italic; }
+        .inat-species .common { color: var(--text-muted); font-size: 0.75rem; }
+        .inat-species .count { color: var(--accent); font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Bar with Selector -->
+        <div class="top-bar">
+            <div class="logo">
+                <div class="logo-icon">🌿</div>
+                <span>Mexican Protected Areas Dashboard</span>
+            </div>
+            <div class="toolbar">
+                <div class="anp-selector">
+                    <select id="anp-select">
+                        <option value="" data-i18n="loading">Loading...</option>
+                    </select>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="lang-selector">
+                    <button class="lang-btn active" onclick="changeLanguage('en')">EN</button>
+                    <button class="lang-btn" onclick="changeLanguage('es')">ES</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <a href="admin.html" class="admin-link">Admin &rarr;</a>
+            </div>
+        </div>
+        
+        <!-- Hero Section -->
+        <section class="hero fade-in" id="hero">
+            <div class="hero-content">
+                <span class="badge" id="badge" data-i18n="loading">Loading...</span>
+                <h1 id="anp-name" data-i18n="select_anp">Select a Protected Area</h1>
+                <p class="subtitle" id="subtitle" data-i18n="subtitle_default">Choose an area from the dropdown above</p>
+                <div class="key-stats" id="key-stats"></div>
+            </div>
+        </section>
+        
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <div class="card map-card fade-in" style="animation-delay: 0.1s">
+                <div class="card-header">
+                    <div class="card-title"><div class="card-icon">🗺️</div><span data-i18n="protected_area_boundary">Protected Area Boundary</span></div>
+                    <span class="source">WDPA</span>
+                </div>
+                <div id="map"></div>
+            </div>
+            
+            <div class="side-panel">
+                <div class="card fade-in" style="animation-delay: 0.2s">
+                    <div class="card-header"><div class="card-title"><div class="card-icon">🏗️</div><span data-i18n="human_modification">Human Modification</span></div><span class="source">CSP gHM 2016</span></div>
+                    <div class="progress-container">
+                        <div class="progress-label"><span data-i18n="pristine">Pristine</span><span id="hm-value">--</span><span data-i18n="modified">Modified</span></div>
+                        <div class="progress-bar"><div class="progress-fill" id="hm-bar" style="width: 0%"></div></div>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-secondary);" id="hm-interpretation"></p>
+                </div>
+                
+                <div class="card fade-in" style="animation-delay: 0.3s">
+                    <div class="card-header"><div class="card-title"><div class="card-icon">🌿</div><span data-i18n="vegetation_health">Vegetation Health</span></div><span class="source">MODIS NDVI 2020</span></div>
+                    <div class="progress-container">
+                        <div class="progress-label"><span data-i18n="low_ndvi">Low NDVI</span><span id="ndvi-value">--</span><span data-i18n="high">High</span></div>
+                        <div class="progress-bar"><div class="progress-fill" id="ndvi-bar" style="width: 0%"></div></div>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-secondary);" id="ndvi-interpretation"></p>
+                </div>
+                
+                <div class="card fade-in" style="animation-delay: 0.4s">
+                    <div class="card-header"><div class="card-title"><div class="card-icon">🦜</div><span data-i18n="ecoregions">Ecoregions</span></div><span class="source">RESOLVE/WWF</span></div>
+                    <div class="tags" id="ecoregions"></div>
+                </div>
+            </div>
+            
+            <div class="card land-cover-card fade-in" style="animation-delay: 0.5s">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🌳</div><span data-i18n="land_cover">Land Cover (2021)</span></div><span class="source">ESA WorldCover 10m</span></div>
+                <div class="land-cover-chart"><canvas id="landCoverChart"></canvas></div>
+            </div>
+            
+            <div class="card forest-card fade-in" style="animation-delay: 0.6s">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🪓</div><span data-i18n="forest_loss_year">Forest Loss by Year</span></div><span class="source">Hansen Global Forest Change</span></div>
+                <div class="forest-chart"><canvas id="forestChart"></canvas></div>
+            </div>
+            
+            <div class="small-cards fade-in" style="animation-delay: 0.7s">
+                <div class="mini-card"><div class="mini-value" id="population">--</div><div class="mini-label" data-i18n="population">Population (2020)</div><div class="mini-source">WorldPop</div></div>
+                <div class="mini-card"><div class="mini-value" id="elevation">--</div><div class="mini-label" data-i18n="mean_elevation">Mean Elevation</div><div class="mini-source">SRTM 30m</div></div>
+                <div class="mini-card"><div class="mini-value" id="tree-cover">--</div><div class="mini-label" data-i18n="tree_cover">Tree Cover (2000)</div><div class="mini-source">Hansen</div></div>
+                <div class="mini-card"><div class="mini-value" id="forest-loss">--</div><div class="mini-label" data-i18n="total_forest_loss">Total Forest Loss</div><div class="mini-source">2001-2023</div></div>
+                <div class="mini-card"><div class="mini-value" id="night-lights">--</div><div class="mini-label" data-i18n="light_pollution">Light Pollution</div><div class="mini-source">VIIRS 2020</div></div>
+                <div class="mini-card"><div class="mini-value" id="water">--</div><div class="mini-label" data-i18n="permanent_water">Permanent Water</div><div class="mini-source">JRC GSW</div></div>
+            </div>
+            
+            <div class="card climate-card fade-in" style="animation-delay: 0.8s">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🌡️</div><span data-i18n="climate">Climate (2020)</span></div><span class="source">TerraClimate</span></div>
+                <div class="climate-grid">
+                    <div class="climate-item"><div class="climate-icon">🌧️</div><div class="mini-value" id="precipitation">--</div><div class="mini-label" data-i18n="annual_rainfall">Annual Rainfall</div></div>
+                    <div class="climate-item"><div class="climate-icon">☀️</div><div class="mini-value" id="temp-max">--</div><div class="mini-label" data-i18n="avg_max_temp">Avg Max Temp</div></div>
+                    <div class="climate-item"><div class="climate-icon">🌙</div><div class="mini-value" id="temp-min">--</div><div class="mini-label" data-i18n="avg_min_temp">Avg Min Temp</div></div>
+                    <div class="climate-item"><div class="climate-icon">🧪</div><div class="mini-value" id="soil-ph">--</div><div class="mini-label" data-i18n="soil_ph">Soil pH</div></div>
+                </div>
+            </div>
+            
+            <div class="card water-stress-card fade-in" id="water-stress-section" style="animation-delay: 0.85s; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">💧</div><span data-i18n="water_stress">Water Stress</span></div><span class="source">WRI Aqueduct 2019</span></div>
+                <div class="water-stress-grid">
+                    <div class="water-stress-item">
+                        <div class="water-stress-icon">🚰</div>
+                        <div class="mini-value" id="bws-value">--</div>
+                        <div class="mini-label" data-i18n="baseline_water_stress">Baseline Water Stress</div>
+                        <div class="bws-indicator" id="bws-category">--</div>
+                    </div>
+                    <div class="water-stress-item">
+                        <div class="water-stress-icon">🌊</div>
+                        <div class="mini-value" id="seasonal-var">--</div>
+                        <div class="mini-label" data-i18n="seasonal_variability">Seasonal Variability</div>
+                    </div>
+                    <div class="water-stress-item">
+                        <div class="water-stress-icon">⚡</div>
+                        <div class="mini-value" id="water-depletion">--</div>
+                        <div class="mini-label" data-i18n="water_depletion">Water Depletion</div>
+                    </div>
+                    <div class="water-stress-item">
+                        <div class="water-stress-icon">🏜️</div>
+                        <div class="mini-value" id="drought-risk">--</div>
+                        <div class="mini-label" data-i18n="drought_risk">Drought Risk</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card fire-card fade-in" style="animation-delay: 0.9s">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🔥</div><span data-i18n="fire_history">Fire History</span></div><span class="source">MODIS Burned Area</span></div>
+                <div class="fire-chart"><canvas id="fireChart"></canvas></div>
+            </div>
+            
+            <div class="card species-card fade-in" id="species-section" style="animation-delay: 1.0s; grid-column: span 6; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🦎</div><span data-i18n="species_biodiversity">Species Biodiversity</span></div><span class="source">GBIF</span></div>
+                <div class="species-stats">
+                    <div class="species-stat">
+                        <div class="mini-value" id="total-species">--</div>
+                        <div class="mini-label" data-i18n="species_gbif">Species in GBIF Data</div>
+                    </div>
+                    <div class="species-stat">
+                        <div class="mini-value" id="total-occurrences">--</div>
+                        <div class="mini-label" data-i18n="occurrence_records">Occurrence Records</div>
+                    </div>
+                </div>
+                <div class="species-by-class" id="species-by-class"></div>
+            </div>
+            
+            <div class="card demographics-card fade-in" id="demographics-section" style="animation-delay: 1.05s; grid-column: span 12; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">👥</div><span data-i18n="demographics">Demographics & Socioeconomic</span></div><span class="source">INEGI Censo 2020</span></div>
+                <div class="demographics-grid" style="grid-template-columns: repeat(6, 1fr);">
+                    <div class="demo-stat"><div class="mini-value" id="census-population">--</div><div class="mini-label" data-i18n="census_population">Census Population</div></div>
+                    <div class="demo-stat"><div class="mini-value" id="female-pct">--</div><div class="mini-label" data-i18n="female_pct">% Female</div></div>
+                    <div class="demo-stat"><div class="mini-value" id="indigenous-pop">--</div><div class="mini-label" data-i18n="indigenous_speakers">Indigenous Speakers</div></div>
+                    <div class="demo-stat"><div class="mini-value" id="indigenous-pct">--</div><div class="mini-label" data-i18n="indigenous_pct">% Indigenous</div></div>
+                    <div class="demo-stat"><div class="mini-value" id="afromexican-pop">--</div><div class="mini-label" data-i18n="afromexican">Afro-Mexican</div></div>
+                    <div class="demo-stat"><div class="mini-value" id="localities-count">--</div><div class="mini-label" data-i18n="localities">Localities</div></div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <div class="demo-indicators">
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;" data-i18n="health_welfare">Health & Welfare</div>
+                        <div class="indicator-row"><span class="indicator-label" data-i18n="no_health_services">No Health Services:</span><span class="indicator-value" id="no-health">--</span></div>
+                        <div class="indicator-row"><span class="indicator-label" data-i18n="with_disability">With Disability:</span><span class="indicator-value" id="with-disability">--</span></div>
+                        <div class="indicator-row"><span class="indicator-label" data-i18n="population_60">Population 60+:</span><span class="indicator-value" id="pop-elderly">--</span></div>
+                    </div>
+                    <div class="demo-indicators">
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;" data-i18n="education">Education</div>
+                        <div class="indicator-row"><span class="indicator-label" data-i18n="illiterate">Illiterate (15+):</span><span class="indicator-value" id="illiterate">--</span></div>
+                        <div class="indicator-row"><span class="indicator-label" data-i18n="no_schooling">No Schooling (15+):</span><span class="indicator-value" id="no-schooling">--</span></div>
+                        <div class="indicator-row"><span class="indicator-label" data-i18n="avg_years_schooling">Avg Years Schooling:</span><span class="indicator-value" id="avg-schooling">--</span></div>
+                    </div>
+                    <div class="demo-indicators">
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;" data-i18n="housing">Housing (poverty proxies)</div>
+                        <div class="indicator-row"><span class="indicator-label" data-i18n="homes_dirt_floor">Homes w/ Dirt Floor:</span><span class="indicator-value" id="dirt-floor">--</span></div>
+                        <div class="indicator-row"><span class="indicator-label" data-i18n="homes_no_electricity">Homes No Electricity:</span><span class="indicator-value" id="no-electricity">--</span></div>
+                        <div class="indicator-row"><span class="indicator-label" data-i18n="homes_no_services">Homes No Services:</span><span class="indicator-value" id="no-services">--</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card threatened-card fade-in" id="threatened-section" style="animation-delay: 1.1s; grid-column: span 6; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">⚠️</div><span data-i18n="threatened_species">Threatened Species</span></div><span class="source">IUCN + NOM-059</span></div>
+                <div class="threatened-grid">
+                    <div class="threatened-category critical">
+                        <div class="category-label" data-i18n="critically_endangered">Critically Endangered</div>
+                        <div class="category-count" id="iucn-cr">0</div>
+                    </div>
+                    <div class="threatened-category endangered">
+                        <div class="category-label" data-i18n="endangered">Endangered</div>
+                        <div class="category-count" id="iucn-en">0</div>
+                    </div>
+                    <div class="threatened-category vulnerable">
+                        <div class="category-label" data-i18n="vulnerable">Vulnerable</div>
+                        <div class="category-count" id="iucn-vu">0</div>
+                    </div>
+                </div>
+                <div class="nom059-section" id="nom059-section" style="margin-top: 15px; display: none;">
+                    <div class="nom059-header">NOM-059-SEMARNAT (Mexico)</div>
+                    <div class="nom059-tags" id="nom059-tags"></div>
+                </div>
+                <div class="threatened-list" id="threatened-list" style="margin-top: 15px;"></div>
+            </div>
+            
+            <div class="card biomass-card fade-in" id="biomass-section" style="animation-delay: 1.15s; grid-column: span 6; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🌲</div><span data-i18n="forest_biomass">Forest Biomass & Carbon</span></div><span class="source">NASA GEDI L4A</span></div>
+                <div class="biomass-grid">
+                    <div class="biomass-item">
+                        <div class="biomass-icon">🪵</div>
+                        <div class="mini-value" id="agbd-mean">--</div>
+                        <div class="mini-label" data-i18n="avg_biomass">Avg Biomass (Mg/ha)</div>
+                    </div>
+                    <div class="biomass-item">
+                        <div class="biomass-icon">📊</div>
+                        <div class="mini-value" id="agbd-max">--</div>
+                        <div class="mini-label" data-i18n="max_biomass">Max Biomass (Mg/ha)</div>
+                    </div>
+                    <div class="biomass-item">
+                        <div class="biomass-icon">🌍</div>
+                        <div class="mini-value" id="total-carbon">--</div>
+                        <div class="mini-label" data-i18n="total_carbon">Total Carbon (Mt)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card poverty-card fade-in" id="poverty-section" style="animation-delay: 1.2s; grid-column: span 6; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">📊</div><span data-i18n="social_lag">Social Lag Index</span></div><span class="source">CONEVAL IRS 2020</span></div>
+                <div class="poverty-grid">
+                    <div class="poverty-item">
+                        <div class="mini-value" id="irs-value">--</div>
+                        <div class="mini-label" data-i18n="irs_index">IRS Index (weighted)</div>
+                        <div class="irs-indicator" id="irs-category">--</div>
+                    </div>
+                    <div class="poverty-item">
+                        <div class="mini-value" id="irs-municipalities">--</div>
+                        <div class="mini-label" data-i18n="municipalities">Municipalities</div>
+                        <div class="mini-source" id="irs-population" style="margin-top: 8px;">--</div>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; font-size: 0.75rem; color: var(--text-muted);" data-i18n="irs_desc">
+                    Lower IRS = better conditions. Categories: Muy bajo (best) → Bajo → Medio → Alto → Muy alto (worst)
+                </div>
+            </div>
+            
+            <div class="card inat-card fade-in" id="inat-section" style="animation-delay: 1.25s; grid-column: span 6; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">📸</div><span data-i18n="citizen_science">Citizen Science</span></div><span class="source">iNaturalist</span></div>
+                <div class="inat-grid">
+                    <div class="inat-stat">
+                        <div class="mini-value" id="inat-observations">--</div>
+                        <div class="mini-label" data-i18n="observations">Observations</div>
+                    </div>
+                    <div class="inat-stat">
+                        <div class="mini-value" id="inat-species">--</div>
+                        <div class="mini-label" data-i18n="species_identified">Species Identified</div>
+                    </div>
+                </div>
+                <div class="species-by-class" id="inat-by-group"></div>
+                <div class="inat-species-list" id="inat-top-species" style="margin-top: 12px;"></div>
+            </div>
+        </div>
+        
+        <footer>
+            <p><span data-i18n="footer_data">Data from</span> <strong>Google Earth Engine</strong> | Boundaries from <a href="https://protectedplanet.net" target="_blank">WDPA</a></p>
+            <p style="margin-top: 10px;" data-i18n="footer_built">Built for FMCN (Fondo Mexicano para la Conservación de la Naturaleza)</p>
+            <p style="margin-top: 5px; font-size: 0.75rem;"><span data-i18n="footer_add">Add new areas:</span> <code>python3 add_anp.py "Area Name"</code></p>
+        </footer>
+    </div>
+    
+    <script>
+        let map, geojsonLayer;
+        let landCoverChart, forestChart, fireChart;
+        let anpIndex = { anps: [] };
+        let anpDecrees = {};
+        let currentLang = 'en';
+        
+        const t = (key) => translations[currentLang][key] || key;
+        
+        async function init() {
+            // Check browser language
+            const userLang = navigator.language || navigator.userLanguage;
+            if (userLang.startsWith('es')) {
+                currentLang = 'es';
+                updateLangButtons();
+            }
+            
+            initMap();
+            await Promise.all([
+                loadIndex(),
+                loadDecrees()
+            ]);
+            
+            updateStaticTranslations();
+        }
+        
+        function changeLanguage(lang) {
+            currentLang = lang;
+            updateLangButtons();
+            updateStaticTranslations();
+            
+            // Re-render current ANP if loaded
+            const select = document.getElementById('anp-select');
+            if (select.value) {
+                loadANP(select.value);
+            }
+        }
+        
+        function updateLangButtons() {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.innerText.toLowerCase() === currentLang) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        
+        function updateStaticTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+            
+            document.querySelector('.logo span').textContent = t('logo');
+            document.title = t('title');
+        }
+        
+        async function loadDecrees() {
+            try {
+                const response = await fetch('anp_decrees.json');
+                anpDecrees = await response.json();
+            } catch (error) {
+                console.error('Error loading decrees:', error);
+            }
+        }
+        
+        function initMap() {
+            map = L.map('map').setView([23.6345, -102.5528], 5);
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Esri World Imagery'
+            }).addTo(map);
+        }
+        
+        async function loadIndex() {
+            try {
+                const response = await fetch('anp_index.json');
+                anpIndex = await response.json();
+                populateSelector();
+                
+                if (anpIndex.anps.length > 0) {
+                    document.getElementById('anp-select').value = anpIndex.anps[0].id;
+                    loadANP(anpIndex.anps[0].id);
+                }
+            } catch (error) {
+                console.error('Error loading index:', error);
+                document.getElementById('anp-select').innerHTML = '<option value="">Error loading areas</option>';
+            }
+        }
+        
+        function populateSelector() {
+            const select = document.getElementById('anp-select');
+            select.innerHTML = anpIndex.anps.map(anp => 
+                `<option value="${anp.id}">${anp.name}</option>`
+            ).join('');
+            
+            select.addEventListener('change', (e) => {
+                if (e.target.value) loadANP(e.target.value);
+            });
+        }
+        
+        async function loadANP(anpId) {
+            const anp = anpIndex.anps.find(a => a.id === anpId);
+            if (!anp) return;
+            
+            try {
+                const [dataResponse, boundaryResponse] = await Promise.all([
+                    fetch(anp.data_file),
+                    fetch(anp.boundary_file)
+                ]);
+                
+                const data = await dataResponse.json();
+                const boundary = await boundaryResponse.json();
+                
+                renderDashboard(data, boundary);
+            } catch (error) {
+                console.error('Error loading ANP data:', error);
+            }
+        }
+        
+        function renderDashboard(data, boundary) {
+            const meta = data.metadata;
+            const datasets = data.datasets;
+            const geom = data.geometry;
+            
+            document.getElementById('badge').textContent = meta.designation || 'Protected Area';
+            document.getElementById('anp-name').textContent = meta.name;
+            
+            const decreeUrl = anpDecrees[meta.id];
+            const subtitleHtml = `${t('established')} ${meta.status_year || 'N/A'} · ${meta.country === 'MEX' ? t('mexico') : meta.country}`;
+            
+            if (decreeUrl) {
+                document.getElementById('subtitle').innerHTML = `<a href="${decreeUrl}" target="_blank" style="color: var(--text-secondary); text-decoration: underline; text-decoration-style: dotted;" title="View Legal Decree">${subtitleHtml} 📜</a>`;
+            } else {
+                document.getElementById('subtitle').textContent = subtitleHtml;
+            }
+            
+            const hmVal = datasets.human_modification?.gHM_mean ?? datasets.human_modification?.mean_index ?? 0;
+            document.getElementById('key-stats').innerHTML = `
+                <div class="stat-item"><div class="stat-value">${formatNumber(meta.reported_area_km2, 0)}</div><div class="stat-label">km² ${t('total_area')}</div><div class="stat-source">WDPA</div></div>
+                <div class="stat-item"><div class="stat-value">${formatNumber(datasets.population?.year_2020?.population, 0)}</div><div class="stat-label">${t('people')} (2020)</div><div class="stat-source">WorldPop</div></div>
+                <div class="stat-item"><div class="stat-value">${formatNumber(datasets.forest?.tree_cover_2000_percent, 1)}%</div><div class="stat-label">${t('forest_cover')} (2000)</div><div class="stat-source">Hansen GFC</div></div>
+                <div class="stat-item"><div class="stat-value">${formatNumber(hmVal * 100, 1)}%</div><div class="stat-label">${t('human_modification')}</div><div class="stat-source">CSP gHM</div></div>
+            `;
+            
+            updateMap(geom, boundary);
+            
+            const hmIndex = datasets.human_modification?.gHM_mean ?? datasets.human_modification?.mean_index ?? 0;
+            document.getElementById('hm-value').textContent = (hmIndex * 100).toFixed(1) + '%';
+            document.getElementById('hm-bar').style.width = (hmIndex * 100) + '%';
+            document.getElementById('hm-bar').className = 'progress-fill' + (hmIndex > 0.3 ? ' warning' : '');
+            document.getElementById('hm-interpretation').textContent = hmIndex < 0.1 ? t('excellent_pristine') : hmIndex < 0.3 ? t('good_low') : t('moderate_mod');
+            
+            const ndvi = datasets.vegetation?.NDVI_mean ?? datasets.vegetation?.mean_ndvi ?? 0;
+            document.getElementById('ndvi-value').textContent = ndvi.toFixed(3);
+            document.getElementById('ndvi-bar').style.width = (ndvi * 100) + '%';
+            document.getElementById('ndvi-interpretation').textContent = ndvi > 0.6 ? t('dense_veg') : ndvi > 0.3 ? t('moderate_veg') : t('sparse_veg');
+            
+            const ecoregions = datasets.biodiversity?.ecoregions || [];
+            const biomes = datasets.biodiversity?.biomes || [];
+            let ecoHtml = ecoregions.map(e => `<span class="tag">${e}</span>`).join('');
+            if (biomes.length > 0) {
+                ecoHtml += biomes.map(b => `<span class="tag" style="border-color: var(--warning); color: var(--warning);">${b}</span>`).join('');
+            }
+            document.getElementById('ecoregions').innerHTML = ecoHtml;
+            
+            document.getElementById('population').textContent = formatNumber(datasets.population?.year_2020?.population, 0);
+            const elevMean = datasets.elevation?.elevation_mean ?? datasets.elevation?.mean_meters;
+            const elevMin = datasets.elevation?.elevation_min;
+            const elevMax = datasets.elevation?.elevation_max;
+            let elevText = formatNumber(elevMean, 0) + 'm';
+            if (elevMin != null && elevMax != null) {
+                elevText += ` (${formatNumber(elevMin, 0)}-${formatNumber(elevMax, 0)})`;
+            }
+            document.getElementById('elevation').textContent = elevText;
+            document.getElementById('tree-cover').textContent = formatNumber(datasets.forest?.tree_cover_2000_percent, 1) + '%';
+            document.getElementById('forest-loss').textContent = formatNumber(datasets.forest?.total_loss_km2, 0) + ' km²';
+            document.getElementById('night-lights').textContent = (datasets.night_lights?.avg_rad_mean ?? datasets.night_lights?.mean_radiance ?? 0) < 1 ? t('very_low') : (datasets.night_lights?.avg_rad_mean ?? datasets.night_lights?.mean_radiance ?? 0) < 5 ? t('low') : t('moderate');
+            document.getElementById('water').textContent = formatNumber(datasets.surface_water?.permanent_water_km2, 2) + ' km²';
+            
+            document.getElementById('precipitation').textContent = formatNumber(datasets.climate?.annual_precipitation_mm, 0) + ' mm';
+            document.getElementById('temp-max').textContent = formatNumber(datasets.climate?.mean_max_temp_c, 1) + '°C';
+            document.getElementById('temp-min').textContent = formatNumber(datasets.climate?.mean_min_temp_c, 1) + '°C';
+            document.getElementById('soil-ph').textContent = formatNumber(datasets.soil?.ph_h2o, 1);
+            
+            // Water Stress
+            renderWaterStress(datasets.water_stress);
+            
+            renderLandCoverChart(datasets.land_cover);
+            renderForestChart(datasets.forest);
+            renderFireChart(datasets.fire);
+            
+            if (data.external_data) {
+                renderSpeciesData(data.external_data);
+                renderInatData(data.external_data);
+                renderPovertyData(data.external_data);
+            } else {
+                document.getElementById('species-section').style.display = 'none';
+                document.getElementById('threatened-section').style.display = 'none';
+                document.getElementById('inat-section').style.display = 'none';
+                document.getElementById('poverty-section').style.display = 'none';
+            }
+            
+            renderBiomassData(datasets.gedi_biomass);
+        }
+        
+        function renderSpeciesData(extData) {
+            const speciesSection = document.getElementById('species-section');
+            const threatenedSection = document.getElementById('threatened-section');
+            
+            if (extData.gbif_species && !extData.gbif_species.error) {
+                speciesSection.style.display = 'block';
+                const gbif = extData.gbif_species;
+                
+                document.getElementById('total-species').textContent = formatNumber(gbif.unique_species, 0);
+                document.getElementById('total-occurrences').textContent = formatNumber(gbif.total_occurrences, 0);
+                
+                const byClass = gbif.species_by_class || {};
+                const classHtml = Object.entries(byClass)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 10)
+                    .map(([cls, count]) => `<span class="class-tag">${cls}<span class="count">${count}</span></span>`)
+                    .join('');
+                document.getElementById('species-by-class').innerHTML = classHtml;
+            } else {
+                speciesSection.style.display = 'none';
+            }
+            
+            if (extData.iucn_threatened || extData.nom059) {
+                threatenedSection.style.display = 'block';
+                
+                if (extData.iucn_threatened && !extData.iucn_threatened.error) {
+                    const iucn = extData.iucn_threatened;
+                    document.getElementById('iucn-cr').textContent = (iucn.critically_endangered || []).length;
+                    document.getElementById('iucn-en').textContent = (iucn.endangered || []).length;
+                    document.getElementById('iucn-vu').textContent = (iucn.vulnerable || []).length;
+                    
+                    const allThreatened = [
+                        ...(iucn.critically_endangered || []),
+                        ...(iucn.endangered || []),
+                        ...(iucn.vulnerable || [])
+                    ].slice(0, 10);
+                    
+                    if (allThreatened.length > 0) {
+                        document.getElementById('threatened-list').innerHTML = 
+                            allThreatened.map(sp => `<div class="threatened-species">${sp}</div>`).join('');
+                    }
+                }
+                
+                const nom = extData.simec_nom059 || extData.nom059;
+                if (nom && !nom.error && (nom.total_species > 0 || nom.total_nom059 > 0)) {
+                    document.getElementById('nom059-section').style.display = 'block';
+                    
+                    let tags = [];
+                    const pCount = nom.endangered_P?.length || 0;
+                    const aCount = nom.threatened_A?.length || 0;
+                    const prCount = nom.special_protection_Pr?.length || 0;
+                    
+                    if (pCount) tags.push(`<span class="nom059-tag P">En Peligro (${pCount})</span>`);
+                    if (aCount) tags.push(`<span class="nom059-tag A">Amenazada (${aCount})</span>`);
+                    if (prCount) tags.push(`<span class="nom059-tag Pr">Proteccion Especial (${prCount})</span>`);
+                    
+                    document.getElementById('nom059-tags').innerHTML = tags.join('');
+                } else {
+                    document.getElementById('nom059-section').style.display = 'none';
+                }
+            } else {
+                threatenedSection.style.display = 'none';
+            }
+            
+            const demoSection = document.getElementById('demographics-section');
+            if (extData.inegi_census && !extData.inegi_census.error) {
+                demoSection.style.display = 'block';
+                const census = extData.inegi_census;
+                
+                const pop = census.total_population || 0;
+                const indigenous = census.indigenous_speakers_3plus || 0;
+                const pct = pop > 0 ? Math.round((indigenous / pop) * 100) : 0;
+                const femalePct = census.female_percent != null ? census.female_percent : 
+                    (census.female_population && pop > 0 ? Math.round((census.female_population / pop) * 100) : null);
+                
+                document.getElementById('census-population').textContent = formatNumber(pop, 0);
+                document.getElementById('female-pct').textContent = femalePct != null ? femalePct + '%' : '--';
+                document.getElementById('indigenous-pop').textContent = formatNumber(indigenous, 0);
+                document.getElementById('indigenous-pct').textContent = pct + '%';
+                document.getElementById('afromexican-pop').textContent = formatNumber(census.afromexican_population, 0);
+                document.getElementById('localities-count').textContent = census.localities_in_area || '--';
+                
+                document.getElementById('no-health').textContent = formatNumber(census.no_health_services, 0);
+                document.getElementById('with-disability').textContent = formatNumber(census.with_disability, 0);
+                document.getElementById('pop-elderly').textContent = formatNumber(census.population_60plus, 0);
+                
+                document.getElementById('illiterate').textContent = formatNumber(census.illiterate_15plus, 0);
+                document.getElementById('no-schooling').textContent = formatNumber(census.no_schooling_15plus, 0);
+                document.getElementById('avg-schooling').textContent = census.avg_schooling_years != null ? census.avg_schooling_years.toFixed(1) : '--';
+                
+                document.getElementById('dirt-floor').textContent = formatNumber(census.homes_dirt_floor, 0);
+                document.getElementById('no-electricity').textContent = formatNumber(census.homes_no_electricity, 0);
+                document.getElementById('no-services').textContent = formatNumber(census.homes_no_services, 0);
+            } else {
+                demoSection.style.display = 'none';
+            }
+        }
+        
+        function updateMap(geom, boundary) {
+            if (geojsonLayer) map.removeLayer(geojsonLayer);
+            
+            if (boundary && boundary.features) {
+                geojsonLayer = L.geoJSON(boundary, {
+                    style: { color: '#10b981', weight: 3, fillColor: '#10b981', fillOpacity: 0.2 }
+                }).addTo(map);
+                map.fitBounds(geojsonLayer.getBounds(), { padding: [20, 20] });
+            } else if (geom && geom.centroid) {
+                map.setView([geom.centroid[1], geom.centroid[0]], 9);
+            }
+        }
+        
+        function renderLandCoverChart(landCover) {
+            const classes = landCover?.classes || {};
+            const labels = Object.keys(classes);
+            const values = labels.map(l => classes[l].area_km2);
+            const colors = { 'Tree cover': '#22c55e', 'Shrubland': '#84cc16', 'Grassland': '#eab308', 'Cropland': '#f97316', 'Built-up': '#ef4444', 'Bare/sparse vegetation': '#a3a3a3', 'Permanent water bodies': '#3b82f6', 'Herbaceous wetland': '#06b6d4', 'Mangroves': '#0d9488' };
+            
+            if (landCoverChart) landCoverChart.destroy();
+            landCoverChart = new Chart(document.getElementById('landCoverChart').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels, datasets: [{ data: values, backgroundColor: labels.map(l => colors[l] || '#64748b'), borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 11 } } }, tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${formatNumber(ctx.raw, 0)} km²` } } } }
+            });
+        }
+        
+        function renderWaterStress(waterStress) {
+            const section = document.getElementById('water-stress-section');
+            
+            if (!waterStress || waterStress.error || waterStress.baseline_water_stress === null) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            
+            const bws = waterStress.baseline_water_stress;
+            const sv = waterStress.seasonal_variability;
+            const wd = waterStress.water_depletion;
+            const drr = waterStress.drought_risk;
+            
+            // Format BWS value
+            document.getElementById('bws-value').textContent = bws !== null ? bws.toFixed(2) : '--';
+            
+            // Set category indicator
+            const categoryEl = document.getElementById('bws-category');
+            const category = waterStress.baseline_water_stress_category || 'Unknown';
+            categoryEl.textContent = category.split(' ')[0]; // Just show "Low", "High", etc.
+            
+            // Apply color class based on category
+            categoryEl.className = 'bws-indicator';
+            if (category.includes('Extremely')) categoryEl.classList.add('bws-extreme');
+            else if (category.includes('High') && !category.includes('Medium')) categoryEl.classList.add('bws-high');
+            else if (category.includes('Medium')) categoryEl.classList.add('bws-medium-high');
+            else if (category.includes('Low-Medium')) categoryEl.classList.add('bws-low-medium');
+            else categoryEl.classList.add('bws-low');
+            
+            // Other indicators
+            document.getElementById('seasonal-var').textContent = sv != null ? sv.toFixed(2) : '--';
+            document.getElementById('water-depletion').textContent = wd != null ? wd.toFixed(2) : '--';
+            document.getElementById('drought-risk').textContent = drr != null ? drr.toFixed(2) : '--';
+        }
+        
+        function renderBiomassData(gedi) {
+            const section = document.getElementById('biomass-section');
+            
+            if (!gedi || !gedi.data_available) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            
+            document.getElementById('agbd-mean').textContent = gedi.agbd_mean_mg_ha != null ? gedi.agbd_mean_mg_ha.toFixed(1) : '--';
+            document.getElementById('agbd-max').textContent = gedi.agbd_max_mg_ha != null ? formatNumber(gedi.agbd_max_mg_ha, 0) : '--';
+            document.getElementById('total-carbon').textContent = gedi.total_carbon_estimate_mt != null ? formatNumber(gedi.total_carbon_estimate_mt, 0) : '--';
+        }
+        
+        function renderPovertyData(extData) {
+            const section = document.getElementById('poverty-section');
+            const coneval = extData.coneval_irs;
+            
+            if (!coneval || !coneval.data_available) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            
+            const irsVal = coneval.irs_weighted_mean;
+            document.getElementById('irs-value').textContent = irsVal != null ? irsVal.toFixed(2) : '--';
+            document.getElementById('irs-municipalities').textContent = coneval.municipalities_count || '--';
+            document.getElementById('irs-population').textContent = coneval.total_population ? `Pop: ${formatNumber(coneval.total_population, 0)}` : '';
+            
+            const categoryEl = document.getElementById('irs-category');
+            const cat = coneval.irs_predominant_category || 'Unknown';
+            categoryEl.textContent = cat;
+            categoryEl.className = 'irs-indicator';
+            
+            const catLower = cat.toLowerCase().replace(' ', '-');
+            if (catLower.includes('muy bajo')) categoryEl.classList.add('irs-muy-bajo');
+            else if (catLower.includes('bajo')) categoryEl.classList.add('irs-bajo');
+            else if (catLower.includes('medio')) categoryEl.classList.add('irs-medio');
+            else if (catLower.includes('muy alto')) categoryEl.classList.add('irs-muy-alto');
+            else if (catLower.includes('alto')) categoryEl.classList.add('irs-alto');
+        }
+        
+        function renderInatData(extData) {
+            const section = document.getElementById('inat-section');
+            const inat = extData.inaturalist;
+            
+            if (!inat || !inat.data_available) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            
+            document.getElementById('inat-observations').textContent = formatNumber(inat.total_observations, 0);
+            document.getElementById('inat-species').textContent = formatNumber(inat.unique_species, 0);
+            
+            const byGroup = inat.species_by_group || {};
+            const groupHtml = Object.entries(byGroup)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8)
+                .map(([grp, count]) => `<span class="class-tag">${grp}<span class="count">${count}</span></span>`)
+                .join('');
+            document.getElementById('inat-by-group').innerHTML = groupHtml;
+            
+            const topSpecies = (inat.top_species || []).slice(0, 10);
+            if (topSpecies.length > 0) {
+                const speciesHtml = topSpecies.map(sp => `
+                    <div class="inat-species">
+                        <div><span class="name">${sp.scientific_name}</span><br><span class="common">${sp.common_name || ''}</span></div>
+                        <span class="count">${sp.observations}</span>
+                    </div>
+                `).join('');
+                document.getElementById('inat-top-species').innerHTML = speciesHtml;
+            }
+        }
+        
+        function renderForestChart(forest) {
+            const lossByYear = forest?.loss_by_year || {};
+            const years = Object.keys(lossByYear).sort();
+            const values = years.map(y => lossByYear[y]);
+            
+            if (forestChart) forestChart.destroy();
+            forestChart = new Chart(document.getElementById('forestChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: years, datasets: [{ label: 'Forest Loss (km²)', data: values, borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.3 }] },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }, 
+                        y: { 
+                            grid: { color: '#334155' }, 
+                            ticks: { color: '#94a3b8' },
+                            title: {
+                                display: true,
+                                text: t('loss_km2'),
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            }
+                        } 
+                    } 
+                }
+            });
+        }
+        
+        function renderFireChart(fire) {
+            const burnedByYear = fire?.burned_area_km2_by_year || {};
+            const years = Object.keys(burnedByYear).sort();
+            const values = years.map(y => burnedByYear[y]);
+            
+            if (fireChart) fireChart.destroy();
+            fireChart = new Chart(document.getElementById('fireChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: years, datasets: [{ label: 'Burned Area (km²)', data: values, backgroundColor: '#f59e0b' }] },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }, 
+                        y: { 
+                            grid: { color: '#334155' }, 
+                            ticks: { color: '#94a3b8' },
+                            title: {
+                                display: true,
+                                text: t('burned_area'),
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            }
+                        } 
+                    } 
+                }
+            });
+        }
+        
+        function formatNumber(num, decimals = 0) {
+            if (num === null || num === undefined) return '--';
+            return num.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+        
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
