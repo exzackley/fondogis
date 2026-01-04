@@ -628,6 +628,62 @@
             .scenario-tabs { flex-wrap: wrap; }
             .scenario-tab { padding: 6px 12px; font-size: 0.8rem; }
         }
+        
+        .climate-ssr-card { grid-column: span 12; }
+        .ssr-tab.active { background: var(--accent); color: var(--bg-primary); }
+        .period-tab {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .period-tab:hover { border-color: var(--accent); color: var(--accent); }
+        .period-tab.active { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+        
+        .ssr-indicator-card {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .ssr-icon { font-size: 2rem; margin-bottom: 8px; }
+        .ssr-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px; }
+        .ssr-value { font-size: 1.8rem; font-weight: 700; }
+        .ssr-value.positive { color: #ef4444; }
+        .ssr-value.negative { color: #3b82f6; }
+        .ssr-value.neutral { color: var(--text-primary); }
+        .ssr-unit { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+        
+        .ssr-mini-card {
+            background: var(--bg-tertiary);
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ssr-mini-label { font-size: 0.8rem; color: var(--text-secondary); }
+        .ssr-mini-value { font-size: 1rem; font-weight: 600; }
+        .ssr-mini-value.positive { color: #ef4444; }
+        .ssr-mini-value.negative { color: #3b82f6; }
+        
+        @media (max-width: 1024px) {
+            #ssr-data-grid { grid-template-columns: repeat(3, 1fr); }
+            #ssr-secondary-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            #ssr-data-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            #ssr-secondary-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .ssr-indicator-card { padding: 12px; }
+            .ssr-icon { font-size: 1.5rem; }
+            .ssr-value { font-size: 1.3rem; }
+            .ssr-period-tabs { flex-wrap: wrap; }
+            .period-tab { padding: 6px 12px; font-size: 0.75rem; }
+        }
     </style>
 </head>
 <body>
@@ -988,6 +1044,88 @@
                     Animated temperature projection (1980-2100) under SSP2-4.5 scenario. Colors range from blue (15°C) to red (30°C).
                 </div>
             </div>
+            
+            <!-- Climate SSR Projections Card (CORDEX bias-adjusted data) -->
+            <div class="card climate-ssr-card fade-in" id="climate-ssr-section" style="animation-delay: 1.4s; grid-column: span 12; display: none;">
+                <div class="climate-proj-header">
+                    <div class="card-title"><div class="card-icon">🌐</div><span data-i18n="climate_ssr">Regional Climate Projections (CORDEX)</span></div>
+                    <div class="scenario-tabs">
+                        <button class="scenario-tab ssr-tab active" data-scenario="rcp45" onclick="switchSSRScenario('rcp45')">RCP 4.5 <span style="font-size:0.7rem;">(moderate)</span></button>
+                        <button class="scenario-tab ssr-tab" data-scenario="rcp85" onclick="switchSSRScenario('rcp85')">RCP 8.5 <span style="font-size:0.7rem;">(high emissions)</span></button>
+                    </div>
+                    <span class="source">climateinformation.org</span>
+                </div>
+                
+                <div class="ssr-period-tabs" style="display: flex; gap: 8px; margin: 15px 0;">
+                    <button class="period-tab active" data-period="2011-2040" onclick="switchSSRPeriod('2011-2040')">2011-2040</button>
+                    <button class="period-tab" data-period="2041-2070" onclick="switchSSRPeriod('2041-2070')">2041-2070</button>
+                    <button class="period-tab" data-period="2071-2100" onclick="switchSSRPeriod('2071-2100')">2071-2100</button>
+                </div>
+                
+                <div id="ssr-data-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;">
+                    <!-- Temperature -->
+                    <div class="ssr-indicator-card">
+                        <div class="ssr-icon">🌡️</div>
+                        <div class="ssr-label">Temperature</div>
+                        <div class="ssr-value" id="ssr-temperature">--</div>
+                        <div class="ssr-unit">°C change</div>
+                    </div>
+                    <!-- Precipitation -->
+                    <div class="ssr-indicator-card">
+                        <div class="ssr-icon">🌧️</div>
+                        <div class="ssr-label">Precipitation</div>
+                        <div class="ssr-value" id="ssr-precipitation">--</div>
+                        <div class="ssr-unit">% change</div>
+                    </div>
+                    <!-- Soil Moisture -->
+                    <div class="ssr-indicator-card">
+                        <div class="ssr-icon">💧</div>
+                        <div class="ssr-label">Soil Moisture</div>
+                        <div class="ssr-value" id="ssr-soil-moisture">--</div>
+                        <div class="ssr-unit">% change</div>
+                    </div>
+                    <!-- Water Discharge -->
+                    <div class="ssr-indicator-card">
+                        <div class="ssr-icon">🏞️</div>
+                        <div class="ssr-label">Water Discharge</div>
+                        <div class="ssr-value" id="ssr-water-discharge">--</div>
+                        <div class="ssr-unit">% change</div>
+                    </div>
+                    <!-- Tropical Nights -->
+                    <div class="ssr-indicator-card">
+                        <div class="ssr-icon">🌙</div>
+                        <div class="ssr-label">Tropical Nights</div>
+                        <div class="ssr-value" id="ssr-tropical-nights">--</div>
+                        <div class="ssr-unit">days change</div>
+                    </div>
+                </div>
+                
+                <!-- Secondary indicators row -->
+                <div id="ssr-secondary-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 15px;">
+                    <div class="ssr-mini-card">
+                        <span class="ssr-mini-label">Aridity</span>
+                        <span class="ssr-mini-value" id="ssr-aridity">--</span>
+                    </div>
+                    <div class="ssr-mini-card">
+                        <span class="ssr-mini-label">Longest Dry Spell</span>
+                        <span class="ssr-mini-value" id="ssr-dry-spell">--</span>
+                    </div>
+                    <div class="ssr-mini-card">
+                        <span class="ssr-mini-label">Water Runoff</span>
+                        <span class="ssr-mini-value" id="ssr-water-runoff">--</span>
+                    </div>
+                    <div class="ssr-mini-card">
+                        <span class="ssr-mini-label">Frost Days</span>
+                        <span class="ssr-mini-value" id="ssr-frost-days">--</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px; font-size: 0.75rem; color: var(--text-muted);">
+                    <strong>Source:</strong> climateinformation.org (CORDEX CAM-44, bias-adjusted MIdAS method) • 
+                    <strong>Baseline:</strong> 1981-2010 • 
+                    <strong>Resolution:</strong> ~50km regional downscaling
+                </div>
+            </div>
         </div>
         
         <footer>
@@ -1206,6 +1344,8 @@
             renderClimateProjections(datasets);
             
             loadClimateHeatmap(anpId);
+            
+            loadClimateSSR(anpId);
         }
         
         function renderSpeciesData(extData) {
@@ -1851,6 +1991,119 @@
         function formatNumber(num, decimals = 0) {
             if (num === null || num === undefined) return '--';
             return num.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+        
+        let currentSSRData = null;
+        let currentSSRScenario = 'rcp45';
+        let currentSSRPeriod = '2041-2070';
+        
+        async function loadClimateSSR(anpId) {
+            const section = document.getElementById('climate-ssr-section');
+            const ssrFile = `anp_data/${anpId}_climate_ssr.json`;
+            
+            try {
+                const response = await fetch(ssrFile);
+                if (!response.ok) {
+                    section.style.display = 'none';
+                    return;
+                }
+                
+                currentSSRData = await response.json();
+                
+                if (!currentSSRData.data || Object.keys(currentSSRData.data).length === 0) {
+                    section.style.display = 'none';
+                    return;
+                }
+                
+                section.style.display = 'block';
+                updateSSRDisplay();
+                
+            } catch (error) {
+                section.style.display = 'none';
+            }
+        }
+        
+        function switchSSRScenario(scenario) {
+            currentSSRScenario = scenario;
+            document.querySelectorAll('.ssr-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.scenario === scenario);
+            });
+            updateSSRDisplay();
+        }
+        
+        function switchSSRPeriod(period) {
+            currentSSRPeriod = period;
+            document.querySelectorAll('.period-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.period === period);
+            });
+            updateSSRDisplay();
+        }
+        
+        function formatSSRValue(val, unit) {
+            if (val == null) return '--';
+            const num = parseFloat(val);
+            if (unit === '°C change') {
+                return (num >= 0 ? '+' : '') + num.toFixed(1);
+            } else if (unit.includes('%') || unit.includes('days')) {
+                return (num >= 0 ? '+' : '') + num.toFixed(1);
+            }
+            return num.toFixed(1);
+        }
+        
+        function getValueClass(val, indicator) {
+            if (val == null) return 'neutral';
+            const num = parseFloat(val);
+            const negativeIsBad = ['temperature', 'aridity_actual', 'longest_dry_spell', 'tropical_nights'];
+            const positiveIsBad = negativeIsBad.includes(indicator);
+            if (num > 0) return positiveIsBad ? 'positive' : 'negative';
+            if (num < 0) return positiveIsBad ? 'negative' : 'positive';
+            return 'neutral';
+        }
+        
+        function updateSSRDisplay() {
+            if (!currentSSRData) return;
+            
+            const scenarioData = currentSSRData.data[currentSSRScenario];
+            if (!scenarioData) return;
+            
+            const periodData = scenarioData[currentSSRPeriod];
+            if (!periodData) return;
+            
+            const tempEl = document.getElementById('ssr-temperature');
+            tempEl.textContent = formatSSRValue(periodData.temperature, '°C change');
+            tempEl.className = 'ssr-value ' + getValueClass(periodData.temperature, 'temperature');
+            
+            const precipEl = document.getElementById('ssr-precipitation');
+            precipEl.textContent = formatSSRValue(periodData.precipitation, '% change');
+            precipEl.className = 'ssr-value ' + getValueClass(periodData.precipitation, 'precipitation');
+            
+            const soilEl = document.getElementById('ssr-soil-moisture');
+            soilEl.textContent = formatSSRValue(periodData.soil_moisture, '% change');
+            soilEl.className = 'ssr-value ' + getValueClass(periodData.soil_moisture, 'soil_moisture');
+            
+            const waterEl = document.getElementById('ssr-water-discharge');
+            waterEl.textContent = formatSSRValue(periodData.water_discharge, '% change');
+            waterEl.className = 'ssr-value ' + getValueClass(periodData.water_discharge, 'water_discharge');
+            
+            const tropEl = document.getElementById('ssr-tropical-nights');
+            tropEl.textContent = formatSSRValue(periodData.tropical_nights, 'days change');
+            tropEl.className = 'ssr-value ' + getValueClass(periodData.tropical_nights, 'tropical_nights');
+            
+            const aridEl = document.getElementById('ssr-aridity');
+            aridEl.textContent = formatSSRValue(periodData.aridity_actual, '% change') + '%';
+            aridEl.className = 'ssr-mini-value ' + getValueClass(periodData.aridity_actual, 'aridity_actual');
+            
+            const dryEl = document.getElementById('ssr-dry-spell');
+            dryEl.textContent = formatSSRValue(periodData.longest_dry_spell, '% change') + '%';
+            dryEl.className = 'ssr-mini-value ' + getValueClass(periodData.longest_dry_spell, 'longest_dry_spell');
+            
+            const runoffEl = document.getElementById('ssr-water-runoff');
+            runoffEl.textContent = formatSSRValue(periodData.water_runoff, '% change') + '%';
+            runoffEl.className = 'ssr-mini-value ' + getValueClass(periodData.water_runoff, 'water_runoff');
+            
+            const frostEl = document.getElementById('ssr-frost-days');
+            frostEl.textContent = formatSSRValue(periodData.frost_days, 'days change') + ' days';
+            frostEl.className = 'ssr-mini-value ' + getValueClass(periodData.frost_days, 'frost_days');
         }
         
         document.addEventListener('DOMContentLoaded', init);

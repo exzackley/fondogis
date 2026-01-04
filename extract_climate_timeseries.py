@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-import ee
+import ee  # type: ignore
 import json
 import sys
+import os
 from datetime import datetime
 
 try:
@@ -9,13 +10,26 @@ try:
 except ImportError:
     def init_ee():
         ee.Initialize(project='gen-lang-client-0866285082')
+        return True
 
 CMIP6_COLLECTION = 'NASA/GDDP-CMIP6'
 MODEL = 'ACCESS-CM2'
-GRID_RESOLUTION_DEG = 0.05  # ~5.5km
+GRID_RESOLUTION_DEG = 0.05
+DATA_DIR = 'anp_data'
 
 HISTORICAL_YEARS = list(range(1980, 2015, 5))
-FUTURE_YEARS = list(range(2020, 2100, 5))
+FUTURE_YEARS = list(range(2015, 2100, 5))
+
+SCENARIOS_TO_EXTRACT = ['ssp245', 'ssp585']
+
+TEST_ANPS = [
+    "alto_golfo_de_california_y_delta_del_rio_colorado",
+    "arrecife_alacranes",
+    "arrecife_de_puerto_morelos",
+    "calakmul",
+    "sierra_gorda",
+    "sierra_gorda_de_guanajuato"
+]
 
 
 def point_in_polygon(point, polygon):
@@ -101,17 +115,23 @@ def extract_year_temperatures(year, points, scenario):
     return temps
 
 
-def main():
-    anp_file = sys.argv[1] if len(sys.argv) > 1 else 'anp_data/sierra_gorda_data.json'
+def process_anp(anp_slug, force=False):
+    data_file = f'{DATA_DIR}/{anp_slug}_data.json'
+    output_file = f'{DATA_DIR}/{anp_slug}_climate_timeseries.json'
     
-    print(f"Loading {anp_file}...")
-    with open(anp_file) as f:
+    if os.path.exists(output_file) and not force:
+        print(f"  Already exists: {output_file}")
+        print("  Use --force to re-extract")
+        return None
+    
+    print(f"Loading {data_file}...")
+    with open(data_file) as f:
         anp_data = json.load(f)
     
     name = anp_data['metadata']['name']
     bounds = anp_data['geometry']['bounds']
     
-    boundary_file = anp_file.replace('_data.json', '_boundary.geojson')
+    boundary_file = data_file.replace('_data.json', '_boundary.geojson')
     polygon = None
     try:
         with open(boundary_file) as f:
@@ -124,71 +144,90 @@ def main():
     
     print(f"\n=== {name} ===")
     
-    init_ee()
-    print("GEE initialized")
-    
     points, bbox = create_grid_points(bounds, GRID_RESOLUTION_DEG, polygon)
-    print(f"Created grid: {len(points)} points inside ANP at {GRID_RESOLUTION_DEG}° resolution")
+    print(f"Created grid: {len(points)} points inside ANP at {GRID_RESOLUTION_DEG}deg resolution")
     print(f"Bounding box: {bbox}")
     
     result = {
         "anp_name": name,
         "model": MODEL,
-        "scenario": "ssp245",
         "grid_resolution_deg": GRID_RESOLUTION_DEG,
         "bbox": {"min_lon": bbox[0], "min_lat": bbox[1], "max_lon": bbox[2], "max_lat": bbox[3]},
         "points": points,
-        "years": {},
+        "scenarios": {},
         "extracted_at": datetime.now().isoformat()
     }
     
-    all_years = []
-    
-    print(f"\nExtracting historical years (1980-2010)...")
-    for year in HISTORICAL_YEARS:
-        print(f"  {year}...", end=" ", flush=True)
-        try:
-            temps = extract_year_temperatures(year, points, 'historical')
-            result["years"][str(year)] = temps
-            all_years.append(year)
-            valid = len([t for t in temps if t is not None])
-            print(f"OK ({valid}/{len(points)} points)")
-        except Exception as e:
-            print(f"ERROR: {e}")
-    
-    print(f"\nExtracting future years (2020-2095, SSP2-4.5)...")
-    for year in FUTURE_YEARS:
-        print(f"  {year}...", end=" ", flush=True)
-        try:
-            temps = extract_year_temperatures(year, points, 'ssp245')
-            result["years"][str(year)] = temps
-            all_years.append(year)
-            valid = len([t for t in temps if t is not None])
-            print(f"OK ({valid}/{len(points)} points)")
-        except Exception as e:
-            print(f"ERROR: {e}")
-    
-    slug = name.lower().replace(' ', '_').replace("'", "")
-    output_file = f"anp_data/{slug}_climate_timeseries.json"
+    for scenario in SCENARIOS_TO_EXTRACT:
+        print(f"\n--- Scenario: {scenario} ---")
+        result["scenarios"][scenario] = {"years": {}}
+        
+        print(f"Extracting historical years (1980-2014)...")
+        for year in HISTORICAL_YEARS:
+            print(f"  {year}...", end=" ", flush=True)
+            try:
+                temps = extract_year_temperatures(year, points, 'historical')
+                result["scenarios"][scenario]["years"][str(year)] = temps
+                valid = len([t for t in temps if t is not None])
+                print(f"OK ({valid}/{len(points)} points)")
+            except Exception as e:
+                print(f"ERROR: {e}")
+                result["scenarios"][scenario]["years"][str(year)] = [None] * len(points)
+        
+        print(f"Extracting future years (2015-2095, {scenario})...")
+        for year in FUTURE_YEARS:
+            print(f"  {year}...", end=" ", flush=True)
+            try:
+                temps = extract_year_temperatures(year, points, scenario)
+                result["scenarios"][scenario]["years"][str(year)] = temps
+                valid = len([t for t in temps if t is not None])
+                print(f"OK ({valid}/{len(points)} points)")
+            except Exception as e:
+                print(f"ERROR: {e}")
+                result["scenarios"][scenario]["years"][str(year)] = [None] * len(points)
     
     with open(output_file, 'w') as f:
         json.dump(result, f)
     
     print(f"\n=== COMPLETE ===")
     print(f"Saved to: {output_file}")
-    print(f"Years: {min(all_years)} - {max(all_years)}")
     print(f"Grid points: {len(points)}")
+    print(f"Scenarios: {', '.join(SCENARIOS_TO_EXTRACT)}")
     
-    if result["years"]:
-        first_year = str(all_years[0])
-        last_year = str(all_years[-1])
-        first_temps = [t for t in result["years"][first_year] if t]
-        last_temps = [t for t in result["years"][last_year] if t]
-        if first_temps and last_temps:
-            print(f"\nTemperature change:")
-            print(f"  {first_year} mean: {sum(first_temps)/len(first_temps):.1f}°C")
-            print(f"  {last_year} mean: {sum(last_temps)/len(last_temps):.1f}°C")
-            print(f"  Change: +{sum(last_temps)/len(last_temps) - sum(first_temps)/len(first_temps):.1f}°C")
+    return result
+
+
+def main():
+    force = '--force' in sys.argv
+    
+    if '--test6' in sys.argv:
+        anp_list = TEST_ANPS
+    elif len(sys.argv) > 1 and not sys.argv[1].startswith('--'):
+        anp_list = [sys.argv[1].replace(f'{DATA_DIR}/', '').replace('_data.json', '')]
+    else:
+        anp_list = TEST_ANPS
+    
+    print(f"\n{'='*60}")
+    print("GEE Climate Timeseries Extraction")
+    print(f"Model: {MODEL}")
+    print(f"Scenarios: {', '.join(SCENARIOS_TO_EXTRACT)}")
+    print(f"ANPs to process: {len(anp_list)}")
+    print('='*60)
+    
+    init_ee()
+    print("GEE initialized")
+    
+    for anp_slug in anp_list:
+        print(f"\n{'='*60}")
+        print(f"Processing: {anp_slug}")
+        print('='*60)
+        
+        try:
+            process_anp(anp_slug, force)
+        except FileNotFoundError as e:
+            print(f"  Skipping: {e}")
+        except Exception as e:
+            print(f"  Error processing {anp_slug}: {e}")
 
 
 if __name__ == '__main__':
