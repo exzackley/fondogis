@@ -351,24 +351,70 @@
         }
 
         @media (max-width: 640px) {
-            .container { padding: 10px; }
-            .hero { padding: 15px; }
-            .top-bar { padding: 15px; }
-            h1 { font-size: 1.5rem; word-wrap: break-word; }
+            .container { padding: 8px; }
+            .hero { padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+            .top-bar { padding: 12px; border-radius: 12px; margin-bottom: 15px; }
+            h1 { font-size: 1.3rem; margin-bottom: 5px; }
+            .badge { margin-bottom: 8px; font-size: 10px; padding: 4px 10px; }
+            .subtitle { font-size: 0.9rem; margin-bottom: 20px; }
             
-            .anp-selector select { min-width: 0; }
-            .toolbar { gap: 5px; }
+            .anp-selector select { min-width: 0; font-size: 0.85rem; padding: 8px 10px; }
+            .toolbar { gap: 5px; padding: 3px; }
             .admin-link, .divider:last-child { display: none !important; }
             
-            .key-stats { grid-template-columns: 1fr; gap: 10px; }
+            /* Compact Key Stats: 2 columns, smaller text/padding */
+            .key-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .stat-item { padding: 10px; border-radius: 8px; }
+            .stat-value { font-size: 1.2rem; }
+            .stat-label { font-size: 0.75rem; margin-top: 2px; }
+            .stat-source { font-size: 0.6rem; margin-top: 4px; }
             
-            .climate-grid, .water-stress-grid, .threatened-grid, .biomass-grid { grid-template-columns: 1fr; }
-            .demographics-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            /* Main Grid: Force single column for cards */
+            .dashboard-grid { display: flex; flex-direction: column; gap: 15px; }
+            .card { padding: 12px; border-radius: 12px; }
+            .card-header { margin-bottom: 12px; }
+            .card-title { font-size: 1rem; gap: 8px; }
+            .card-icon { width: 28px; height: 28px; font-size: 16px; border-radius: 8px; }
             
-            .card { padding: 15px; }
-            .mini-value { font-size: 1.5rem; }
+            /* Internal Grids: Compact 2 columns */
+            .small-cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .mini-card { padding: 10px; border-radius: 8px; }
+            .mini-value { font-size: 1.1rem; }
+            .mini-label { font-size: 0.7rem; margin-top: 2px; }
             
-            .inat-grid { grid-template-columns: 1fr; }
+            .climate-grid, .water-stress-grid, .biomass-grid, .poverty-grid { 
+                grid-template-columns: 1fr 1fr; 
+                gap: 8px; 
+            }
+            .climate-item, .water-stress-item, .biomass-item, .poverty-item, .inat-stat {
+                padding: 10px;
+                border-radius: 8px;
+            }
+            .climate-icon, .water-stress-icon, .biomass-icon { font-size: 1.5rem; margin-bottom: 5px; }
+            
+            /* Demographics: 3 columns for small stats */
+            .demographics-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 5px; }
+            .demo-stat { padding: 8px; }
+            .demo-stat .mini-value { font-size: 1rem; }
+            
+            /* Demographics Indicators: Stack */
+            .card.demographics-card > div:last-child { 
+                grid-template-columns: 1fr !important; 
+                gap: 10px !important; 
+            }
+            
+            /* Threatened Species: 3 columns, very tight */
+            .threatened-grid { grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+            .threatened-category { padding: 8px; }
+            .category-count { font-size: 1.2rem; }
+            .category-label { font-size: 0.65rem; }
+            
+            /* iNaturalist: 2 columns */
+            .inat-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            
+            /* Charts height */
+            #map { height: 250px; }
+            .land-cover-chart, .forest-chart, .fire-chart { height: 180px; }
             
             /* Prevent horizontal scroll */
             body { overflow-x: hidden; width: 100%; }
