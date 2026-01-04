@@ -200,6 +200,47 @@ def normalize_anp_name(name):
 3. Update this file's command list
 4. Test with `--test` flag before running on all ANPs
 
+## Climate Data Architecture
+
+Three separate climate data sources with different granularities:
+
+### 1. GEE Climate Projections (`add_climate_projections.py`)
+- **Source**: NASA NEX-GDDP-CMIP6 via Google Earth Engine
+- **Granularity**: Period averages only (baseline 2005-2014 vs future 2055-2064)
+- **Output**: `datasets.climate_projections` in `{anp}_data.json`
+- **Contains**: Temperature, precipitation, tropical nights, drought indicators
+- **Coverage**: 6 ANPs as of Jan 2024
+
+### 2. Climate Portal Scraping (Playwright)
+- **Source**: climateinformation.org (SMHI/GCF/WMO) - bias-adjusted CMIP6
+- **Granularity**: Summary change values only (2071-2100 vs 1981-2010)
+- **Output**: `datasets.climate_portal` in `{anp}_data.json`
+- **Contains**: Temp, precip, soil moisture, aridity, water discharge/runoff
+- **Note**: Requires Playwright browser automation, not a script yet
+- **Coverage**: Sierra Gorda only
+
+### 3. Heatmap Timeseries (`extract_climate_timeseries.py`)
+- **Source**: NASA CMIP6 via GEE (same as #1, different extraction)
+- **Granularity**: Yearly data (every 5 years 1980-2095) for spatial grid
+- **Output**: SEPARATE FILE `{anp}_climate_timeseries.json`
+- **Contains**: Temperature values for ~180 grid points at 0.05° resolution
+- **Used by**: Animated heatmap visualization in dashboard
+- **Coverage**: Sierra Gorda only
+
+### Data Comparison Notes
+- GEE and Climate Portal may show different results due to:
+  - Different time periods (2055-2064 vs 2071-2100)
+  - Different bias correction (raw vs MIdAS method)
+  - Different model ensembles
+- Sierra Gorda is the only ANP with all three data types for comparison
+
+### Climate Scripts Summary
+```bash
+python3 add_climate_projections.py "sierra_gorda"    # GEE period averages
+python3 extract_climate_timeseries.py "sierra_gorda" # Heatmap grid data
+# Climate Portal: manual Playwright scraping (no script yet)
+```
+
 ## Common Issues
 
 ### Charts Not Rendering
