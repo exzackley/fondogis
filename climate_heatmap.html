@@ -3,72 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Climate Change Heatmap - Sierra Gorda</title>
+    <title>Climate Change Heatmap</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; }
-        #map { width: 100%; height: calc(100vh - 140px); }
-        .controls { background: #16213e; padding: 20px; display: flex; align-items: center; gap: 30px; flex-wrap: wrap; }
-        .year-display { font-size: 48px; font-weight: bold; color: #4ecdc4; min-width: 120px; }
-        .slider-container { flex: 1; min-width: 300px; }
+        #map { width: 100%; height: calc(100vh - 180px); }
+        .header { background: #0f3460; padding: 15px 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .header h1 { font-size: 18px; flex: 1; min-width: 200px; }
+        .anp-select { background: #16213e; border: 1px solid #4ecdc4; color: #eee; padding: 8px 12px; border-radius: 6px; font-size: 14px; }
+        .controls { background: #16213e; padding: 15px 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .year-display { font-size: 42px; font-weight: bold; color: #4ecdc4; min-width: 100px; }
+        .slider-container { flex: 1; min-width: 250px; }
         #year-slider { width: 100%; height: 8px; cursor: pointer; }
-        .stats { display: flex; gap: 20px; font-size: 14px; }
-        .stat { background: #0f3460; padding: 10px 15px; border-radius: 8px; }
-        .stat-value { font-size: 24px; font-weight: bold; color: #e94560; }
+        .stats { display: flex; gap: 15px; font-size: 13px; }
+        .stat { background: #0f3460; padding: 8px 12px; border-radius: 8px; }
+        .stat-value { font-size: 20px; font-weight: bold; color: #e94560; }
         .legend { position: absolute; bottom: 30px; right: 10px; background: rgba(22, 33, 62, 0.95); padding: 15px; border-radius: 8px; z-index: 1000; }
         .legend-title { font-weight: bold; margin-bottom: 10px; }
         .legend-scale { display: flex; height: 20px; width: 200px; margin-bottom: 5px; }
         .legend-labels { display: flex; justify-content: space-between; font-size: 12px; }
-        .play-btn { background: #4ecdc4; border: none; color: #1a1a2e; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .play-btn { background: #4ecdc4; border: none; color: #1a1a2e; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; }
         .play-btn:hover { background: #45b7aa; }
-        h1 { padding: 15px 20px; background: #0f3460; font-size: 20px; }
-        .scenario-toggle { display: flex; gap: 10px; }
-        .scenario-btn { background: #0f3460; border: 1px solid #4ecdc4; color: #4ecdc4; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        .scenario-toggle { display: flex; gap: 8px; }
+        .scenario-btn { background: #0f3460; border: 1px solid #4ecdc4; color: #4ecdc4; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
         .scenario-btn.active { background: #4ecdc4; color: #1a1a2e; }
+        .scenario-btn:hover { background: #1a3a5c; }
+        .scenario-btn.active:hover { background: #45b7aa; }
+        .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(22, 33, 62, 0.95); padding: 30px; border-radius: 12px; z-index: 2000; text-align: center; }
+        .loading.hidden { display: none; }
+        .speed-control { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+        .speed-btn { background: #0f3460; border: 1px solid #4ecdc4; color: #4ecdc4; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .speed-btn.active { background: #4ecdc4; color: #1a1a2e; }
     </style>
 </head>
 <body>
-    <h1>Climate Change Projection: Sierra Gorda Biosphere Reserve</h1>
+    <div class="header">
+        <h1 id="title">Climate Change Projection</h1>
+        <select class="anp-select" id="anp-select">
+            <option value="sierra_gorda">Sierra Gorda</option>
+            <option value="sierra_gorda_de_guanajuato">Sierra Gorda de Guanajuato</option>
+            <option value="calakmul">Calakmul</option>
+            <option value="alto_golfo_de_california_y_delta_del_rio_colorado">Alto Golfo de California</option>
+            <option value="arrecife_alacranes">Arrecife Alacranes</option>
+            <option value="arrecife_de_puerto_morelos">Arrecife de Puerto Morelos</option>
+        </select>
+        <div class="scenario-toggle">
+            <button class="scenario-btn active" data-scenario="ssp245">SSP2-4.5</button>
+            <button class="scenario-btn" data-scenario="ssp585">SSP5-8.5</button>
+        </div>
+    </div>
     <div class="controls">
         <div class="year-display" id="year-display">1980</div>
         <div class="slider-container">
             <input type="range" id="year-slider" min="0" max="22" value="0">
         </div>
-        <button class="play-btn" id="play-btn">▶ Play</button>
+        <button class="play-btn" id="play-btn">&#9654; Play</button>
+        <div class="speed-control">
+            <span>Speed:</span>
+            <button class="speed-btn" data-speed="1000">1x</button>
+            <button class="speed-btn active" data-speed="500">2x</button>
+            <button class="speed-btn" data-speed="250">4x</button>
+        </div>
         <div class="stats">
             <div class="stat">
                 <div>Mean Temp</div>
-                <div class="stat-value" id="mean-temp">--°C</div>
+                <div class="stat-value" id="mean-temp">--&deg;C</div>
             </div>
             <div class="stat">
                 <div>Change from 1980</div>
-                <div class="stat-value" id="temp-change">+0.0°C</div>
+                <div class="stat-value" id="temp-change">+0.0&deg;C</div>
             </div>
         </div>
     </div>
     <div id="map"></div>
     <div class="legend">
-        <div class="legend-title">Temperature (°C)</div>
+        <div class="legend-title">Temperature (&deg;C)</div>
         <div class="legend-scale" id="legend-scale"></div>
         <div class="legend-labels">
-            <span id="legend-min">15°C</span>
-            <span id="legend-max">30°C</span>
+            <span id="legend-min">15&deg;C</span>
+            <span id="legend-max">30&deg;C</span>
         </div>
     </div>
+    <div class="loading" id="loading">Loading climate data...</div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         let climateData = null;
         let map = null;
         let heatmapLayer = null;
+        let boundaryLayer = null;
         let boundaryData = null;
-        let clipPolygon = null; // ANP boundary as [[lat,lon], ...]
+        let clipPolygon = null;
         let years = [];
         let currentYearIndex = 0;
         let isPlaying = false;
         let playInterval = null;
         let baselineTemp = null;
+        let currentScenario = 'ssp245';
+        let currentAnp = 'sierra_gorda';
+        let playSpeed = 500;
 
         const tempMin = 15;
         const tempMax = 30;
@@ -101,8 +135,6 @@
             
             onAdd: function(map) {
                 this._map = map;
-                
-                // Create canvas
                 this._canvas = L.DomUtil.create('canvas', 'leaflet-heatmap-canvas');
                 const size = map.getSize();
                 this._canvas.width = size.x;
@@ -113,11 +145,9 @@
                 this._canvas.style.pointerEvents = 'none';
                 
                 map.getPanes().overlayPane.appendChild(this._canvas);
-                
                 map.on('moveend', this._redraw, this);
                 map.on('zoomend', this._redraw, this);
                 map.on('resize', this._resize, this);
-                
                 this._redraw();
             },
             
@@ -140,6 +170,17 @@
                 this._redraw();
             },
             
+            setClipPolygon: function(poly) {
+                this._clipPoly = poly;
+                this._redraw();
+            },
+            
+            setPoints: function(points, resolution) {
+                this._points = points;
+                this._resolution = resolution;
+                this._redraw();
+            },
+            
             _redraw: function() {
                 if (!this._map) return;
                 
@@ -148,13 +189,9 @@
                 const bounds = this._map.getBounds();
                 const topLeft = this._map.latLngToContainerPoint(bounds.getNorthWest());
                 
-                // Position canvas at map origin
                 L.DomUtil.setPosition(this._canvas, topLeft);
-                
-                // Clear
                 ctx.clearRect(0, 0, size.x, size.y);
                 
-                // Set clip path to ANP polygon
                 if (this._clipPoly && this._clipPoly.length > 0) {
                     ctx.save();
                     ctx.beginPath();
@@ -170,7 +207,6 @@
                     ctx.clip();
                 }
                 
-                // Draw rectangles
                 const res = this._resolution;
                 this._points.forEach((point, i) => {
                     const temp = this._temps[i];
@@ -179,7 +215,6 @@
                     const color = tempToColor(temp, true);
                     ctx.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${color[3]})`;
                     
-                    // Convert bounds to pixel coordinates
                     const sw = this._map.latLngToContainerPoint([point[1] - res/2, point[0] - res/2]);
                     const ne = this._map.latLngToContainerPoint([point[1] + res/2, point[0] + res/2]);
                     
@@ -199,6 +234,7 @@
 
         function createLegend() {
             const scale = document.getElementById('legend-scale');
+            scale.innerHTML = '';
             const steps = 20;
             for (let i = 0; i < steps; i++) {
                 const temp = tempMin + (i / steps) * (tempMax - tempMin);
@@ -209,11 +245,24 @@
             }
         }
 
+        function getYearsData() {
+            // Handle both old format (years at root) and new format (scenarios.X.years)
+            if (climateData.scenarios && climateData.scenarios[currentScenario]) {
+                return climateData.scenarios[currentScenario].years;
+            } else if (climateData.years) {
+                return climateData.years;
+            }
+            return {};
+        }
+
         function updateHeatmap(yearIndex) {
             if (!climateData) return;
             
+            const yearsData = getYearsData();
             const year = years[yearIndex];
-            const temps = climateData.years[year];
+            const temps = yearsData[year];
+            
+            if (!temps) return;
             
             if (heatmapLayer) {
                 heatmapLayer.setTemps(temps);
@@ -222,12 +271,14 @@
             document.getElementById('year-display').textContent = year;
             
             const validTemps = temps.filter(t => t != null);
+            if (validTemps.length === 0) return;
+            
             const meanTemp = validTemps.reduce((a, b) => a + b, 0) / validTemps.length;
-            document.getElementById('mean-temp').textContent = meanTemp.toFixed(1) + '°C';
+            document.getElementById('mean-temp').textContent = meanTemp.toFixed(1) + '\u00B0C';
             
             const change = meanTemp - baselineTemp;
             const changeEl = document.getElementById('temp-change');
-            changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '°C';
+            changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '\u00B0C';
             changeEl.style.color = change > 1.5 ? '#e94560' : change > 0.5 ? '#ffa502' : '#4ecdc4';
         }
 
@@ -236,70 +287,174 @@
             const btn = document.getElementById('play-btn');
             
             if (isPlaying) {
-                btn.textContent = '⏸ Pause';
+                btn.innerHTML = '&#9208; Pause';
                 playInterval = setInterval(() => {
                     currentYearIndex = (currentYearIndex + 1) % years.length;
                     document.getElementById('year-slider').value = currentYearIndex;
                     updateHeatmap(currentYearIndex);
-                }, 500);
+                }, playSpeed);
             } else {
-                btn.textContent = '▶ Play';
+                btn.innerHTML = '&#9654; Play';
                 clearInterval(playInterval);
             }
         }
 
-        async function init() {
-            const response = await fetch('anp_data/sierra_gorda_climate_timeseries.json');
-            climateData = await response.json();
-            
-            years = Object.keys(climateData.years).sort();
-            document.getElementById('year-slider').max = years.length - 1;
-            
-            const firstYearTemps = climateData.years[years[0]].filter(t => t != null);
-            baselineTemp = firstYearTemps.reduce((a, b) => a + b, 0) / firstYearTemps.length;
+        function stopPlaying() {
+            if (isPlaying) {
+                isPlaying = false;
+                document.getElementById('play-btn').innerHTML = '&#9654; Play';
+                clearInterval(playInterval);
+            }
+        }
 
-            const bbox = climateData.bbox;
-            const center = [(bbox.min_lat + bbox.max_lat) / 2, (bbox.min_lon + bbox.max_lon) / 2];
+        async function loadAnp(anpSlug) {
+            document.getElementById('loading').classList.remove('hidden');
+            stopPlaying();
             
-            map = L.map('map').setView(center, 10);
-            
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '© OpenStreetMap, © CARTO'
-            }).addTo(map);
-
             try {
-                const boundaryResp = await fetch('anp_data/sierra_gorda_boundary.geojson');
-                boundaryData = await boundaryResp.json();
+                const response = await fetch(`anp_data/${anpSlug}_climate_timeseries.json`);
+                if (!response.ok) throw new Error('Failed to load climate data');
+                climateData = await response.json();
                 
-                // Get ANP coordinates for clipping [lon, lat] format
-                clipPolygon = boundaryData.features[0].geometry.coordinates[0];
+                // Get years from the appropriate location
+                const yearsData = getYearsData();
+                years = Object.keys(yearsData).sort();
+                document.getElementById('year-slider').max = years.length - 1;
+                document.getElementById('year-slider').value = 0;
+                currentYearIndex = 0;
                 
-                // Create clipped heatmap layer
-                heatmapLayer = new ClippedHeatmapLayer({
-                    temps: climateData.years[years[0]],
-                    points: climateData.points,
-                    resolution: climateData.grid_resolution_deg,
-                    clipPolygon: clipPolygon
-                }).addTo(map);
+                // Calculate baseline
+                const firstYearTemps = yearsData[years[0]].filter(t => t != null);
+                baselineTemp = firstYearTemps.reduce((a, b) => a + b, 0) / firstYearTemps.length;
+
+                const bbox = climateData.bbox;
+                const center = [(bbox.min_lat + bbox.max_lat) / 2, (bbox.min_lon + bbox.max_lon) / 2];
                 
-                // Add boundary outline on top
-                L.geoJSON(boundaryData, {
-                    style: { color: '#4ecdc4', weight: 2, fill: false }
-                }).addTo(map);
+                // Update title
+                document.getElementById('title').textContent = `Climate Projection: ${climateData.anp_name}`;
+                
+                // Fit map to bounds
+                map.fitBounds([
+                    [bbox.min_lat, bbox.min_lon],
+                    [bbox.max_lat, bbox.max_lon]
+                ]);
+
+                // Load boundary
+                const boundaryResp = await fetch(`anp_data/${anpSlug}_boundary.geojson`);
+                if (boundaryResp.ok) {
+                    boundaryData = await boundaryResp.json();
+                    clipPolygon = boundaryData.features[0].geometry.coordinates[0];
+                    
+                    if (heatmapLayer) {
+                        heatmapLayer.setClipPolygon(clipPolygon);
+                        heatmapLayer.setPoints(climateData.points, climateData.grid_resolution_deg);
+                        heatmapLayer.setTemps(yearsData[years[0]]);
+                    }
+                    
+                    if (boundaryLayer) {
+                        map.removeLayer(boundaryLayer);
+                    }
+                    boundaryLayer = L.geoJSON(boundaryData, {
+                        style: { color: '#4ecdc4', weight: 2, fill: false }
+                    }).addTo(map);
+                }
+                
+                updateHeatmap(0);
                 
             } catch (e) {
-                console.error('Failed to load boundary:', e);
+                console.error('Failed to load ANP:', e);
+                alert('Failed to load climate data for this ANP');
+            }
+            
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        function setScenario(scenario) {
+            currentScenario = scenario;
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.scenario === scenario);
+            });
+            
+            // Reload years for new scenario
+            const yearsData = getYearsData();
+            if (yearsData) {
+                years = Object.keys(yearsData).sort();
+                const firstYearTemps = yearsData[years[0]].filter(t => t != null);
+                baselineTemp = firstYearTemps.reduce((a, b) => a + b, 0) / firstYearTemps.length;
+                updateHeatmap(currentYearIndex);
+            }
+        }
+
+        async function init() {
+            // Check URL params
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('anp')) {
+                currentAnp = params.get('anp');
+                document.getElementById('anp-select').value = currentAnp;
+            }
+            if (params.has('scenario')) {
+                currentScenario = params.get('scenario');
             }
 
-            createLegend();
-            updateHeatmap(0);
+            // Initialize map
+            map = L.map('map').setView([21.3, -99.5], 10);
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap, &copy; CARTO'
+            }).addTo(map);
 
+            // Initialize heatmap layer (will be updated when data loads)
+            heatmapLayer = new ClippedHeatmapLayer({
+                temps: [],
+                points: [],
+                resolution: 0.05,
+                clipPolygon: null
+            }).addTo(map);
+
+            createLegend();
+            
+            // Load initial ANP
+            await loadAnp(currentAnp);
+
+            // Event listeners
             document.getElementById('year-slider').addEventListener('input', (e) => {
                 currentYearIndex = parseInt(e.target.value);
                 updateHeatmap(currentYearIndex);
             });
 
             document.getElementById('play-btn').addEventListener('click', togglePlay);
+            
+            document.getElementById('anp-select').addEventListener('change', (e) => {
+                currentAnp = e.target.value;
+                loadAnp(currentAnp);
+                // Update URL without reload
+                const url = new URL(window.location);
+                url.searchParams.set('anp', currentAnp);
+                window.history.pushState({}, '', url);
+            });
+            
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.addEventListener('click', () => setScenario(btn.dataset.scenario));
+            });
+            
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    playSpeed = parseInt(btn.dataset.speed);
+                    if (isPlaying) {
+                        clearInterval(playInterval);
+                        playInterval = setInterval(() => {
+                            currentYearIndex = (currentYearIndex + 1) % years.length;
+                            document.getElementById('year-slider').value = currentYearIndex;
+                            updateHeatmap(currentYearIndex);
+                        }, playSpeed);
+                    }
+                });
+            });
+            
+            // Set initial scenario button state
+            setScenario(currentScenario);
         }
 
         init();
