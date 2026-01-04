@@ -2,7 +2,24 @@
 
 ## Project Overview
 
-Environmental data dashboard for FMCN analyzing Mexico's 212 federal protected areas (ANPs). Extracts data from Google Earth Engine, GBIF, CONANP SIMEC, INEGI Census, CONEVAL, and iNaturalist.
+Environmental data dashboard for FMCN analyzing Mexico's 232 federal protected areas (ANPs). Extracts data from Google Earth Engine, GBIF, CONANP SIMEC, INEGI Census, CONEVAL, and iNaturalist.
+
+### ANP Categories (232 total)
+| Category | Count | Full Name |
+|----------|-------|-----------|
+| PN | 79 | Parque Nacional |
+| RB | 48 | Reserva de la Biósfera |
+| APFF | 57 | Área de Protección de Flora y Fauna |
+| Sant | 28 | Santuario |
+| APRN | 15 | Área de Protección de Recursos Naturales |
+| MN | 5 | Monumento Natural |
+
+### ANP Registry (`anp_registry.py`)
+Central source of truth for all ANP names and IDs. All scripts should import from here:
+
+```python
+from anp_registry import get_all_anps, get_anp_by_name, get_anps_by_category
+```
 
 ## Quick Start
 
@@ -55,6 +72,7 @@ pip install earthengine-api pandas requests openpyxl
 
 ```
 fondogis/
+├── anp_registry.py             # Central ANP list (import from here, not hardcoded lists)
 ├── add_anp.py                  # Core GEE extraction (population, elevation, land cover, etc.)
 ├── add_water_stress.py         # WRI Aqueduct V4
 ├── add_climate_projections.py  # NASA CMIP6 climate projections
@@ -64,10 +82,11 @@ fondogis/
 ├── add_inaturalist_data.py     # iNaturalist API
 ├── extract_external_data.py    # GBIF, SIMEC NOM-059, INEGI Census
 ├── gee_auth.py                 # GEE authentication helper
-├── index.html              # Main visualization dashboard
+├── index.html                  # Main visualization dashboard
 ├── admin.html                  # Data admin panel
 ├── anp_data/                   # Generated JSON per ANP (DO NOT HAND-EDIT)
 ├── reference_data/             # Downloaded Excel/CSV reference files
+│   └── official_anp_list.json  # Authoritative 234 ANP list (used by anp_registry.py)
 ├── data_sources.json           # Data source documentation (21 sources)
 └── service_account.json        # GEE service account key (gitignored)
 ```

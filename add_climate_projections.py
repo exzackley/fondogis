@@ -25,12 +25,12 @@ except ImportError:
 DATA_DIR = 'anp_data'
 CMIP6_COLLECTION = 'NASA/GDDP-CMIP6'
 
-BASELINE_START = '2010-01-01'
-BASELINE_END = '2010-12-31'
-FUTURE_START = '2060-01-01'
-FUTURE_END = '2060-12-31'
+BASELINE_START = '2005-01-01'
+BASELINE_END = '2014-12-31'
+FUTURE_START = '2055-01-01'
+FUTURE_END = '2064-12-31'
 
-MODELS = ['ACCESS-CM2']
+MODELS = ['ACCESS-CM2', 'GFDL-ESM4', 'MRI-ESM2-0']
 
 SCENARIOS = ['ssp245', 'ssp585']
 
@@ -57,8 +57,8 @@ def extract_climate_projections(geometry):
         results = {
             "source": "NASA NEX-GDDP-CMIP6",
             "resolution": "0.25 degrees (~27km)",
-            "baseline_period": "2010",
-            "future_period": "2060",
+            "baseline_period": "2005-2014",
+            "future_period": "2055-2064",
             "models_used": len(MODELS),
             "model_list": MODELS,
             "scenarios": {},

@@ -490,6 +490,144 @@
         .inat-species .name { color: var(--text-secondary); font-style: italic; }
         .inat-species .common { color: var(--text-muted); font-size: 0.75rem; }
         .inat-species .count { color: var(--accent); font-weight: 500; }
+        
+        /* Climate Projections Section */
+        .climate-proj-card { grid-column: span 12; }
+        .climate-proj-header { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .scenario-tabs {
+            display: flex;
+            gap: 8px;
+        }
+        .scenario-tab {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .scenario-tab:hover { border-color: var(--accent); color: var(--text-primary); }
+        .scenario-tab.active { background: var(--accent); border-color: var(--accent); color: var(--bg-primary); }
+        
+        .climate-proj-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .climate-proj-item {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+        }
+        .climate-proj-item .icon { font-size: 2rem; margin-bottom: 10px; }
+        .climate-proj-item .label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; }
+        .climate-proj-item .value { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+        .climate-proj-item .change { 
+            font-size: 1rem; 
+            font-weight: 600; 
+            margin-top: 8px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .climate-proj-item .change.increase { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .climate-proj-item .change.decrease { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .climate-proj-item .change.neutral { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+        .climate-proj-item .subtext { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; }
+        
+        .climate-indicators-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .climate-indicator-box {
+            background: var(--bg-tertiary);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .climate-indicator-box .title { 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            color: var(--text-primary); 
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .climate-indicator-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 0.8rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .climate-indicator-row:last-child { border-bottom: none; }
+        .climate-indicator-row .label { color: var(--text-secondary); }
+        .climate-indicator-row .value { color: var(--accent); font-weight: 500; }
+        
+        /* Climate Heatmap */
+        .climate-heatmap-container {
+            margin-top: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        .heatmap-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .heatmap-title { font-size: 0.9rem; font-weight: 600; }
+        .heatmap-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .heatmap-year { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .heatmap-slider { width: 200px; }
+        .heatmap-play-btn {
+            background: var(--accent);
+            border: none;
+            color: var(--bg-primary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        #climate-heatmap-frame {
+            width: 100%;
+            height: 350px;
+            border: none;
+            border-radius: 8px;
+        }
+        
+        @media (max-width: 1024px) {
+            .climate-proj-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .climate-proj-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .climate-proj-item { padding: 12px; }
+            .climate-proj-item .icon { font-size: 1.5rem; margin-bottom: 5px; }
+            .climate-proj-item .value { font-size: 1.2rem; }
+            .climate-proj-item .change { font-size: 0.85rem; padding: 3px 8px; }
+            .climate-indicators-row { grid-template-columns: 1fr; }
+            .scenario-tabs { flex-wrap: wrap; }
+            .scenario-tab { padding: 6px 12px; font-size: 0.8rem; }
+        }
     </style>
 </head>
 <body>
@@ -751,6 +889,105 @@
                 <div class="species-by-class" id="inat-by-group"></div>
                 <div class="inat-species-list" id="inat-top-species" style="margin-top: 12px;"></div>
             </div>
+            
+            <!-- Climate Projections Section -->
+            <div class="card climate-proj-card fade-in" id="climate-proj-section" style="animation-delay: 1.3s; display: none;">
+                <div class="climate-proj-header">
+                    <div class="card-title"><div class="card-icon">🌡️</div><span data-i18n="climate_projections">Climate Projections (2055-2064)</span></div>
+                    <div class="scenario-tabs">
+                        <button class="scenario-tab active" data-scenario="ssp245" onclick="switchScenario('ssp245')">SSP2-4.5 <span style="font-size:0.7rem;">(moderate)</span></button>
+                        <button class="scenario-tab" data-scenario="ssp585" onclick="switchScenario('ssp585')">SSP5-8.5 <span style="font-size:0.7rem;">(high emissions)</span></button>
+                    </div>
+                    <span class="source">NASA NEX-GDDP-CMIP6</span>
+                </div>
+                
+                <div class="climate-proj-grid">
+                    <div class="climate-proj-item">
+                        <div class="icon">🌡️</div>
+                        <div class="label" data-i18n="mean_temperature">Mean Temperature</div>
+                        <div class="value" id="proj-temp-future">--</div>
+                        <div class="change increase" id="proj-temp-change">--</div>
+                        <div class="subtext" id="proj-temp-baseline">Baseline: --</div>
+                    </div>
+                    <div class="climate-proj-item">
+                        <div class="icon">🌧️</div>
+                        <div class="label" data-i18n="annual_precipitation">Annual Precipitation</div>
+                        <div class="value" id="proj-precip-future">--</div>
+                        <div class="change decrease" id="proj-precip-change">--</div>
+                        <div class="subtext" id="proj-precip-baseline">Baseline: --</div>
+                    </div>
+                    <div class="climate-proj-item">
+                        <div class="icon">🌙</div>
+                        <div class="label" data-i18n="tropical_nights">Tropical Nights/yr</div>
+                        <div class="value" id="proj-tropnights-future">--</div>
+                        <div class="change increase" id="proj-tropnights-change">--</div>
+                        <div class="subtext" id="proj-tropnights-baseline">Baseline: --</div>
+                    </div>
+                    <div class="climate-proj-item">
+                        <div class="icon">🏜️</div>
+                        <div class="label" data-i18n="drought_risk">Drought Risk</div>
+                        <div class="value" id="proj-drought-future">--</div>
+                        <div class="change neutral" id="proj-drought-change">--</div>
+                        <div class="subtext" id="proj-drought-baseline">Baseline: --</div>
+                    </div>
+                </div>
+                
+                <div class="climate-indicators-row">
+                    <div class="climate-indicator-box">
+                        <div class="title">🔥 Heat Stress Indicators</div>
+                        <div class="climate-indicator-row">
+                            <span class="label" data-i18n="min_temp_baseline">Min Temp (Baseline)</span>
+                            <span class="value" id="proj-mintemp-baseline">--</span>
+                        </div>
+                        <div class="climate-indicator-row">
+                            <span class="label" data-i18n="min_temp_future">Min Temp (Future)</span>
+                            <span class="value" id="proj-mintemp-future">--</span>
+                        </div>
+                        <div class="climate-indicator-row">
+                            <span class="label" data-i18n="tropical_nights_change">Tropical Nights Change</span>
+                            <span class="value" id="proj-tropnights-detail">--</span>
+                        </div>
+                    </div>
+                    <div class="climate-indicator-box">
+                        <div class="title">💧 Drought Indicators</div>
+                        <div class="climate-indicator-row">
+                            <span class="label" data-i18n="daily_precip_baseline">Daily Precip (Baseline)</span>
+                            <span class="value" id="proj-dailyprecip-baseline">--</span>
+                        </div>
+                        <div class="climate-indicator-row">
+                            <span class="label" data-i18n="daily_precip_future">Daily Precip (Future)</span>
+                            <span class="value" id="proj-dailyprecip-future">--</span>
+                        </div>
+                        <div class="climate-indicator-row">
+                            <span class="label" data-i18n="consecutive_dry_days">Consecutive Dry Days</span>
+                            <span class="value" id="proj-drydays-detail">--</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px; font-size: 0.75rem; color: var(--text-muted);">
+                    <strong>Source:</strong> NASA NEX-GDDP-CMIP6 (3-model ensemble: ACCESS-CM2, GFDL-ESM4, MRI-ESM2-0) • 
+                    <strong>Baseline:</strong> 2005-2014 • 
+                    <strong>Projection:</strong> 2055-2064
+                </div>
+            </div>
+            
+            <!-- Climate Heatmap Card (separate - shows if timeseries data available) -->
+            <div class="card climate-heatmap-card fade-in" id="climate-heatmap-section" style="animation-delay: 1.35s; grid-column: span 12; display: none;">
+                <div class="card-header">
+                    <div class="card-title"><div class="card-icon">🗺️</div><span data-i18n="temperature_heatmap">Temperature Change Heatmap</span></div>
+                    <div class="heatmap-controls">
+                        <span class="heatmap-year" id="heatmap-year">1980</span>
+                        <input type="range" class="heatmap-slider" id="heatmap-slider" min="0" max="22" value="0">
+                        <button class="heatmap-play-btn" id="heatmap-play-btn">▶ Play</button>
+                    </div>
+                    <span class="source">NASA CMIP6 / ACCESS-CM2</span>
+                </div>
+                <div id="heatmap-map" style="height: 350px; border-radius: 8px;"></div>
+                <div style="margin-top: 10px; font-size: 0.75rem; color: var(--text-muted);">
+                    Animated temperature projection (1980-2100) under SSP2-4.5 scenario. Colors range from blue (15°C) to red (30°C).
+                </div>
+            </div>
         </div>
         
         <footer>
@@ -875,13 +1112,13 @@
                 const data = await dataResponse.json();
                 const boundary = await boundaryResponse.json();
                 
-                renderDashboard(data, boundary);
+                renderDashboard(data, boundary, anpId);
             } catch (error) {
                 console.error('Error loading ANP data:', error);
             }
         }
         
-        function renderDashboard(data, boundary) {
+        function renderDashboard(data, boundary, anpId) {
             const meta = data.metadata;
             const datasets = data.datasets;
             const geom = data.geometry;
@@ -965,6 +1202,10 @@
             }
             
             renderBiomassData(datasets.gedi_biomass);
+            
+            renderClimateProjections(datasets);
+            
+            loadClimateHeatmap(anpId);
         }
         
         function renderSpeciesData(extData) {
@@ -1204,6 +1445,346 @@
                     </div>
                 `).join('');
                 document.getElementById('inat-top-species').innerHTML = speciesHtml;
+            }
+        }
+        
+        let currentClimateData = null;
+        let currentClimatePortalData = null;
+        let currentScenario = 'ssp245';
+        let heatmapMap = null;
+        let heatmapLayer = null;
+        let heatmapData = null;
+        let heatmapYears = [];
+        let heatmapPlaying = false;
+        let heatmapInterval = null;
+        let heatmapBaselineTemp = null;
+        
+        function renderClimateProjections(datasets) {
+            const section = document.getElementById('climate-proj-section');
+            const proj = datasets.climate_projections;
+            const portal = datasets.climate_portal;
+            
+            currentClimatePortalData = portal;
+            currentClimateData = proj;
+            
+            const hasGeeData = proj && proj.data_available;
+            const hasPortalData = portal && portal.data_available;
+            
+            if (!hasGeeData && !hasPortalData) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            
+            if (hasGeeData) {
+                updateClimateDisplay(currentScenario);
+            } else {
+                document.getElementById('proj-temp-future').textContent = '--';
+                document.getElementById('proj-temp-change').textContent = 'No GEE data';
+                document.getElementById('proj-temp-change').className = 'change neutral';
+                document.getElementById('proj-temp-baseline').textContent = '';
+                document.getElementById('proj-precip-future').textContent = '--';
+                document.getElementById('proj-precip-change').textContent = '--';
+                document.getElementById('proj-precip-baseline').textContent = '';
+                document.getElementById('proj-tropnights-future').textContent = '--';
+                document.getElementById('proj-tropnights-change').textContent = '--';
+                document.getElementById('proj-tropnights-baseline').textContent = '';
+                document.getElementById('proj-drought-future').textContent = '--';
+                document.getElementById('proj-drought-change').textContent = '--';
+                document.getElementById('proj-drought-baseline').textContent = '';
+                document.getElementById('proj-mintemp-baseline').textContent = '--';
+                document.getElementById('proj-mintemp-future').textContent = '--';
+                document.getElementById('proj-tropnights-detail').textContent = '--';
+                document.getElementById('proj-dailyprecip-baseline').textContent = '--';
+                document.getElementById('proj-dailyprecip-future').textContent = '--';
+                document.getElementById('proj-drydays-detail').textContent = '--';
+            }
+            
+            if (hasPortalData) {
+                renderClimatePortalComparison(portal, currentScenario);
+            } else {
+                const compDiv = document.getElementById('climate-portal-comparison');
+                if (compDiv) compDiv.innerHTML = '';
+            }
+        }
+        
+        function renderClimatePortalComparison(portal, scenario) {
+            let comparisonDiv = document.getElementById('climate-portal-comparison');
+            if (!comparisonDiv) {
+                const section = document.getElementById('climate-proj-section');
+                const sourceDiv = section.querySelector('div[style*="margin-top: 15px"]');
+                comparisonDiv = document.createElement('div');
+                comparisonDiv.id = 'climate-portal-comparison';
+                comparisonDiv.style.cssText = 'margin-top: 20px; background: var(--bg-tertiary); padding: 20px; border-radius: 12px;';
+                section.insertBefore(comparisonDiv, sourceDiv);
+            }
+            
+            const portalScenario = scenario === 'ssp245' ? 'rcp45' : 'rcp85';
+            const data = portal.scenarios[portalScenario];
+            
+            if (!data) {
+                comparisonDiv.innerHTML = '';
+                return;
+            }
+            
+            comparisonDiv.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                    <div style="font-size: 1rem; font-weight: 600;">🌐 Climate Portal Comparison (2071-2100)</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">climateinformation.org • Bias-adjusted CMIP6</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;">
+                    <div style="text-align: center; background: var(--bg-secondary); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">Temperature</div>
+                        <div style="font-size: 1.2rem; font-weight: 700; color: ${data.temperature_change_c > 0 ? '#ef4444' : '#3b82f6'};">
+                            ${data.temperature_change_c > 0 ? '+' : ''}${data.temperature_change_c}°C
+                        </div>
+                    </div>
+                    <div style="text-align: center; background: var(--bg-secondary); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">Precipitation</div>
+                        <div style="font-size: 1.2rem; font-weight: 700; color: ${data.precipitation_change_pct < 0 ? '#3b82f6' : '#10b981'};">
+                            ${data.precipitation_change_pct > 0 ? '+' : ''}${data.precipitation_change_pct}%
+                        </div>
+                    </div>
+                    <div style="text-align: center; background: var(--bg-secondary); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">Soil Moisture</div>
+                        <div style="font-size: 1.2rem; font-weight: 700; color: ${data.soil_moisture_change_pct < 0 ? '#ef4444' : '#10b981'};">
+                            ${data.soil_moisture_change_pct > 0 ? '+' : ''}${data.soil_moisture_change_pct}%
+                        </div>
+                    </div>
+                    <div style="text-align: center; background: var(--bg-secondary); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">Aridity</div>
+                        <div style="font-size: 1.2rem; font-weight: 700; color: ${data.aridity_change_pct > 0 ? '#ef4444' : '#10b981'};">
+                            ${data.aridity_change_pct > 0 ? '+' : ''}${data.aridity_change_pct}%
+                        </div>
+                    </div>
+                    <div style="text-align: center; background: var(--bg-secondary); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">Water Discharge</div>
+                        <div style="font-size: 1.2rem; font-weight: 700; color: ${data.water_discharge_change_pct < 0 ? '#ef4444' : '#10b981'};">
+                            ${data.water_discharge_change_pct > 0 ? '+' : ''}${data.water_discharge_change_pct}%
+                        </div>
+                    </div>
+                    <div style="text-align: center; background: var(--bg-secondary); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">Water Runoff</div>
+                        <div style="font-size: 1.2rem; font-weight: 700; color: ${data.water_runoff_change_pct < 0 ? '#ef4444' : '#10b981'};">
+                            ${data.water_runoff_change_pct > 0 ? '+' : ''}${data.water_runoff_change_pct}%
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.7rem; color: var(--text-muted);">
+                    Model agreement: ${data.model_agreement} • Tropical nights: ${data.tropical_nights}
+                </div>
+            `;
+        }
+        
+        function switchScenario(scenario) {
+            currentScenario = scenario;
+            document.querySelectorAll('.scenario-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.scenario === scenario);
+            });
+            if (currentClimateData) {
+                updateClimateDisplay(scenario);
+            }
+            if (currentClimatePortalData && currentClimatePortalData.data_available) {
+                renderClimatePortalComparison(currentClimatePortalData, scenario);
+            }
+        }
+        
+        function updateClimateDisplay(scenario) {
+            const data = currentClimateData.scenarios[scenario];
+            if (!data) return;
+            
+            const temp = data.temperature || {};
+            const precip = data.precipitation || {};
+            const heat = data.heat_stress || {};
+            const drought = data.drought_indicators || {};
+            
+            document.getElementById('proj-temp-future').textContent = temp.future_mean_c != null ? temp.future_mean_c.toFixed(1) + '°C' : '--';
+            document.getElementById('proj-temp-baseline').textContent = `Baseline: ${temp.baseline_mean_c != null ? temp.baseline_mean_c.toFixed(1) + '°C' : '--'}`;
+            const tempChange = document.getElementById('proj-temp-change');
+            if (temp.change_c != null) {
+                tempChange.textContent = (temp.change_c >= 0 ? '+' : '') + temp.change_c.toFixed(1) + '°C';
+                tempChange.className = 'change ' + (temp.change_c > 0 ? 'increase' : temp.change_c < 0 ? 'decrease' : 'neutral');
+            } else {
+                tempChange.textContent = '--';
+            }
+            
+            document.getElementById('proj-precip-future').textContent = precip.future_annual_mm != null ? formatNumber(precip.future_annual_mm, 0) + ' mm' : '--';
+            document.getElementById('proj-precip-baseline').textContent = `Baseline: ${precip.baseline_annual_mm != null ? formatNumber(precip.baseline_annual_mm, 0) + ' mm' : '--'}`;
+            const precipChange = document.getElementById('proj-precip-change');
+            if (precip.change_percent != null) {
+                precipChange.textContent = (precip.change_percent >= 0 ? '+' : '') + precip.change_percent.toFixed(1) + '%';
+                precipChange.className = 'change ' + (precip.change_percent < 0 ? 'decrease' : precip.change_percent > 0 ? 'increase' : 'neutral');
+            } else {
+                precipChange.textContent = '--';
+            }
+            
+            document.getElementById('proj-tropnights-future').textContent = heat.tropical_nights_future_estimate != null ? heat.tropical_nights_future_estimate : '--';
+            document.getElementById('proj-tropnights-baseline').textContent = `Baseline: ${heat.tropical_nights_baseline_estimate != null ? heat.tropical_nights_baseline_estimate : '--'}`;
+            const tropChange = document.getElementById('proj-tropnights-change');
+            if (heat.change_days_estimate != null) {
+                tropChange.textContent = (heat.change_days_estimate >= 0 ? '+' : '') + heat.change_days_estimate + ' days';
+                tropChange.className = 'change ' + (heat.change_days_estimate > 0 ? 'increase' : heat.change_days_estimate < 0 ? 'decrease' : 'neutral');
+            } else {
+                tropChange.textContent = '--';
+            }
+            
+            document.getElementById('proj-drought-future').textContent = drought.drought_risk_future || '--';
+            document.getElementById('proj-drought-baseline').textContent = `Baseline: ${drought.drought_risk_baseline || '--'}`;
+            const droughtChange = document.getElementById('proj-drought-change');
+            if (drought.consecutive_dry_days_future_estimate != null && drought.consecutive_dry_days_baseline_estimate != null) {
+                const dryChange = drought.consecutive_dry_days_future_estimate - drought.consecutive_dry_days_baseline_estimate;
+                droughtChange.textContent = (dryChange >= 0 ? '+' : '') + dryChange + ' dry days';
+                droughtChange.className = 'change ' + (dryChange > 0 ? 'increase' : dryChange < 0 ? 'decrease' : 'neutral');
+            } else {
+                droughtChange.textContent = '--';
+            }
+            
+            document.getElementById('proj-mintemp-baseline').textContent = heat.mean_min_temp_baseline_c != null ? heat.mean_min_temp_baseline_c.toFixed(1) + '°C' : '--';
+            document.getElementById('proj-mintemp-future').textContent = heat.mean_min_temp_future_c != null ? heat.mean_min_temp_future_c.toFixed(1) + '°C' : '--';
+            if (heat.tropical_nights_baseline_estimate != null && heat.tropical_nights_future_estimate != null) {
+                document.getElementById('proj-tropnights-detail').textContent = `${heat.tropical_nights_baseline_estimate} → ${heat.tropical_nights_future_estimate} nights`;
+            }
+            
+            document.getElementById('proj-dailyprecip-baseline').textContent = drought.mean_daily_precip_baseline_mm != null ? drought.mean_daily_precip_baseline_mm.toFixed(2) + ' mm' : '--';
+            document.getElementById('proj-dailyprecip-future').textContent = drought.mean_daily_precip_future_mm != null ? drought.mean_daily_precip_future_mm.toFixed(2) + ' mm' : '--';
+            if (drought.consecutive_dry_days_baseline_estimate != null && drought.consecutive_dry_days_future_estimate != null) {
+                document.getElementById('proj-drydays-detail').textContent = `${drought.consecutive_dry_days_baseline_estimate} → ${drought.consecutive_dry_days_future_estimate} days`;
+            }
+        }
+        
+        async function loadClimateHeatmap(anpId) {
+            const section = document.getElementById('climate-heatmap-section');
+            const timeseriesFile = `anp_data/${anpId}_climate_timeseries.json`;
+            const boundaryFile = `anp_data/${anpId}_boundary.geojson`;
+            
+            try {
+                const response = await fetch(timeseriesFile);
+                if (!response.ok) {
+                    section.style.display = 'none';
+                    return;
+                }
+                
+                heatmapData = await response.json();
+                heatmapYears = Object.keys(heatmapData.years).sort();
+                
+                if (heatmapYears.length === 0) {
+                    section.style.display = 'none';
+                    return;
+                }
+                
+                section.style.display = 'block';
+                
+                const slider = document.getElementById('heatmap-slider');
+                slider.max = heatmapYears.length - 1;
+                slider.value = 0;
+                
+                const firstYearTemps = heatmapData.years[heatmapYears[0]].filter(t => t != null);
+                heatmapBaselineTemp = firstYearTemps.reduce((a, b) => a + b, 0) / firstYearTemps.length;
+                
+                const bbox = heatmapData.bbox;
+                const center = [(bbox.min_lat + bbox.max_lat) / 2, (bbox.min_lon + bbox.max_lon) / 2];
+                
+                if (!heatmapMap) {
+                    heatmapMap = L.map('heatmap-map').setView(center, 9);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '© OpenStreetMap, © CARTO'
+                    }).addTo(heatmapMap);
+                } else {
+                    heatmapMap.setView(center, 9);
+                }
+                
+                try {
+                    const boundaryResp = await fetch(boundaryFile);
+                    const boundaryData = await boundaryResp.json();
+                    L.geoJSON(boundaryData, {
+                        style: { color: '#10b981', weight: 2, fill: false }
+                    }).addTo(heatmapMap);
+                } catch (e) {}
+                
+                slider.addEventListener('input', (e) => {
+                    const idx = parseInt(e.target.value);
+                    updateHeatmapDisplay(idx);
+                });
+                
+                document.getElementById('heatmap-play-btn').addEventListener('click', toggleHeatmapPlay);
+                
+                updateHeatmapDisplay(0);
+                
+            } catch (error) {
+                section.style.display = 'none';
+            }
+        }
+        
+        function tempToColor(temp) {
+            if (temp == null) return 'rgba(0,0,0,0)';
+            const tempMin = 15, tempMax = 30;
+            const t = Math.max(0, Math.min(1, (temp - tempMin) / (tempMax - tempMin)));
+            
+            let r, g, b;
+            if (t < 0.25) {
+                r = 0; g = Math.round(100 + t * 4 * 155); b = 255;
+            } else if (t < 0.5) {
+                r = 0; g = 255; b = Math.round(255 - (t - 0.25) * 4 * 255);
+            } else if (t < 0.75) {
+                r = Math.round((t - 0.5) * 4 * 255); g = 255; b = 0;
+            } else {
+                r = 255; g = Math.round(255 - (t - 0.75) * 4 * 255); b = 0;
+            }
+            return `rgba(${r},${g},${b},0.6)`;
+        }
+        
+        function updateHeatmapDisplay(yearIndex) {
+            if (!heatmapData || !heatmapMap) return;
+            
+            const year = heatmapYears[yearIndex];
+            const temps = heatmapData.years[year];
+            
+            document.getElementById('heatmap-year').textContent = year;
+            
+            if (heatmapLayer) {
+                heatmapMap.removeLayer(heatmapLayer);
+            }
+            
+            const rectangles = [];
+            const res = heatmapData.grid_resolution_deg || 0.05;
+            
+            heatmapData.points.forEach((point, i) => {
+                const temp = temps[i];
+                if (temp == null) return;
+                
+                const bounds = [
+                    [point[1] - res/2, point[0] - res/2],
+                    [point[1] + res/2, point[0] + res/2]
+                ];
+                
+                rectangles.push(L.rectangle(bounds, {
+                    color: tempToColor(temp),
+                    weight: 0,
+                    fillOpacity: 0.6,
+                    fillColor: tempToColor(temp)
+                }));
+            });
+            
+            heatmapLayer = L.layerGroup(rectangles).addTo(heatmapMap);
+        }
+        
+        function toggleHeatmapPlay() {
+            heatmapPlaying = !heatmapPlaying;
+            const btn = document.getElementById('heatmap-play-btn');
+            
+            if (heatmapPlaying) {
+                btn.textContent = '⏸ Pause';
+                heatmapInterval = setInterval(() => {
+                    const slider = document.getElementById('heatmap-slider');
+                    let idx = parseInt(slider.value) + 1;
+                    if (idx >= heatmapYears.length) idx = 0;
+                    slider.value = idx;
+                    updateHeatmapDisplay(idx);
+                }, 500);
+            } else {
+                btn.textContent = '▶ Play';
+                clearInterval(heatmapInterval);
             }
         }
         

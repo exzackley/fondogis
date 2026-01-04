@@ -89,7 +89,17 @@ const translations = {
         "sparse_veg": "🏜️ Sparse vegetation",
         "loss_km2": "Loss (km²)",
         "burned_area": "Burned Area (km²)",
-        "irs_desc": "Lower IRS = better conditions. Categories: Muy bajo (best) → Bajo → Medio → Alto → Muy alto (worst)"
+        "irs_desc": "Lower IRS = better conditions. Categories: Muy bajo (best) → Bajo → Medio → Alto → Muy alto (worst)",
+        "climate_projections": "Climate Projections (2055-2064)",
+        "mean_temperature": "Mean Temperature",
+        "annual_precipitation": "Annual Precipitation",
+        "tropical_nights": "Tropical Nights/yr",
+        "min_temp_baseline": "Min Temp (Baseline)",
+        "min_temp_future": "Min Temp (Future)",
+        "tropical_nights_change": "Tropical Nights Change",
+        "daily_precip_baseline": "Daily Precip (Baseline)",
+        "daily_precip_future": "Daily Precip (Future)",
+        "consecutive_dry_days": "Consecutive Dry Days"
     },
     "es": {
         "title": "Áreas Naturales Protegidas - Tablero Ambiental",
@@ -180,6 +190,16 @@ const translations = {
         "sparse_veg": "🏜️ Vegetación escasa",
         "loss_km2": "Pérdida (km²)",
         "burned_area": "Área Quemada (km²)",
-        "irs_desc": "Menor IRS = mejores condiciones. Categorías: Muy bajo (mejor) → Bajo → Medio → Alto → Muy alto (peor)"
+        "irs_desc": "Menor IRS = mejores condiciones. Categorías: Muy bajo (mejor) → Bajo → Medio → Alto → Muy alto (peor)",
+        "climate_projections": "Proyecciones Climáticas (2055-2064)",
+        "mean_temperature": "Temperatura Media",
+        "annual_precipitation": "Precipitación Anual",
+        "tropical_nights": "Noches Tropicales/año",
+        "min_temp_baseline": "Temp Mín (Base)",
+        "min_temp_future": "Temp Mín (Futuro)",
+        "tropical_nights_change": "Cambio Noches Tropicales",
+        "daily_precip_baseline": "Precip Diaria (Base)",
+        "daily_precip_future": "Precip Diaria (Futuro)",
+        "consecutive_dry_days": "Días Secos Consecutivos"
     }
 };

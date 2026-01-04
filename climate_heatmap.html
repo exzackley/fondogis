@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Change Heatmap - Sierra Gorda</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; }
+        #map { width: 100%; height: calc(100vh - 140px); }
+        .controls { background: #16213e; padding: 20px; display: flex; align-items: center; gap: 30px; flex-wrap: wrap; }
+        .year-display { font-size: 48px; font-weight: bold; color: #4ecdc4; min-width: 120px; }
+        .slider-container { flex: 1; min-width: 300px; }
+        #year-slider { width: 100%; height: 8px; cursor: pointer; }
+        .stats { display: flex; gap: 20px; font-size: 14px; }
+        .stat { background: #0f3460; padding: 10px 15px; border-radius: 8px; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #e94560; }
+        .legend { position: absolute; bottom: 30px; right: 10px; background: rgba(22, 33, 62, 0.95); padding: 15px; border-radius: 8px; z-index: 1000; }
+        .legend-title { font-weight: bold; margin-bottom: 10px; }
+        .legend-scale { display: flex; height: 20px; width: 200px; margin-bottom: 5px; }
+        .legend-labels { display: flex; justify-content: space-between; font-size: 12px; }
+        .play-btn { background: #4ecdc4; border: none; color: #1a1a2e; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .play-btn:hover { background: #45b7aa; }
+        h1 { padding: 15px 20px; background: #0f3460; font-size: 20px; }
+        .scenario-toggle { display: flex; gap: 10px; }
+        .scenario-btn { background: #0f3460; border: 1px solid #4ecdc4; color: #4ecdc4; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        .scenario-btn.active { background: #4ecdc4; color: #1a1a2e; }
+    </style>
+</head>
+<body>
+    <h1>Climate Change Projection: Sierra Gorda Biosphere Reserve</h1>
+    <div class="controls">
+        <div class="year-display" id="year-display">1980</div>
+        <div class="slider-container">
+            <input type="range" id="year-slider" min="0" max="22" value="0">
+        </div>
+        <button class="play-btn" id="play-btn">▶ Play</button>
+        <div class="stats">
+            <div class="stat">
+                <div>Mean Temp</div>
+                <div class="stat-value" id="mean-temp">--°C</div>
+            </div>
+            <div class="stat">
+                <div>Change from 1980</div>
+                <div class="stat-value" id="temp-change">+0.0°C</div>
+            </div>
+        </div>
+    </div>
+    <div id="map"></div>
+    <div class="legend">
+        <div class="legend-title">Temperature (°C)</div>
+        <div class="legend-scale" id="legend-scale"></div>
+        <div class="legend-labels">
+            <span id="legend-min">15°C</span>
+            <span id="legend-max">30°C</span>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let climateData = null;
+        let map = null;
+        let heatmapLayer = null;
+        let boundaryData = null;
+        let clipPolygon = null; // ANP boundary as [[lat,lon], ...]
+        let years = [];
+        let currentYearIndex = 0;
+        let isPlaying = false;
+        let playInterval = null;
+        let baselineTemp = null;
+
+        const tempMin = 15;
+        const tempMax = 30;
+
+        function tempToColor(temp, asArray = false) {
+            if (temp == null) return asArray ? [0,0,0,0] : 'rgba(0,0,0,0)';
+            const t = Math.max(0, Math.min(1, (temp - tempMin) / (tempMax - tempMin)));
+            
+            let r, g, b;
+            if (t < 0.25) {
+                r = 0; g = Math.round(100 + t * 4 * 155); b = 255;
+            } else if (t < 0.5) {
+                r = 0; g = 255; b = Math.round(255 - (t - 0.25) * 4 * 255);
+            } else if (t < 0.75) {
+                r = Math.round((t - 0.5) * 4 * 255); g = 255; b = 0;
+            } else {
+                r = 255; g = Math.round(255 - (t - 0.75) * 4 * 255); b = 0;
+            }
+            return asArray ? [r, g, b, 0.7] : `rgba(${r},${g},${b},0.7)`;
+        }
+
+        // Custom Canvas layer with polygon clipping
+        const ClippedHeatmapLayer = L.Layer.extend({
+            initialize: function(options) {
+                this._temps = options.temps || [];
+                this._points = options.points || [];
+                this._resolution = options.resolution || 0.05;
+                this._clipPoly = options.clipPolygon || null;
+            },
+            
+            onAdd: function(map) {
+                this._map = map;
+                
+                // Create canvas
+                this._canvas = L.DomUtil.create('canvas', 'leaflet-heatmap-canvas');
+                const size = map.getSize();
+                this._canvas.width = size.x;
+                this._canvas.height = size.y;
+                this._canvas.style.position = 'absolute';
+                this._canvas.style.top = '0';
+                this._canvas.style.left = '0';
+                this._canvas.style.pointerEvents = 'none';
+                
+                map.getPanes().overlayPane.appendChild(this._canvas);
+                
+                map.on('moveend', this._redraw, this);
+                map.on('zoomend', this._redraw, this);
+                map.on('resize', this._resize, this);
+                
+                this._redraw();
+            },
+            
+            onRemove: function(map) {
+                map.getPanes().overlayPane.removeChild(this._canvas);
+                map.off('moveend', this._redraw, this);
+                map.off('zoomend', this._redraw, this);
+                map.off('resize', this._resize, this);
+            },
+            
+            _resize: function() {
+                const size = this._map.getSize();
+                this._canvas.width = size.x;
+                this._canvas.height = size.y;
+                this._redraw();
+            },
+            
+            setTemps: function(temps) {
+                this._temps = temps;
+                this._redraw();
+            },
+            
+            _redraw: function() {
+                if (!this._map) return;
+                
+                const ctx = this._canvas.getContext('2d');
+                const size = this._map.getSize();
+                const bounds = this._map.getBounds();
+                const topLeft = this._map.latLngToContainerPoint(bounds.getNorthWest());
+                
+                // Position canvas at map origin
+                L.DomUtil.setPosition(this._canvas, topLeft);
+                
+                // Clear
+                ctx.clearRect(0, 0, size.x, size.y);
+                
+                // Set clip path to ANP polygon
+                if (this._clipPoly && this._clipPoly.length > 0) {
+                    ctx.save();
+                    ctx.beginPath();
+                    
+                    const firstPt = this._map.latLngToContainerPoint([this._clipPoly[0][1], this._clipPoly[0][0]]);
+                    ctx.moveTo(firstPt.x - topLeft.x, firstPt.y - topLeft.y);
+                    
+                    for (let i = 1; i < this._clipPoly.length; i++) {
+                        const pt = this._map.latLngToContainerPoint([this._clipPoly[i][1], this._clipPoly[i][0]]);
+                        ctx.lineTo(pt.x - topLeft.x, pt.y - topLeft.y);
+                    }
+                    ctx.closePath();
+                    ctx.clip();
+                }
+                
+                // Draw rectangles
+                const res = this._resolution;
+                this._points.forEach((point, i) => {
+                    const temp = this._temps[i];
+                    if (temp == null) return;
+                    
+                    const color = tempToColor(temp, true);
+                    ctx.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${color[3]})`;
+                    
+                    // Convert bounds to pixel coordinates
+                    const sw = this._map.latLngToContainerPoint([point[1] - res/2, point[0] - res/2]);
+                    const ne = this._map.latLngToContainerPoint([point[1] + res/2, point[0] + res/2]);
+                    
+                    const x = ne.x - topLeft.x;
+                    const y = ne.y - topLeft.y;
+                    const w = sw.x - ne.x;
+                    const h = sw.y - ne.y;
+                    
+                    ctx.fillRect(x, y, w, h);
+                });
+                
+                if (this._clipPoly) {
+                    ctx.restore();
+                }
+            }
+        });
+
+        function createLegend() {
+            const scale = document.getElementById('legend-scale');
+            const steps = 20;
+            for (let i = 0; i < steps; i++) {
+                const temp = tempMin + (i / steps) * (tempMax - tempMin);
+                const div = document.createElement('div');
+                div.style.flex = '1';
+                div.style.background = tempToColor(temp);
+                scale.appendChild(div);
+            }
+        }
+
+        function updateHeatmap(yearIndex) {
+            if (!climateData) return;
+            
+            const year = years[yearIndex];
+            const temps = climateData.years[year];
+            
+            if (heatmapLayer) {
+                heatmapLayer.setTemps(temps);
+            }
+
+            document.getElementById('year-display').textContent = year;
+            
+            const validTemps = temps.filter(t => t != null);
+            const meanTemp = validTemps.reduce((a, b) => a + b, 0) / validTemps.length;
+            document.getElementById('mean-temp').textContent = meanTemp.toFixed(1) + '°C';
+            
+            const change = meanTemp - baselineTemp;
+            const changeEl = document.getElementById('temp-change');
+            changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '°C';
+            changeEl.style.color = change > 1.5 ? '#e94560' : change > 0.5 ? '#ffa502' : '#4ecdc4';
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('play-btn');
+            
+            if (isPlaying) {
+                btn.textContent = '⏸ Pause';
+                playInterval = setInterval(() => {
+                    currentYearIndex = (currentYearIndex + 1) % years.length;
+                    document.getElementById('year-slider').value = currentYearIndex;
+                    updateHeatmap(currentYearIndex);
+                }, 500);
+            } else {
+                btn.textContent = '▶ Play';
+                clearInterval(playInterval);
+            }
+        }
+
+        async function init() {
+            const response = await fetch('anp_data/sierra_gorda_climate_timeseries.json');
+            climateData = await response.json();
+            
+            years = Object.keys(climateData.years).sort();
+            document.getElementById('year-slider').max = years.length - 1;
+            
+            const firstYearTemps = climateData.years[years[0]].filter(t => t != null);
+            baselineTemp = firstYearTemps.reduce((a, b) => a + b, 0) / firstYearTemps.length;
+
+            const bbox = climateData.bbox;
+            const center = [(bbox.min_lat + bbox.max_lat) / 2, (bbox.min_lon + bbox.max_lon) / 2];
+            
+            map = L.map('map').setView(center, 10);
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap, © CARTO'
+            }).addTo(map);
+
+            try {
+                const boundaryResp = await fetch('anp_data/sierra_gorda_boundary.geojson');
+                boundaryData = await boundaryResp.json();
+                
+                // Get ANP coordinates for clipping [lon, lat] format
+                clipPolygon = boundaryData.features[0].geometry.coordinates[0];
+                
+                // Create clipped heatmap layer
+                heatmapLayer = new ClippedHeatmapLayer({
+                    temps: climateData.years[years[0]],
+                    points: climateData.points,
+                    resolution: climateData.grid_resolution_deg,
+                    clipPolygon: clipPolygon
+                }).addTo(map);
+                
+                // Add boundary outline on top
+                L.geoJSON(boundaryData, {
+                    style: { color: '#4ecdc4', weight: 2, fill: false }
+                }).addTo(map);
+                
+            } catch (e) {
+                console.error('Failed to load boundary:', e);
+            }
+
+            createLegend();
+            updateHeatmap(0);
+
+            document.getElementById('year-slider').addEventListener('input', (e) => {
+                currentYearIndex = parseInt(e.target.value);
+                updateHeatmap(currentYearIndex);
+            });
+
+            document.getElementById('play-btn').addEventListener('click', togglePlay);
+        }
+
+        init();
+    </script>
+</body>
+</html>

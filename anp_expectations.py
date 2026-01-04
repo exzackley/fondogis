@@ -24,8 +24,15 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+try:
+    from anp_registry import get_all_anps, get_anp_count
+    HAS_REGISTRY = True
+except ImportError:
+    HAS_REGISTRY = False
+
 DATA_DIR = 'anp_data'
 INDEX_FILE = 'anp_index.json'
+OFFICIAL_LIST_FILE = 'reference_data/official_anp_list.json'
 SIMEC_LIST_FILE = 'reference_data/simec_anp_list.json'
 DATA_SOURCES_FILE = 'data_sources.json'
 OUTPUT_FILE = 'anp_expectations.json'

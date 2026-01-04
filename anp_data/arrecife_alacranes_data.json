@@ -154,6 +154,94 @@
       "mangrove_extent_km2": 0,
       "note": "No mangrove pixels detected (class 95) within ANP boundary",
       "extracted_at": "2026-01-03T11:35:13.110382"
+    },
+    "climate_projections": {
+      "source": "NASA NEX-GDDP-CMIP6",
+      "resolution": "0.25 degrees (~27km)",
+      "baseline_period": "2010",
+      "future_period": "2060",
+      "models_used": 1,
+      "model_list": [
+        "ACCESS-CM2"
+      ],
+      "scenarios": {
+        "ssp245": {
+          "temperature": {
+            "baseline_mean_c": 25.78,
+            "future_mean_c": 27.61,
+            "change_c": 1.83,
+            "spatial_variation": {
+              "baseline_min_c": 25.78,
+              "baseline_max_c": 25.78,
+              "future_min_c": 27.61,
+              "future_max_c": 27.61
+            }
+          },
+          "precipitation": {
+            "baseline_annual_mm": 1068.4,
+            "future_annual_mm": 815.7,
+            "change_mm": -252.7,
+            "change_percent": -23.7
+          },
+          "heat_stress": {
+            "mean_min_temp_baseline_c": 25.13,
+            "mean_min_temp_future_c": 26.97,
+            "tropical_nights_baseline_estimate": 252,
+            "tropical_nights_future_estimate": 289,
+            "change_days_estimate": 37,
+            "note": "Tropical nights estimated from mean minimum temperature"
+          },
+          "drought_indicators": {
+            "mean_daily_precip_baseline_mm": 2.93,
+            "mean_daily_precip_future_mm": 2.23,
+            "consecutive_dry_days_baseline_estimate": 50,
+            "consecutive_dry_days_future_estimate": 57,
+            "change_days_estimate": 7,
+            "drought_risk_baseline": "Medium",
+            "drought_risk_future": "Medium",
+            "note": "Drought indicators estimated from mean precipitation patterns"
+          }
+        },
+        "ssp585": {
+          "temperature": {
+            "baseline_mean_c": 25.78,
+            "future_mean_c": 28.25,
+            "change_c": 2.47,
+            "spatial_variation": {
+              "baseline_min_c": 25.78,
+              "baseline_max_c": 25.78,
+              "future_min_c": 28.25,
+              "future_max_c": 28.25
+            }
+          },
+          "precipitation": {
+            "baseline_annual_mm": 1068.4,
+            "future_annual_mm": 666.0,
+            "change_mm": -402.4,
+            "change_percent": -37.7
+          },
+          "heat_stress": {
+            "mean_min_temp_baseline_c": 25.13,
+            "mean_min_temp_future_c": 27.59,
+            "tropical_nights_baseline_estimate": 252,
+            "tropical_nights_future_estimate": 301,
+            "change_days_estimate": 49,
+            "note": "Tropical nights estimated from mean minimum temperature"
+          },
+          "drought_indicators": {
+            "mean_daily_precip_baseline_mm": 2.93,
+            "mean_daily_precip_future_mm": 1.82,
+            "consecutive_dry_days_baseline_estimate": 50,
+            "consecutive_dry_days_future_estimate": 35,
+            "change_days_estimate": -15,
+            "drought_risk_baseline": "Medium",
+            "drought_risk_future": "High",
+            "note": "Drought indicators estimated from mean precipitation patterns"
+          }
+        }
+      },
+      "extracted_at": "2026-01-03T15:24:06.615507",
+      "data_available": true
     }
   },
   "external_data": {
@@ -797,7 +885,7 @@
       "top_species": [
         {
           "scientific_name": "Anous stolidus",
-          "common_name": "Charrán Café",
+          "common_name": "Charr\u00e1n Caf\u00e9",
           "iconic_taxon": "Aves",
           "observations": 118,
           "taxon_id": 4535
@@ -846,7 +934,7 @@
         },
         {
           "scientific_name": "Onychoprion fuscatus",
-          "common_name": "Charrán Albinegro",
+          "common_name": "Charr\u00e1n Albinegro",
           "iconic_taxon": "Aves",
           "observations": 69,
           "taxon_id": 144525
@@ -902,7 +990,7 @@
         },
         {
           "scientific_name": "Coenobita clypeatus",
-          "common_name": "Cangrejo ermitaño caribeño",
+          "common_name": "Cangrejo ermita\u00f1o caribe\u00f1o",
           "iconic_taxon": "Animalia",
           "observations": 46,
           "taxon_id": 133675
@@ -937,14 +1025,14 @@
         },
         {
           "scientific_name": "Ocypode quadrata",
-          "common_name": "Cangrejo fantasma del Atlántico",
+          "common_name": "Cangrejo fantasma del Atl\u00e1ntico",
           "iconic_taxon": "Animalia",
           "observations": 35,
           "taxon_id": 53875
         },
         {
           "scientific_name": "Holothuria mexicana",
-          "common_name": "Pepino de mar michelín",
+          "common_name": "Pepino de mar michel\u00edn",
           "iconic_taxon": "Animalia",
           "observations": 35,
           "taxon_id": 82512
@@ -965,7 +1053,7 @@
         },
         {
           "scientific_name": "Orbicella faveolata",
-          "common_name": "Coral estrella montaña",
+          "common_name": "Coral estrella monta\u00f1a",
           "iconic_taxon": "Animalia",
           "observations": 31,
           "taxon_id": 503516

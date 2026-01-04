@@ -24,6 +24,13 @@ except ImportError:
     def init_ee():
         ee.Initialize(project='gen-lang-client-0866285082')
 
+# Use central ANP registry
+try:
+    from anp_registry import get_all_anps, get_anps_by_category, get_anp_count, get_category_counts
+    HAS_REGISTRY = True
+except ImportError:
+    HAS_REGISTRY = False
+
 DATA_DIR = 'anp_data'
 INDEX_FILE = 'anp_index.json'
 
@@ -40,47 +47,77 @@ def get_anp_by_name(name_search):
 
 
 def list_mexican_anps():
-    """List FEDERAL Mexican ANPs from WDPA."""
+    """List FEDERAL Mexican ANPs from central registry (or WDPA fallback)."""
     print("\n" + "=" * 70)
     print("FEDERAL Mexican Protected Areas (CONANP)")
     print("=" * 70)
     
-    wdpa = ee.FeatureCollection('WCMC/WDPA/current/polygons')
-    mexico = wdpa.filter(ee.Filter.eq('ISO3', 'MEX'))
-    
-    federal_filter = ee.Filter.Or(
-        ee.Filter.eq('DESIG', 'Reserva de la Biósfera'),
-        ee.Filter.eq('DESIG', 'Parque Nacional'),
-        ee.Filter.eq('DESIG', 'Monumento Natural'),
-        ee.Filter.eq('DESIG', 'Área de Protección de Recursos Naturales'),
-        ee.Filter.eq('DESIG', 'Área de Protección de Flora y Fauna'),
-        ee.Filter.eq('DESIG', 'Santuario')
-    )
-    
-    federal_anps = mexico.filter(federal_filter)
-    count = federal_anps.size().getInfo()
-    
-    print(f"\nTotal Federal ANPs: {count}")
-    print("(CONANP officially reports 232)\n")
-    
-    categories = [
-        ('Reserva de la Biósfera', 'RB'),
-        ('Parque Nacional', 'PN'),
-        ('Área de Protección de Flora y Fauna', 'APFF'),
-        ('Santuario', 'SANT'),
-        ('Monumento Natural', 'MN'),
-        ('Área de Protección de Recursos Naturales', 'APRN')
-    ]
-    
-    for desig, abbrev in categories:
-        filtered = federal_anps.filter(ee.Filter.eq('DESIG', desig))
-        cat_count = filtered.size().getInfo()
-        print(f"\n{abbrev} - {desig} ({cat_count}):")
-        names = filtered.limit(10).aggregate_array('NAME').getInfo()
-        for name in sorted(names):
-            print(f"    {name}")
-        if cat_count > 10:
-            print(f"    ... and {cat_count - 10} more")
+    # Use central registry if available (fast, authoritative)
+    if HAS_REGISTRY:
+        total = get_anp_count()
+        counts = get_category_counts()
+        
+        print(f"\nTotal Federal ANPs: {total}")
+        print("(Source: official_anp_list.json - CONANP registry)\n")
+        
+        # Category display order and full names
+        categories = [
+            ('PN', 'Parque Nacional'),
+            ('RB', 'Reserva de la Biósfera'),
+            ('APFF', 'Área de Protección de Flora y Fauna'),
+            ('Sant', 'Santuario'),
+            ('APRN', 'Área de Protección de Recursos Naturales'),
+            ('MN', 'Monumento Natural')
+        ]
+        
+        for abbrev, full_name in categories:
+            cat_anps = get_anps_by_category(abbrev)
+            cat_count = len(cat_anps)
+            print(f"\n{abbrev} - {full_name} ({cat_count}):")
+            # Show first 10
+            for anp in cat_anps[:10]:
+                print(f"    {anp['name']}")
+            if cat_count > 10:
+                print(f"    ... and {cat_count - 10} more")
+    else:
+        # Fallback to GEE query (slow)
+        print("\n(Note: anp_registry.py not found, querying GEE directly...)\n")
+        wdpa = ee.FeatureCollection('WCMC/WDPA/current/polygons')
+        mexico = wdpa.filter(ee.Filter.eq('ISO3', 'MEX'))
+        
+        federal_filter = ee.Filter.Or(
+            ee.Filter.eq('DESIG', 'Reserva de la Biósfera'),
+            ee.Filter.eq('DESIG', 'Parque Nacional'),
+            ee.Filter.eq('DESIG', 'Monumento Natural'),
+            ee.Filter.eq('DESIG', 'Área de Protección de Recursos Naturales'),
+            ee.Filter.eq('DESIG', 'Área de Protección de Flora y Fauna'),
+            ee.Filter.eq('DESIG', 'Santuario')
+        )
+        
+        federal_anps = mexico.filter(federal_filter)
+        count = federal_anps.size().getInfo()
+        
+        print(f"\nTotal Federal ANPs: {count}")
+        print("(CONANP officially reports 232)\n")
+        
+        categories = [
+            ('Reserva de la Biósfera', 'RB'),
+            ('Parque Nacional', 'PN'),
+            ('Área de Protección de Flora y Fauna', 'APFF'),
+            ('Santuario', 'SANT'),
+            ('Monumento Natural', 'MN'),
+            ('Área de Protección de Recursos Naturales', 'APRN')
+        ]
+        
+        for desig, abbrev in categories:
+            filtered = federal_anps.filter(ee.Filter.eq('DESIG', desig))
+            cat_count = filtered.size().getInfo()
+            print(f"\n{abbrev} - {desig} ({cat_count}):")
+            names = filtered.limit(10).aggregate_array('NAME').getInfo()
+            for name in sorted(names):
+                print(f"    {name}")
+            if cat_count > 10:
+                print(f"    ... and {cat_count - 10} more")
     
     print("\n" + "=" * 70)
     print("Usage: python3 add_anp.py \"<name>\"")

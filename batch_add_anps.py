@@ -14,10 +14,16 @@ import sys
 import os
 from datetime import datetime
 
+try:
+    from anp_registry import get_all_anps, get_anp_names
+    HAS_REGISTRY = True
+except ImportError:
+    HAS_REGISTRY = False
+
 PROJECT_ID = 'new-newconsensus'
 DATA_DIR = 'anp_data'
 INDEX_FILE = 'anp_index.json'
-NAMES_FILE = 'federal_anp_names.json'
+OFFICIAL_LIST_FILE = 'reference_data/official_anp_list.json'
 
 
 def init():
@@ -250,6 +256,16 @@ def process_anp(name):
         return False
 
 
+def load_anp_names():
+    """Load ANP names from the official registry."""
+    if HAS_REGISTRY:
+        return get_anp_names()
+    
+    with open(OFFICIAL_LIST_FILE) as f:
+        data = json.load(f)
+    return [anp['name'] for anp in data['anps']]
+
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: python3 batch_add_anps.py <start> <end>")
@@ -258,9 +274,7 @@ def main():
     start_idx = int(sys.argv[1])
     end_idx = int(sys.argv[2])
     
-    with open(NAMES_FILE) as f:
-        all_names = json.load(f)
-    
+    all_names = load_anp_names()
     batch = all_names[start_idx:end_idx]
     
     print(f"\n{'='*60}")

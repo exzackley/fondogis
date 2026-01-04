@@ -180,6 +180,94 @@
       "mangrove_extent_km2": 0,
       "note": "No mangrove pixels detected (class 95) within ANP boundary",
       "extracted_at": "2026-01-03T11:35:11.244197"
+    },
+    "climate_projections": {
+      "source": "NASA NEX-GDDP-CMIP6",
+      "resolution": "0.25 degrees (~27km)",
+      "baseline_period": "2010",
+      "future_period": "2060",
+      "models_used": 1,
+      "model_list": [
+        "ACCESS-CM2"
+      ],
+      "scenarios": {
+        "ssp245": {
+          "temperature": {
+            "baseline_mean_c": 23.11,
+            "future_mean_c": 25.52,
+            "change_c": 2.4,
+            "spatial_variation": {
+              "baseline_min_c": 18.9,
+              "baseline_max_c": 24.43,
+              "future_min_c": 21.26,
+              "future_max_c": 26.87
+            }
+          },
+          "precipitation": {
+            "baseline_annual_mm": 209.1,
+            "future_annual_mm": 71.7,
+            "change_mm": -137.4,
+            "change_percent": -65.7
+          },
+          "heat_stress": {
+            "mean_min_temp_baseline_c": 15.07,
+            "mean_min_temp_future_c": 16.32,
+            "tropical_nights_baseline_estimate": 31,
+            "tropical_nights_future_estimate": 53,
+            "change_days_estimate": 22,
+            "note": "Tropical nights estimated from mean minimum temperature"
+          },
+          "drought_indicators": {
+            "mean_daily_precip_baseline_mm": 0.57,
+            "mean_daily_precip_future_mm": 0.2,
+            "consecutive_dry_days_baseline_estimate": 90,
+            "consecutive_dry_days_future_estimate": 90,
+            "change_days_estimate": 0,
+            "drought_risk_baseline": "Very High",
+            "drought_risk_future": "Very High",
+            "note": "Drought indicators estimated from mean precipitation patterns"
+          }
+        },
+        "ssp585": {
+          "temperature": {
+            "baseline_mean_c": 23.11,
+            "future_mean_c": 25.9,
+            "change_c": 2.79,
+            "spatial_variation": {
+              "baseline_min_c": 18.9,
+              "baseline_max_c": 24.43,
+              "future_min_c": 21.74,
+              "future_max_c": 27.18
+            }
+          },
+          "precipitation": {
+            "baseline_annual_mm": 209.1,
+            "future_annual_mm": 120.3,
+            "change_mm": -88.8,
+            "change_percent": -42.5
+          },
+          "heat_stress": {
+            "mean_min_temp_baseline_c": 15.07,
+            "mean_min_temp_future_c": 17.95,
+            "tropical_nights_baseline_estimate": 31,
+            "tropical_nights_future_estimate": 83,
+            "change_days_estimate": 52,
+            "note": "Tropical nights estimated from mean minimum temperature"
+          },
+          "drought_indicators": {
+            "mean_daily_precip_baseline_mm": 0.57,
+            "mean_daily_precip_future_mm": 0.33,
+            "consecutive_dry_days_baseline_estimate": 90,
+            "consecutive_dry_days_future_estimate": 90,
+            "change_days_estimate": 0,
+            "drought_risk_baseline": "Very High",
+            "drought_risk_future": "Very High",
+            "note": "Drought indicators estimated from mean precipitation patterns"
+          }
+        }
+      },
+      "extracted_at": "2026-01-03T15:23:54.942841",
+      "data_available": true
     }
   },
   "external_data": {
