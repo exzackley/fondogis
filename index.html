@@ -949,12 +949,18 @@
             <!-- Climate Projections Section -->
             <div class="card climate-proj-card fade-in" id="climate-proj-section" style="animation-delay: 1.3s; display: none;">
                 <div class="climate-proj-header">
-                    <div class="card-title"><div class="card-icon">🌡️</div><span data-i18n="climate_projections">Climate Projections (2055-2064)</span></div>
+                    <div class="card-title"><div class="card-icon">🌡️</div><span data-i18n="climate_projections">Climate Projections (NASA CMIP6)</span></div>
                     <div class="scenario-tabs">
-                        <button class="scenario-tab active" data-scenario="ssp245" onclick="switchScenario('ssp245')">SSP2-4.5 <span style="font-size:0.7rem;">(moderate)</span></button>
-                        <button class="scenario-tab" data-scenario="ssp585" onclick="switchScenario('ssp585')">SSP5-8.5 <span style="font-size:0.7rem;">(high emissions)</span></button>
+                        <button class="scenario-tab gee-tab active" data-scenario="ssp245" onclick="switchScenario('ssp245')">SSP2-4.5 <span style="font-size:0.7rem;">(moderate)</span></button>
+                        <button class="scenario-tab gee-tab" data-scenario="ssp585" onclick="switchScenario('ssp585')">SSP5-8.5 <span style="font-size:0.7rem;">(high emissions)</span></button>
                     </div>
                     <span class="source">NASA NEX-GDDP-CMIP6</span>
+                </div>
+                
+                <div class="gee-period-tabs" style="display: flex; gap: 8px; margin: 15px 0;">
+                    <button class="period-tab gee-period active" data-period="2011-2040" onclick="switchGeePeriod('2011-2040')">2011-2040</button>
+                    <button class="period-tab gee-period" data-period="2041-2070" onclick="switchGeePeriod('2041-2070')">2041-2070</button>
+                    <button class="period-tab gee-period" data-period="2071-2100" onclick="switchGeePeriod('2071-2100')">2071-2100</button>
                 </div>
                 
                 <div class="climate-proj-grid">
@@ -1023,8 +1029,8 @@
                 
                 <div style="margin-top: 15px; font-size: 0.75rem; color: var(--text-muted);">
                     <strong>Source:</strong> NASA NEX-GDDP-CMIP6 (3-model ensemble: ACCESS-CM2, GFDL-ESM4, MRI-ESM2-0) • 
-                    <strong>Baseline:</strong> 2005-2014 • 
-                    <strong>Projection:</strong> 2055-2064
+                    <strong>Baseline:</strong> 1981-2010 (30 years) • 
+                    <strong>Resolution:</strong> ~27km
                 </div>
             </div>
             
@@ -1591,6 +1597,7 @@
         let currentClimateData = null;
         let currentClimatePortalData = null;
         let currentScenario = 'ssp245';
+        let currentGeePeriod = '2041-2070';
         let heatmapMap = null;
         let heatmapLayer = null;
         let heatmapData = null;
@@ -1618,7 +1625,7 @@
             section.style.display = 'block';
             
             if (hasGeeData) {
-                updateClimateDisplay(currentScenario);
+                updateClimateDisplay(currentScenario, currentGeePeriod);
             } else {
                 document.getElementById('proj-temp-future').textContent = '--';
                 document.getElementById('proj-temp-change').textContent = 'No GEE data';
@@ -1719,20 +1726,42 @@
         
         function switchScenario(scenario) {
             currentScenario = scenario;
-            document.querySelectorAll('.scenario-tab').forEach(tab => {
+            document.querySelectorAll('.gee-tab').forEach(tab => {
                 tab.classList.toggle('active', tab.dataset.scenario === scenario);
             });
             if (currentClimateData) {
-                updateClimateDisplay(scenario);
+                updateClimateDisplay(scenario, currentGeePeriod);
             }
             if (currentClimatePortalData && currentClimatePortalData.data_available) {
                 renderClimatePortalComparison(currentClimatePortalData, scenario);
             }
         }
         
-        function updateClimateDisplay(scenario) {
-            const data = currentClimateData.scenarios[scenario];
-            if (!data) return;
+        function switchGeePeriod(period) {
+            currentGeePeriod = period;
+            document.querySelectorAll('.gee-period').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.period === period);
+            });
+            if (currentClimateData) {
+                updateClimateDisplay(currentScenario, period);
+            }
+        }
+        
+        function updateClimateDisplay(scenario, period) {
+            const scenarioData = currentClimateData.scenarios[scenario];
+            if (!scenarioData) return;
+            
+            // Support both old flat structure and new nested period structure
+            let data;
+            if (scenarioData[period]) {
+                // New structure: scenarios.ssp245["2041-2070"].temperature
+                data = scenarioData[period];
+            } else if (scenarioData.temperature) {
+                // Old structure: scenarios.ssp245.temperature (flat)
+                data = scenarioData;
+            } else {
+                return;
+            }
             
             const temp = data.temperature || {};
             const precip = data.precipitation || {};

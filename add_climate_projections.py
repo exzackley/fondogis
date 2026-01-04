@@ -25,10 +25,14 @@ except ImportError:
 DATA_DIR = 'anp_data'
 CMIP6_COLLECTION = 'NASA/GDDP-CMIP6'
 
-BASELINE_START = '2005-01-01'
-BASELINE_END = '2014-12-31'
-FUTURE_START = '2055-01-01'
-FUTURE_END = '2064-12-31'
+BASELINE_START = '1981-01-01'
+BASELINE_END = '2010-12-31'
+
+FUTURE_PERIODS = {
+    "2011-2040": ("2011-01-01", "2040-12-31"),
+    "2041-2070": ("2041-01-01", "2070-12-31"),
+    "2071-2100": ("2071-01-01", "2100-12-31"),
+}
 
 MODELS = ['ACCESS-CM2', 'GFDL-ESM4', 'MRI-ESM2-0']
 
@@ -57,8 +61,8 @@ def extract_climate_projections(geometry):
         results = {
             "source": "NASA NEX-GDDP-CMIP6",
             "resolution": "0.25 degrees (~27km)",
-            "baseline_period": "2005-2014",
-            "future_period": "2055-2064",
+            "baseline_period": "1981-2010",
+            "future_periods": list(FUTURE_PERIODS.keys()),
             "models_used": len(MODELS),
             "model_list": MODELS,
             "scenarios": {},
@@ -66,9 +70,14 @@ def extract_climate_projections(geometry):
         }
         
         for scenario in SCENARIOS:
-            print(f"      {scenario.upper()}...", end=" ", flush=True)
-            scenario_data = extract_scenario_data(cmip6, geom, scenario)
-            results["scenarios"][scenario] = scenario_data
+            print(f"      {scenario.upper()}:", end=" ", flush=True)
+            results["scenarios"][scenario] = {}
+            
+            for period_name, (period_start, period_end) in FUTURE_PERIODS.items():
+                print(f"{period_name}...", end=" ", flush=True)
+                scenario_data = extract_scenario_data(cmip6, geom, scenario, period_start, period_end)
+                results["scenarios"][scenario][period_name] = scenario_data
+            
             print("OK")
         
         results["data_available"] = True
@@ -82,7 +91,7 @@ def extract_climate_projections(geometry):
         }
 
 
-def extract_scenario_data(cmip6, geom, scenario):
+def extract_scenario_data(cmip6, geom, scenario, future_start, future_end):
     model_filter = ee.Filter.inList('model', MODELS)
     
     baseline = cmip6.filter(model_filter) \
@@ -91,7 +100,7 @@ def extract_scenario_data(cmip6, geom, scenario):
     
     future = cmip6.filter(model_filter) \
         .filter(ee.Filter.eq('scenario', scenario)) \
-        .filter(ee.Filter.date(FUTURE_START, FUTURE_END))
+        .filter(ee.Filter.date(future_start, future_end))
     
     return {
         "temperature": extract_temperature_stats(baseline, future, geom),
@@ -285,15 +294,15 @@ def categorize_drought_risk(mean_precip_mm_day):
         return "Low"
 
 
-def process_anp(data_file):
+def process_anp(data_file, force=False):
     with open(data_file) as f:
         data = json.load(f)
     
     name = data.get('metadata', {}).get('name', os.path.basename(data_file))
     
     existing = data.get('datasets', {}).get('climate_projections', {})
-    if existing and existing.get('data_available') and 'error' not in existing:
-        print(f"  {name}: Already has climate projections, skipping")
+    if not force and existing and existing.get('data_available') and 'error' not in existing:
+        print(f"  {name}: Already has climate projections, skipping (use --force to re-extract)")
         return 'skipped'
     
     bounds = data.get('geometry', {}).get('bounds')
@@ -316,10 +325,11 @@ def process_anp(data_file):
         
         if projections.get('data_available'):
             ssp245 = projections.get('scenarios', {}).get('ssp245', {})
-            temp_change = ssp245.get('temperature', {}).get('change_c')
-            precip_change = ssp245.get('precipitation', {}).get('change_percent')
-            if temp_change and precip_change:
-                print(f"    Summary (SSP2-4.5): Temp +{temp_change}°C, Precip {precip_change:+.1f}%")
+            mid_century = ssp245.get('2041-2070', {})
+            temp_change = mid_century.get('temperature', {}).get('change_c')
+            precip_change = mid_century.get('precipitation', {}).get('change_percent')
+            if temp_change is not None and precip_change is not None:
+                print(f"    Summary (SSP2-4.5, 2041-2070): Temp +{temp_change}°C, Precip {precip_change:+.1f}%")
             else:
                 print("    Data extracted")
         else:
@@ -340,25 +350,31 @@ def main():
     init()
     print("GEE initialized")
     print(f"Using {len(MODELS)} climate models")
-    print(f"Baseline: {BASELINE_START[:4]}-{BASELINE_END[:4]}")
-    print(f"Future: {FUTURE_START[:4]}-{FUTURE_END[:4]}")
+    print(f"Baseline: 1981-2010 (30 years)")
+    print(f"Future periods: {', '.join(FUTURE_PERIODS.keys())}")
     print(f"Scenarios: {', '.join(SCENARIOS)}\n")
     
     data_files = sorted(glob(f"{DATA_DIR}/*_data.json"))
+    force = False
     
     if len(sys.argv) > 1:
-        arg = sys.argv[1]
-        if arg == '--test':
-            data_files = data_files[:3]
-            print(f"TEST MODE: Processing first 3 ANPs")
-        elif arg == '--force':
-            print("FORCE MODE: Re-processing all ANPs")
-        else:
-            search = arg.lower().replace(' ', '_')
-            data_files = [f for f in data_files if search in f.lower()]
-            if not data_files:
-                print(f"No ANP found matching '{arg}'")
-                return
+        args = sys.argv[1:]
+        if '--force' in args:
+            force = True
+            args.remove('--force')
+            print("FORCE MODE: Re-processing (will overwrite existing data)")
+        
+        if args:
+            arg = args[0]
+            if arg == '--test':
+                data_files = data_files[:3]
+                print(f"TEST MODE: Processing first 3 ANPs")
+            else:
+                search = arg.lower().replace(' ', '_')
+                data_files = [f for f in data_files if search in f.lower()]
+                if not data_files:
+                    print(f"No ANP found matching '{arg}'")
+                    return
     
     print(f"Processing {len(data_files)} ANP files...\n")
     
@@ -370,7 +386,7 @@ def main():
         if i > 1:
             time.sleep(1.0)
         
-        result = process_anp(data_file)
+        result = process_anp(data_file, force=force)
         if result == 'success':
             success += 1
         elif result == 'skipped':
