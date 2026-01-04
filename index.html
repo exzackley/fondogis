@@ -1044,6 +1044,10 @@
                 <div class="card-header">
                     <div class="card-title"><div class="card-icon">🗺️</div><span data-i18n="temperature_heatmap">Temperature Change Heatmap</span></div>
                     <div class="heatmap-controls">
+                        <div class="scenario-tabs" style="margin-right: 15px;">
+                            <button class="scenario-tab heatmap-scenario active" data-scenario="ssp245" onclick="switchHeatmapScenario('ssp245')">SSP2-4.5</button>
+                            <button class="scenario-tab heatmap-scenario" data-scenario="ssp585" onclick="switchHeatmapScenario('ssp585')">SSP5-8.5</button>
+                        </div>
                         <span class="heatmap-year" id="heatmap-year">1980</span>
                         <input type="range" class="heatmap-slider" id="heatmap-slider" min="0" max="22" value="0">
                         <button class="heatmap-play-btn" id="heatmap-play-btn">▶ Play</button>
@@ -1052,7 +1056,8 @@
                 </div>
                 <div id="heatmap-map" style="height: 350px; border-radius: 8px;"></div>
                 <div style="margin-top: 10px; font-size: 0.75rem; color: var(--text-muted);">
-                    Animated temperature projection (1980-2100) under SSP2-4.5 scenario. Colors range from blue (15°C) to red (30°C).
+                    Animated temperature projection (1980-2100). Colors range from blue (15°C) to red (30°C). 
+                    <a href="climate_heatmap.html" target="_blank" style="color: var(--accent);">Open fullscreen heatmap →</a>
                 </div>
             </div>
             
@@ -1832,6 +1837,18 @@
             }
         }
         
+        let heatmapScenario = 'ssp245';
+        
+        function getHeatmapYearsData() {
+            // Handle both old format (years at root) and new format (scenarios.X.years)
+            if (heatmapData.scenarios && heatmapData.scenarios[heatmapScenario]) {
+                return heatmapData.scenarios[heatmapScenario].years;
+            } else if (heatmapData.years) {
+                return heatmapData.years;
+            }
+            return {};
+        }
+        
         async function loadClimateHeatmap(anpId) {
             const section = document.getElementById('climate-heatmap-section');
             const timeseriesFile = `anp_data/${anpId}_climate_timeseries.json`;
@@ -1845,7 +1862,8 @@
                 }
                 
                 heatmapData = await response.json();
-                heatmapYears = Object.keys(heatmapData.years).sort();
+                const yearsData = getHeatmapYearsData();
+                heatmapYears = Object.keys(yearsData).sort();
                 
                 if (heatmapYears.length === 0) {
                     section.style.display = 'none';
@@ -1858,7 +1876,7 @@
                 slider.max = heatmapYears.length - 1;
                 slider.value = 0;
                 
-                const firstYearTemps = heatmapData.years[heatmapYears[0]].filter(t => t != null);
+                const firstYearTemps = yearsData[heatmapYears[0]].filter(t => t != null);
                 heatmapBaselineTemp = firstYearTemps.reduce((a, b) => a + b, 0) / firstYearTemps.length;
                 
                 const bbox = heatmapData.bbox;
@@ -1916,8 +1934,9 @@
         function updateHeatmapDisplay(yearIndex) {
             if (!heatmapData || !heatmapMap) return;
             
+            const yearsData = getHeatmapYearsData();
             const year = heatmapYears[yearIndex];
-            const temps = heatmapData.years[year];
+            const temps = yearsData[year];
             
             document.getElementById('heatmap-year').textContent = year;
             
@@ -1964,6 +1983,26 @@
             } else {
                 btn.textContent = '▶ Play';
                 clearInterval(heatmapInterval);
+            }
+        }
+        
+        function switchHeatmapScenario(scenario) {
+            heatmapScenario = scenario;
+            document.querySelectorAll('.heatmap-scenario').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.scenario === scenario);
+            });
+            
+            // Reload years for new scenario
+            const yearsData = getHeatmapYearsData();
+            if (yearsData) {
+                heatmapYears = Object.keys(yearsData).sort();
+                const slider = document.getElementById('heatmap-slider');
+                slider.max = heatmapYears.length - 1;
+                
+                const firstYearTemps = yearsData[heatmapYears[0]].filter(t => t != null);
+                heatmapBaselineTemp = firstYearTemps.reduce((a, b) => a + b, 0) / firstYearTemps.length;
+                
+                updateHeatmapDisplay(parseInt(slider.value));
             }
         }
         
