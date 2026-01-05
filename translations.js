@@ -99,7 +99,22 @@ const translations = {
         "tropical_nights_change": "Tropical Nights Change",
         "daily_precip_baseline": "Daily Precip (Baseline)",
         "daily_precip_future": "Daily Precip (Future)",
-        "consecutive_dry_days": "Consecutive Dry Days"
+        "consecutive_dry_days": "Consecutive Dry Days",
+        "filter_category": "Category",
+        "filter_state": "State",
+        "filter_region": "Region",
+        "all_categories": "All Categories",
+        "all_states": "All States",
+        "all_regions": "All Regions",
+        "clear_filters": "Clear",
+        "no_results": "No results found",
+        "category_label": "Category:",
+        "states_label": "States:",
+        "region_label": "Region:",
+        "surface_label": "Surface Area:",
+        "land_sea_label": "Land/Sea:",
+        "decree_label": "First Decree:",
+        "designations_label": "Designations:"
     },
     "es": {
         "title": "Áreas Naturales Protegidas - Tablero Ambiental",
@@ -200,6 +215,21 @@ const translations = {
         "tropical_nights_change": "Cambio Noches Tropicales",
         "daily_precip_baseline": "Precip Diaria (Base)",
         "daily_precip_future": "Precip Diaria (Futuro)",
-        "consecutive_dry_days": "Días Secos Consecutivos"
+        "consecutive_dry_days": "Días Secos Consecutivos",
+        "filter_category": "Categoría",
+        "filter_state": "Estado",
+        "filter_region": "Región",
+        "all_categories": "Todas las Categorías",
+        "all_states": "Todos los Estados",
+        "all_regions": "Todas las Regiones",
+        "clear_filters": "Limpiar",
+        "no_results": "Sin resultados",
+        "category_label": "Categoría:",
+        "states_label": "Estados:",
+        "region_label": "Región:",
+        "surface_label": "Superficie:",
+        "land_sea_label": "Terrestre/Marina:",
+        "decree_label": "Primer Decreto:",
+        "designations_label": "Designaciones:"
     }
 };

@@ -420,6 +420,87 @@
             body { overflow-x: hidden; width: 100%; }
         }
         
+        /* ANP Metadata Display */
+        .anp-metadata {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0 25px 0;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+        }
+        .anp-metadata-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .anp-metadata-item .label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .anp-metadata-item .value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .anp-metadata-item .value.designation {
+            color: var(--accent);
+        }
+        
+        /* Filter Row */
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        .filter-select {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 8px 30px 8px 12px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            border-radius: 6px;
+            min-width: 160px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+        .filter-select:focus { outline: none; border-color: var(--accent); }
+        .filter-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .filter-group { display: flex; flex-direction: column; }
+        .clear-filters {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 6px;
+            align-self: flex-end;
+        }
+        .clear-filters:hover { border-color: var(--accent); color: var(--accent); }
+        
+        @media (max-width: 640px) {
+            .filter-row { flex-direction: column; }
+            .filter-select { min-width: 100%; }
+            .anp-metadata { padding: 10px; gap: 10px; }
+            .anp-metadata-item { font-size: 0.8rem; }
+        }
+        
         .loading { display: flex; align-items: center; justify-content: center; height: 200px; color: var(--text-secondary); }
         .spinner { width: 40px; height: 40px; border: 3px solid var(--bg-tertiary); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -779,6 +860,27 @@
                 <div class="logo-icon">🌿</div>
                 <span>Mexican Protected Areas Dashboard</span>
             </div>
+            <div class="filter-row" id="filter-row">
+                <div class="filter-group">
+                    <span class="filter-label" data-i18n="filter_category">Categoría</span>
+                    <select class="filter-select" id="filter-category">
+                        <option value="" data-i18n="all_categories">All Categories</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label" data-i18n="filter_state">Estado</span>
+                    <select class="filter-select" id="filter-state">
+                        <option value="" data-i18n="all_states">All States</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label" data-i18n="filter_region">Región</span>
+                    <select class="filter-select" id="filter-region">
+                        <option value="" data-i18n="all_regions">All Regions</option>
+                    </select>
+                </div>
+                <button class="clear-filters" id="clear-filters" onclick="clearFilters()" data-i18n="clear_filters">Clear</button>
+            </div>
             <div class="toolbar">
                 <div class="anp-selector">
                     <select id="anp-select">
@@ -805,6 +907,36 @@
                 <span class="badge" id="badge" data-i18n="loading">Loading...</span>
                 <h1 id="anp-name" data-i18n="select_anp">Select a Protected Area</h1>
                 <p class="subtitle" id="subtitle" data-i18n="subtitle_default">Choose an area from the dropdown above</p>
+                <div class="anp-metadata" id="anp-metadata" style="display: none;">
+                    <div class="anp-metadata-item">
+                        <span class="label" data-i18n="category_label">Categoría:</span>
+                        <span class="value" id="meta-categoria">--</span>
+                    </div>
+                    <div class="anp-metadata-item">
+                        <span class="label" data-i18n="states_label">Estados:</span>
+                        <span class="value" id="meta-estados">--</span>
+                    </div>
+                    <div class="anp-metadata-item">
+                        <span class="label" data-i18n="region_label">Región:</span>
+                        <span class="value" id="meta-region">--</span>
+                    </div>
+                    <div class="anp-metadata-item">
+                        <span class="label" data-i18n="surface_label">Superficie:</span>
+                        <span class="value" id="meta-superficie">--</span>
+                    </div>
+                    <div class="anp-metadata-item" id="meta-superficie-detail" style="display: none;">
+                        <span class="label" data-i18n="land_sea_label">Terrestre/Marina:</span>
+                        <span class="value" id="meta-superficie-breakdown">--</span>
+                    </div>
+                    <div class="anp-metadata-item">
+                        <span class="label" data-i18n="decree_label">Primer Decreto:</span>
+                        <span class="value" id="meta-decreto">--</span>
+                    </div>
+                    <div class="anp-metadata-item" id="meta-designaciones-container" style="display: none;">
+                        <span class="label" data-i18n="designations_label">Designaciones:</span>
+                        <span class="value designation" id="meta-designaciones">--</span>
+                    </div>
+                </div>
                 <div class="key-stats" id="key-stats"></div>
             </div>
         </section>
@@ -1324,6 +1456,7 @@
             try {
                 const response = await fetch('anp_index.json');
                 anpIndex = await response.json();
+                populateFilters();
                 populateSelector();
                 
                 if (anpIndex.anps.length > 0) {
@@ -1336,15 +1469,83 @@
             }
         }
         
-        function populateSelector() {
+        function populateFilters() {
+            const filters = anpIndex.filters || {};
+            
+            const catSelect = document.getElementById('filter-category');
+            if (filters.categorias) {
+                catSelect.innerHTML = `<option value="">${t('all_categories')}</option>` + 
+                    filters.categorias.map(c => `<option value="${c}">${c}</option>`).join('');
+            }
+            
+            const stateSelect = document.getElementById('filter-state');
+            if (filters.estados) {
+                const validStates = filters.estados.filter(s => s && s.length < 30 && !/^\d/.test(s));
+                stateSelect.innerHTML = `<option value="">${t('all_states')}</option>` + 
+                    validStates.map(s => `<option value="${s}">${s}</option>`).join('');
+            }
+            
+            const regionSelect = document.getElementById('filter-region');
+            if (filters.regiones) {
+                regionSelect.innerHTML = `<option value="">${t('all_regions')}</option>` + 
+                    filters.regiones.map(r => `<option value="${r}">${r}</option>`).join('');
+            }
+            
+            catSelect.addEventListener('change', applyFilters);
+            stateSelect.addEventListener('change', applyFilters);
+            regionSelect.addEventListener('change', applyFilters);
+        }
+        
+        function applyFilters() {
+            const catFilter = document.getElementById('filter-category').value;
+            const stateFilter = document.getElementById('filter-state').value;
+            const regionFilter = document.getElementById('filter-region').value;
+            
+            populateSelector(catFilter, stateFilter, regionFilter);
+        }
+        
+        function clearFilters() {
+            document.getElementById('filter-category').value = '';
+            document.getElementById('filter-state').value = '';
+            document.getElementById('filter-region').value = '';
+            populateSelector();
+        }
+        
+        function populateSelector(catFilter = '', stateFilter = '', regionFilter = '') {
             const select = document.getElementById('anp-select');
-            select.innerHTML = anpIndex.anps.map(anp => 
+            
+            let filtered = anpIndex.anps;
+            
+            if (catFilter) {
+                filtered = filtered.filter(a => a.categoria === catFilter);
+            }
+            if (stateFilter) {
+                filtered = filtered.filter(a => a.estados && a.estados.includes(stateFilter));
+            }
+            if (regionFilter) {
+                filtered = filtered.filter(a => a.region === regionFilter);
+            }
+            
+            if (filtered.length === 0) {
+                select.innerHTML = `<option value="">${t('no_results')}</option>`;
+                return;
+            }
+            
+            select.innerHTML = filtered.map(anp => 
                 `<option value="${anp.id}">${anp.name}</option>`
             ).join('');
             
-            select.addEventListener('change', (e) => {
-                if (e.target.value) loadANP(e.target.value);
-            });
+            select.removeEventListener('change', handleAnpChange);
+            select.addEventListener('change', handleAnpChange);
+            
+            if (filtered.length > 0) {
+                select.value = filtered[0].id;
+                loadANP(filtered[0].id);
+            }
+        }
+        
+        function handleAnpChange(e) {
+            if (e.target.value) loadANP(e.target.value);
         }
         
         async function loadANP(anpId) {
@@ -1381,6 +1582,50 @@
                 document.getElementById('subtitle').innerHTML = `<a href="${decreeUrl}" target="_blank" style="color: var(--text-secondary); text-decoration: underline; text-decoration-style: dotted;" title="View Legal Decree">${subtitleHtml} 📜</a>`;
             } else {
                 document.getElementById('subtitle').textContent = subtitleHtml;
+            }
+            
+            const metadataEl = document.getElementById('anp-metadata');
+            const categoria = meta.categoria_de_manejo || '';
+            const estados = meta.estados || [];
+            const region = meta.region || '';
+            const designaciones = meta.designaciones_internacionales || '';
+            const superficieTotal = meta.superficie_total_ha;
+            const superficieTerrestre = meta.superficie_terrestre_ha;
+            const superficieMarina = meta.superficie_marina_ha;
+            const primerDecreto = meta.primer_decreto || '';
+            
+            if (categoria || estados.length || region) {
+                metadataEl.style.display = 'flex';
+                document.getElementById('meta-categoria').textContent = categoria || '--';
+                document.getElementById('meta-estados').textContent = estados.length ? estados.join(', ') : '--';
+                document.getElementById('meta-region').textContent = region || '--';
+                
+                if (superficieTotal != null) {
+                    document.getElementById('meta-superficie').textContent = formatNumber(superficieTotal, 2) + ' ha';
+                } else {
+                    document.getElementById('meta-superficie').textContent = '--';
+                }
+                
+                const detailEl = document.getElementById('meta-superficie-detail');
+                if (superficieMarina != null && superficieMarina > 0) {
+                    detailEl.style.display = 'flex';
+                    document.getElementById('meta-superficie-breakdown').textContent = 
+                        formatNumber(superficieTerrestre, 2) + ' ha / ' + formatNumber(superficieMarina, 2) + ' ha';
+                } else {
+                    detailEl.style.display = 'none';
+                }
+                
+                document.getElementById('meta-decreto').textContent = primerDecreto || '--';
+                
+                const desContainer = document.getElementById('meta-designaciones-container');
+                if (designaciones) {
+                    desContainer.style.display = 'flex';
+                    document.getElementById('meta-designaciones').textContent = designaciones;
+                } else {
+                    desContainer.style.display = 'none';
+                }
+            } else {
+                metadataEl.style.display = 'none';
             }
             
             const hmVal = datasets.human_modification?.gHM_mean ?? datasets.human_modification?.mean_index ?? 0;

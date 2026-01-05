@@ -247,7 +247,12 @@ python3 scrape_climate_ssr.py "sierra_gorda"         # CORDEX SSR data (requires
 
 ## Batch Climate Data Extraction
 
-To extract/update climate data for the 6 priority ANPs, run these commands in tmux on a server with good connectivity:
+To extract/update climate data for the 6 priority ANPs, run these commands in tmux on a server with good connectivity.
+
+**IMPORTANT**: GEE extraction is slow (3-5 min per ANP). Always use an interactive tmux session to avoid timeouts. Do NOT run these via automated agent tool calls - they will time out.
+
+### Step 0: Ensure service account is in place
+The file `service_account.json` must be in the project root for headless GEE auth. This file is gitignored - copy it manually to the server if needed.
 
 ### Step 1: Start tmux session
 ```bash
@@ -257,6 +262,7 @@ cd /path/to/fondogis
 
 ### Step 2: Extract GEE Climate Projections (multi-period)
 ```bash
+# IMPORTANT: Run these commands manually in tmux, NOT via automated tools!
 # Each takes 3-5 minutes. Run sequentially to avoid GEE rate limits.
 python3 add_climate_projections.py "alto_golfo_de_california_y_delta_del_rio_colorado"
 python3 add_climate_projections.py "arrecife_alacranes"
