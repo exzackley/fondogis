@@ -158,89 +158,247 @@
     "climate_projections": {
       "source": "NASA NEX-GDDP-CMIP6",
       "resolution": "0.25 degrees (~27km)",
-      "baseline_period": "2010",
-      "future_period": "2060",
-      "models_used": 1,
+      "baseline_period": "1981-2010",
+      "future_periods": [
+        "2011-2040",
+        "2041-2070",
+        "2071-2100"
+      ],
+      "models_used": 3,
       "model_list": [
-        "ACCESS-CM2"
+        "ACCESS-CM2",
+        "GFDL-ESM4",
+        "MRI-ESM2-0"
       ],
       "scenarios": {
         "ssp245": {
-          "temperature": {
-            "baseline_mean_c": 25.78,
-            "future_mean_c": 27.61,
-            "change_c": 1.83,
-            "spatial_variation": {
-              "baseline_min_c": 25.78,
-              "baseline_max_c": 25.78,
-              "future_min_c": 27.61,
-              "future_max_c": 27.61
+          "2011-2040": {
+            "temperature": {
+              "baseline_mean_c": 25.61,
+              "future_mean_c": 26.56,
+              "change_c": 0.95,
+              "spatial_variation": {
+                "baseline_min_c": 25.61,
+                "baseline_max_c": 25.61,
+                "future_min_c": 26.56,
+                "future_max_c": 26.56
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 863.4,
+              "future_annual_mm": 813.3,
+              "change_mm": -50.1,
+              "change_percent": -5.8
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 24.96,
+              "mean_min_temp_future_c": 25.91,
+              "tropical_nights_baseline_estimate": 248,
+              "tropical_nights_future_estimate": 268,
+              "change_days_estimate": 20,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 2.37,
+              "mean_daily_precip_future_mm": 2.23,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 57,
+              "change_days_estimate": 1,
+              "drought_risk_baseline": "Medium",
+              "drought_risk_future": "Medium",
+              "note": "Drought indicators estimated from mean precipitation patterns"
             }
           },
-          "precipitation": {
-            "baseline_annual_mm": 1068.4,
-            "future_annual_mm": 815.7,
-            "change_mm": -252.7,
-            "change_percent": -23.7
+          "2041-2070": {
+            "temperature": {
+              "baseline_mean_c": 25.61,
+              "future_mean_c": 27.14,
+              "change_c": 1.53,
+              "spatial_variation": {
+                "baseline_min_c": 25.61,
+                "baseline_max_c": 25.61,
+                "future_min_c": 27.14,
+                "future_max_c": 27.14
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 863.4,
+              "future_annual_mm": 802.1,
+              "change_mm": -61.3,
+              "change_percent": -7.1
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 24.96,
+              "mean_min_temp_future_c": 26.49,
+              "tropical_nights_baseline_estimate": 248,
+              "tropical_nights_future_estimate": 279,
+              "change_days_estimate": 31,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 2.37,
+              "mean_daily_precip_future_mm": 2.2,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 58,
+              "change_days_estimate": 2,
+              "drought_risk_baseline": "Medium",
+              "drought_risk_future": "Medium",
+              "note": "Drought indicators estimated from mean precipitation patterns"
+            }
           },
-          "heat_stress": {
-            "mean_min_temp_baseline_c": 25.13,
-            "mean_min_temp_future_c": 26.97,
-            "tropical_nights_baseline_estimate": 252,
-            "tropical_nights_future_estimate": 289,
-            "change_days_estimate": 37,
-            "note": "Tropical nights estimated from mean minimum temperature"
-          },
-          "drought_indicators": {
-            "mean_daily_precip_baseline_mm": 2.93,
-            "mean_daily_precip_future_mm": 2.23,
-            "consecutive_dry_days_baseline_estimate": 50,
-            "consecutive_dry_days_future_estimate": 57,
-            "change_days_estimate": 7,
-            "drought_risk_baseline": "Medium",
-            "drought_risk_future": "Medium",
-            "note": "Drought indicators estimated from mean precipitation patterns"
+          "2071-2100": {
+            "temperature": {
+              "baseline_mean_c": 25.61,
+              "future_mean_c": 27.47,
+              "change_c": 1.87,
+              "spatial_variation": {
+                "baseline_min_c": 25.61,
+                "baseline_max_c": 25.61,
+                "future_min_c": 27.47,
+                "future_max_c": 27.47
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 863.4,
+              "future_annual_mm": 791.6,
+              "change_mm": -71.8,
+              "change_percent": -8.3
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 24.96,
+              "mean_min_temp_future_c": 26.82,
+              "tropical_nights_baseline_estimate": 248,
+              "tropical_nights_future_estimate": 286,
+              "change_days_estimate": 38,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 2.37,
+              "mean_daily_precip_future_mm": 2.17,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 58,
+              "change_days_estimate": 2,
+              "drought_risk_baseline": "Medium",
+              "drought_risk_future": "Medium",
+              "note": "Drought indicators estimated from mean precipitation patterns"
+            }
           }
         },
         "ssp585": {
-          "temperature": {
-            "baseline_mean_c": 25.78,
-            "future_mean_c": 28.25,
-            "change_c": 2.47,
-            "spatial_variation": {
-              "baseline_min_c": 25.78,
-              "baseline_max_c": 25.78,
-              "future_min_c": 28.25,
-              "future_max_c": 28.25
+          "2011-2040": {
+            "temperature": {
+              "baseline_mean_c": 25.61,
+              "future_mean_c": 26.54,
+              "change_c": 0.93,
+              "spatial_variation": {
+                "baseline_min_c": 25.61,
+                "baseline_max_c": 25.61,
+                "future_min_c": 26.54,
+                "future_max_c": 26.54
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 863.4,
+              "future_annual_mm": 810.5,
+              "change_mm": -52.9,
+              "change_percent": -6.1
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 24.96,
+              "mean_min_temp_future_c": 25.89,
+              "tropical_nights_baseline_estimate": 248,
+              "tropical_nights_future_estimate": 267,
+              "change_days_estimate": 19,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 2.37,
+              "mean_daily_precip_future_mm": 2.22,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 57,
+              "change_days_estimate": 1,
+              "drought_risk_baseline": "Medium",
+              "drought_risk_future": "Medium",
+              "note": "Drought indicators estimated from mean precipitation patterns"
             }
           },
-          "precipitation": {
-            "baseline_annual_mm": 1068.4,
-            "future_annual_mm": 666.0,
-            "change_mm": -402.4,
-            "change_percent": -37.7
+          "2041-2070": {
+            "temperature": {
+              "baseline_mean_c": 25.61,
+              "future_mean_c": 27.51,
+              "change_c": 1.9,
+              "spatial_variation": {
+                "baseline_min_c": 25.61,
+                "baseline_max_c": 25.61,
+                "future_min_c": 27.51,
+                "future_max_c": 27.51
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 863.4,
+              "future_annual_mm": 761.8,
+              "change_mm": -101.6,
+              "change_percent": -11.8
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 24.96,
+              "mean_min_temp_future_c": 26.86,
+              "tropical_nights_baseline_estimate": 248,
+              "tropical_nights_future_estimate": 287,
+              "change_days_estimate": 39,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 2.37,
+              "mean_daily_precip_future_mm": 2.09,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 59,
+              "change_days_estimate": 3,
+              "drought_risk_baseline": "Medium",
+              "drought_risk_future": "Medium",
+              "note": "Drought indicators estimated from mean precipitation patterns"
+            }
           },
-          "heat_stress": {
-            "mean_min_temp_baseline_c": 25.13,
-            "mean_min_temp_future_c": 27.59,
-            "tropical_nights_baseline_estimate": 252,
-            "tropical_nights_future_estimate": 301,
-            "change_days_estimate": 49,
-            "note": "Tropical nights estimated from mean minimum temperature"
-          },
-          "drought_indicators": {
-            "mean_daily_precip_baseline_mm": 2.93,
-            "mean_daily_precip_future_mm": 1.82,
-            "consecutive_dry_days_baseline_estimate": 50,
-            "consecutive_dry_days_future_estimate": 35,
-            "change_days_estimate": -15,
-            "drought_risk_baseline": "Medium",
-            "drought_risk_future": "High",
-            "note": "Drought indicators estimated from mean precipitation patterns"
+          "2071-2100": {
+            "temperature": {
+              "baseline_mean_c": 25.61,
+              "future_mean_c": 28.72,
+              "change_c": 3.11,
+              "spatial_variation": {
+                "baseline_min_c": 25.61,
+                "baseline_max_c": 25.61,
+                "future_min_c": 28.72,
+                "future_max_c": 28.72
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 863.4,
+              "future_annual_mm": 632.6,
+              "change_mm": -230.8,
+              "change_percent": -26.7
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 24.96,
+              "mean_min_temp_future_c": 28.06,
+              "tropical_nights_baseline_estimate": 248,
+              "tropical_nights_future_estimate": 311,
+              "change_days_estimate": 63,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 2.37,
+              "mean_daily_precip_future_mm": 1.73,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 38,
+              "change_days_estimate": -18,
+              "drought_risk_baseline": "Medium",
+              "drought_risk_future": "High",
+              "note": "Drought indicators estimated from mean precipitation patterns"
+            }
           }
         }
       },
-      "extracted_at": "2026-01-03T15:24:06.615507",
+      "extracted_at": "2026-01-05T03:31:59.820584",
       "data_available": true
     }
   },
