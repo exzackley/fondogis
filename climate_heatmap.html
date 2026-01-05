@@ -244,6 +244,29 @@
             }
         });
 
+        let tooltip = null;
+
+        function createTooltip() {
+            if (tooltip) return;
+            tooltip = document.createElement('div');
+            tooltip.style.cssText = 'position:absolute;background:rgba(22,33,62,0.95);color:#eee;padding:8px 12px;border-radius:6px;font-size:12px;pointer-events:none;z-index:1000;display:none;border:1px solid rgba(78,205,196,0.5);box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+            document.getElementById('map').appendChild(tooltip);
+        }
+
+        function findCell(latlng) {
+            if (!climateData || !climateData.points) return null;
+            const res = climateData.grid_resolution_deg || 0.05;
+            const half = res / 2;
+            for (let i = 0; i < climateData.points.length; i++) {
+                const p = climateData.points[i];
+                if (latlng.lng >= p[0] - half && latlng.lng <= p[0] + half &&
+                    latlng.lat >= p[1] - half && latlng.lat <= p[1] + half) {
+                    return i;
+                }
+            }
+            return null;
+        }
+
         function createLegend() {
             const scale = document.getElementById('legend-scale');
             scale.innerHTML = '';
@@ -414,6 +437,33 @@
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; OpenStreetMap, &copy; CARTO'
             }).addTo(map);
+
+            createTooltip();
+            map.on('mousemove', function(e) {
+                const idx = findCell(e.latlng);
+                if (idx === null || !climateData) {
+                    tooltip.style.display = 'none';
+                    return;
+                }
+                const yearsData = getYearsData();
+                const year = years[currentYearIndex];
+                const temp = yearsData[year][idx];
+                const baseTemp = yearsData[years[0]][idx];
+                
+                if (temp == null) {
+                    tooltip.innerHTML = '<span style="color:#94a3b8;">No data (ocean)</span>';
+                } else {
+                    const change = baseTemp != null ? temp - baseTemp : null;
+                    const changeStr = change != null ? `<br><span style="color:${change > 0 ? '#ffa502' : '#4ecdc4'};">${change > 0 ? '+' : ''}${change.toFixed(1)}°C from ${years[0]}</span>` : '';
+                    tooltip.innerHTML = `<strong>${temp.toFixed(1)}°C</strong>${changeStr}`;
+                }
+                tooltip.style.left = (e.containerPoint.x + 15) + 'px';
+                tooltip.style.top = (e.containerPoint.y - 10) + 'px';
+                tooltip.style.display = 'block';
+            });
+            map.on('mouseout', function() {
+                tooltip.style.display = 'none';
+            });
 
             // Initialize heatmap layer (will be updated when data loads)
             heatmapLayer = new ClippedHeatmapLayer({
