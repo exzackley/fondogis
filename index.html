@@ -1039,28 +1039,6 @@
                 </div>
             </div>
             
-            <!-- Climate Heatmap Card (separate - shows if timeseries data available) -->
-            <div class="card climate-heatmap-card fade-in" id="climate-heatmap-section" style="animation-delay: 1.35s; grid-column: span 12; display: none;">
-                <div class="card-header">
-                    <div class="card-title"><div class="card-icon">🗺️</div><span data-i18n="temperature_heatmap">Temperature Change Heatmap</span></div>
-                    <div class="heatmap-controls">
-                        <div class="scenario-tabs" style="margin-right: 15px;">
-                            <button class="scenario-tab heatmap-scenario active" data-scenario="ssp245" onclick="switchHeatmapScenario('ssp245')">SSP2-4.5</button>
-                            <button class="scenario-tab heatmap-scenario" data-scenario="ssp585" onclick="switchHeatmapScenario('ssp585')">SSP5-8.5</button>
-                        </div>
-                        <span class="heatmap-year" id="heatmap-year">1980</span>
-                        <input type="range" class="heatmap-slider" id="heatmap-slider" min="0" max="22" value="0">
-                        <button class="heatmap-play-btn" id="heatmap-play-btn">▶ Play</button>
-                    </div>
-                    <span class="source">NASA CMIP6 / ACCESS-CM2</span>
-                </div>
-                <div id="heatmap-map" style="height: 350px; border-radius: 8px;"></div>
-                <div style="margin-top: 10px; font-size: 0.75rem; color: var(--text-muted);">
-                    Animated temperature projection (1980-2100). Colors range from blue (15°C) to red (30°C). 
-                    <a href="climate_heatmap.html" target="_blank" style="color: var(--accent);">Open fullscreen heatmap →</a>
-                </div>
-            </div>
-            
             <!-- Climate SSR Projections Card (CORDEX bias-adjusted data) -->
             <div class="card climate-ssr-card fade-in" id="climate-ssr-section" style="animation-delay: 1.4s; grid-column: span 12; display: none;">
                 <div class="climate-proj-header">
@@ -1145,6 +1123,28 @@
                     <strong>About this dataset:</strong> CORDEX (Coordinated Regional Climate Downscaling Experiment) provides regional climate projections using the CMIP5 generation of models with RCP scenarios. 
                     Data is bias-adjusted using the MIdAS method against historical observations. While coarser resolution (~50km) than NASA CMIP6, CORDEX includes comprehensive hydrological indicators 
                     (soil moisture, water discharge, runoff) from the HYPE model that are not available in the NASA dataset. RCP 4.5 and 8.5 are roughly comparable to SSP2-4.5 and SSP5-8.5.
+                </div>
+            </div>
+            
+            <!-- Climate Heatmap Card (at bottom - animated spatial visualization) -->
+            <div class="card climate-heatmap-card fade-in" id="climate-heatmap-section" style="animation-delay: 1.5s; grid-column: span 12; display: none;">
+                <div class="card-header">
+                    <div class="card-title"><div class="card-icon">🗺️</div><span data-i18n="temperature_heatmap">Temperature Change Heatmap</span></div>
+                    <div class="heatmap-controls">
+                        <div class="scenario-tabs" style="margin-right: 15px;">
+                            <button class="scenario-tab heatmap-scenario active" data-scenario="ssp245" onclick="switchHeatmapScenario('ssp245')">SSP2-4.5</button>
+                            <button class="scenario-tab heatmap-scenario" data-scenario="ssp585" onclick="switchHeatmapScenario('ssp585')">SSP5-8.5</button>
+                        </div>
+                        <span class="heatmap-year" id="heatmap-year">1980</span>
+                        <input type="range" class="heatmap-slider" id="heatmap-slider" min="0" max="22" value="0">
+                        <button class="heatmap-play-btn" id="heatmap-play-btn">▶ Play</button>
+                    </div>
+                    <span class="source">NASA CMIP6 / ACCESS-CM2</span>
+                </div>
+                <div id="heatmap-map" style="height: 400px; border-radius: 8px; position: relative;"></div>
+                <div style="margin-top: 10px; font-size: 0.75rem; color: var(--text-muted);">
+                    Animated temperature projection (1980-2100). Colors range from blue (15°C) to red (30°C). 
+                    <a href="climate_heatmap.html" target="_blank" style="color: var(--accent);">Open fullscreen heatmap →</a>
                 </div>
             </div>
         </div>
@@ -1838,9 +1838,10 @@
         }
         
         let heatmapScenario = 'ssp245';
-        
+        let heatmapClipPolygon = null;
+        let heatmapBoundaryLayer = null;
+
         function getHeatmapYearsData() {
-            // Handle both old format (years at root) and new format (scenarios.X.years)
             if (heatmapData.scenarios && heatmapData.scenarios[heatmapScenario]) {
                 return heatmapData.scenarios[heatmapScenario].years;
             } else if (heatmapData.years) {
@@ -1848,7 +1849,98 @@
             }
             return {};
         }
-        
+
+        const ClippedHeatmapLayer = L.Layer.extend({
+            initialize: function(options) {
+                this._temps = options.temps || [];
+                this._points = options.points || [];
+                this._resolution = options.resolution || 0.05;
+                this._clipPoly = options.clipPolygon || null;
+            },
+            onAdd: function(map) {
+                this._map = map;
+                this._canvas = L.DomUtil.create('canvas', 'leaflet-heatmap-canvas');
+                const size = map.getSize();
+                this._canvas.width = size.x;
+                this._canvas.height = size.y;
+                this._canvas.style.position = 'absolute';
+                this._canvas.style.top = '0';
+                this._canvas.style.left = '0';
+                this._canvas.style.pointerEvents = 'none';
+                map.getPanes().overlayPane.appendChild(this._canvas);
+                map.on('moveend', this._redraw, this);
+                map.on('zoomend', this._redraw, this);
+                map.on('resize', this._resize, this);
+                this._redraw();
+            },
+            onRemove: function(map) {
+                map.getPanes().overlayPane.removeChild(this._canvas);
+                map.off('moveend', this._redraw, this);
+                map.off('zoomend', this._redraw, this);
+                map.off('resize', this._resize, this);
+            },
+            _resize: function() {
+                const size = this._map.getSize();
+                this._canvas.width = size.x;
+                this._canvas.height = size.y;
+                this._redraw();
+            },
+            setTemps: function(temps) {
+                this._temps = temps;
+                this._redraw();
+            },
+            setClipPolygon: function(poly) {
+                this._clipPoly = poly;
+                this._redraw();
+            },
+            setPoints: function(points, resolution) {
+                this._points = points;
+                this._resolution = resolution;
+                this._redraw();
+            },
+            _redraw: function() {
+                if (!this._map) return;
+                const ctx = this._canvas.getContext('2d');
+                const size = this._map.getSize();
+                const bounds = this._map.getBounds();
+                const topLeft = this._map.latLngToContainerPoint(bounds.getNorthWest());
+                L.DomUtil.setPosition(this._canvas, topLeft);
+                ctx.clearRect(0, 0, size.x, size.y);
+                
+                if (this._clipPoly && this._clipPoly.length > 0) {
+                    ctx.save();
+                    ctx.beginPath();
+                    const firstPt = this._map.latLngToContainerPoint([this._clipPoly[0][1], this._clipPoly[0][0]]);
+                    ctx.moveTo(firstPt.x - topLeft.x, firstPt.y - topLeft.y);
+                    for (let i = 1; i < this._clipPoly.length; i++) {
+                        const pt = this._map.latLngToContainerPoint([this._clipPoly[i][1], this._clipPoly[i][0]]);
+                        ctx.lineTo(pt.x - topLeft.x, pt.y - topLeft.y);
+                    }
+                    ctx.closePath();
+                    ctx.clip();
+                }
+                
+                const res = this._resolution;
+                const tempMin = 15, tempMax = 30;
+                this._points.forEach((point, i) => {
+                    const temp = this._temps[i];
+                    if (temp == null) return;
+                    const t = Math.max(0, Math.min(1, (temp - tempMin) / (tempMax - tempMin)));
+                    let r, g, b;
+                    if (t < 0.25) { r = 0; g = Math.round(100 + t * 4 * 155); b = 255; }
+                    else if (t < 0.5) { r = 0; g = 255; b = Math.round(255 - (t - 0.25) * 4 * 255); }
+                    else if (t < 0.75) { r = Math.round((t - 0.5) * 4 * 255); g = 255; b = 0; }
+                    else { r = 255; g = Math.round(255 - (t - 0.75) * 4 * 255); b = 0; }
+                    ctx.fillStyle = `rgba(${r},${g},${b},0.7)`;
+                    const sw = this._map.latLngToContainerPoint([point[1] - res/2, point[0] - res/2]);
+                    const ne = this._map.latLngToContainerPoint([point[1] + res/2, point[0] + res/2]);
+                    ctx.fillRect(ne.x - topLeft.x, ne.y - topLeft.y, sw.x - ne.x, sw.y - ne.y);
+                });
+                
+                if (this._clipPoly) ctx.restore();
+            }
+        });
+
         async function loadClimateHeatmap(anpId) {
             const section = document.getElementById('climate-heatmap-section');
             const timeseriesFile = `anp_data/${anpId}_climate_timeseries.json`;
@@ -1882,29 +1974,55 @@
                 const bbox = heatmapData.bbox;
                 const center = [(bbox.min_lat + bbox.max_lat) / 2, (bbox.min_lon + bbox.max_lon) / 2];
                 
+                if (heatmapLayer) {
+                    heatmapMap.removeLayer(heatmapLayer);
+                    heatmapLayer = null;
+                }
+                if (heatmapBoundaryLayer) {
+                    heatmapMap.removeLayer(heatmapBoundaryLayer);
+                    heatmapBoundaryLayer = null;
+                }
+                
                 if (!heatmapMap) {
                     heatmapMap = L.map('heatmap-map').setView(center, 9);
                     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                         attribution: '© OpenStreetMap, © CARTO'
                     }).addTo(heatmapMap);
-                } else {
-                    heatmapMap.setView(center, 9);
                 }
+                
+                heatmapMap.fitBounds([
+                    [bbox.min_lat, bbox.min_lon],
+                    [bbox.max_lat, bbox.max_lon]
+                ]);
                 
                 try {
                     const boundaryResp = await fetch(boundaryFile);
                     const boundaryData = await boundaryResp.json();
-                    L.geoJSON(boundaryData, {
+                    heatmapClipPolygon = boundaryData.features[0].geometry.coordinates[0];
+                    
+                    heatmapLayer = new ClippedHeatmapLayer({
+                        temps: yearsData[heatmapYears[0]],
+                        points: heatmapData.points,
+                        resolution: heatmapData.grid_resolution_deg,
+                        clipPolygon: heatmapClipPolygon
+                    }).addTo(heatmapMap);
+                    
+                    heatmapBoundaryLayer = L.geoJSON(boundaryData, {
                         style: { color: '#10b981', weight: 2, fill: false }
                     }).addTo(heatmapMap);
-                } catch (e) {}
+                } catch (e) {
+                    heatmapLayer = new ClippedHeatmapLayer({
+                        temps: yearsData[heatmapYears[0]],
+                        points: heatmapData.points,
+                        resolution: heatmapData.grid_resolution_deg,
+                        clipPolygon: null
+                    }).addTo(heatmapMap);
+                }
                 
-                slider.addEventListener('input', (e) => {
-                    const idx = parseInt(e.target.value);
-                    updateHeatmapDisplay(idx);
-                });
-                
-                document.getElementById('heatmap-play-btn').addEventListener('click', toggleHeatmapPlay);
+                slider.oninput = (e) => {
+                    updateHeatmapDisplay(parseInt(e.target.value));
+                };
+                document.getElementById('heatmap-play-btn').onclick = toggleHeatmapPlay;
                 
                 updateHeatmapDisplay(0);
                 
@@ -1913,58 +2031,15 @@
             }
         }
         
-        function tempToColor(temp) {
-            if (temp == null) return 'rgba(0,0,0,0)';
-            const tempMin = 15, tempMax = 30;
-            const t = Math.max(0, Math.min(1, (temp - tempMin) / (tempMax - tempMin)));
-            
-            let r, g, b;
-            if (t < 0.25) {
-                r = 0; g = Math.round(100 + t * 4 * 155); b = 255;
-            } else if (t < 0.5) {
-                r = 0; g = 255; b = Math.round(255 - (t - 0.25) * 4 * 255);
-            } else if (t < 0.75) {
-                r = Math.round((t - 0.5) * 4 * 255); g = 255; b = 0;
-            } else {
-                r = 255; g = Math.round(255 - (t - 0.75) * 4 * 255); b = 0;
-            }
-            return `rgba(${r},${g},${b},0.6)`;
-        }
-        
         function updateHeatmapDisplay(yearIndex) {
-            if (!heatmapData || !heatmapMap) return;
+            if (!heatmapData || !heatmapMap || !heatmapLayer) return;
             
             const yearsData = getHeatmapYearsData();
             const year = heatmapYears[yearIndex];
             const temps = yearsData[year];
             
             document.getElementById('heatmap-year').textContent = year;
-            
-            if (heatmapLayer) {
-                heatmapMap.removeLayer(heatmapLayer);
-            }
-            
-            const rectangles = [];
-            const res = heatmapData.grid_resolution_deg || 0.05;
-            
-            heatmapData.points.forEach((point, i) => {
-                const temp = temps[i];
-                if (temp == null) return;
-                
-                const bounds = [
-                    [point[1] - res/2, point[0] - res/2],
-                    [point[1] + res/2, point[0] + res/2]
-                ];
-                
-                rectangles.push(L.rectangle(bounds, {
-                    color: tempToColor(temp),
-                    weight: 0,
-                    fillOpacity: 0.6,
-                    fillColor: tempToColor(temp)
-                }));
-            });
-            
-            heatmapLayer = L.layerGroup(rectangles).addTo(heatmapMap);
+            heatmapLayer.setTemps(temps);
         }
         
         function toggleHeatmapPlay() {
@@ -1992,7 +2067,6 @@
                 btn.classList.toggle('active', btn.dataset.scenario === scenario);
             });
             
-            // Reload years for new scenario
             const yearsData = getHeatmapYearsData();
             if (yearsData) {
                 heatmapYears = Object.keys(yearsData).sort();
