@@ -51,6 +51,19 @@
             border: 1px solid var(--border);
         }
         
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .top-header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
         .logo {
             display: flex;
             align-items: center;
@@ -360,7 +373,9 @@
             
             .anp-selector select { min-width: 0; font-size: 0.85rem; padding: 8px 10px; }
             .toolbar { gap: 5px; padding: 3px; }
-            .admin-link, .divider:last-child { display: none !important; }
+            .top-header { flex-wrap: wrap; gap: 10px; }
+            .top-header-right { gap: 10px; }
+            .admin-link { display: none !important; }
             
             /* Compact Key Stats: 2 columns, smaller text/padding */
             .key-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -856,9 +871,18 @@
     <div class="container">
         <!-- Top Bar with Selector -->
         <div class="top-bar">
-            <div class="logo">
-                <div class="logo-icon">🌿</div>
-                <span>Mexican Protected Areas Dashboard</span>
+            <div class="top-header">
+                <div class="logo">
+                    <div class="logo-icon">🌿</div>
+                    <span>Mexican Protected Areas Dashboard</span>
+                </div>
+                <div class="top-header-right">
+                    <div class="lang-selector">
+                        <button class="lang-btn active" onclick="changeLanguage('en')">EN</button>
+                        <button class="lang-btn" onclick="changeLanguage('es')">ES</button>
+                    </div>
+                    <a href="admin.html" class="admin-link">Admin &rarr;</a>
+                </div>
             </div>
             <div class="filter-row" id="filter-row">
                 <div class="filter-group">
@@ -887,17 +911,6 @@
                         <option value="" data-i18n="loading">Loading...</option>
                     </select>
                 </div>
-                
-                <div class="divider"></div>
-                
-                <div class="lang-selector">
-                    <button class="lang-btn active" onclick="changeLanguage('en')">EN</button>
-                    <button class="lang-btn" onclick="changeLanguage('es')">ES</button>
-                </div>
-
-                <div class="divider"></div>
-
-                <a href="admin.html" class="admin-link">Admin &rarr;</a>
             </div>
         </div>
         
