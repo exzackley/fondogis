@@ -206,18 +206,20 @@ Three separate climate data sources with different granularities:
 
 ### 1. GEE Climate Projections (`add_climate_projections.py`)
 - **Source**: NASA NEX-GDDP-CMIP6 via Google Earth Engine
-- **Granularity**: Period averages only (baseline 2005-2014 vs future 2055-2064)
+- **Granularity**: Multi-period averages (baseline 1981-2010 vs 3 future periods)
+- **Future Periods**: 2011-2040, 2041-2070, 2071-2100
 - **Output**: `datasets.climate_projections` in `{anp}_data.json`
 - **Contains**: Temperature, precipitation, tropical nights, drought indicators
+- **Data Structure**: `scenarios.ssp245["2041-2070"].temperature` (nested by period)
 - **Coverage**: 6 ANPs as of Jan 2024
 
-### 2. Climate Portal Scraping (Playwright)
-- **Source**: climateinformation.org (SMHI/GCF/WMO) - bias-adjusted CMIP6
-- **Granularity**: Summary change values only (2071-2100 vs 1981-2010)
-- **Output**: `datasets.climate_portal` in `{anp}_data.json`
-- **Contains**: Temp, precip, soil moisture, aridity, water discharge/runoff
-- **Note**: Requires Playwright browser automation, not a script yet
-- **Coverage**: Sierra Gorda only
+### 2. Climate Portal / SSR Data (`scrape_climate_ssr.py`)
+- **Source**: climateinformation.org (SMHI/GCF/WMO) - CORDEX bias-adjusted
+- **Granularity**: Multi-period (2011-2040, 2041-2070, 2071-2100)
+- **Output**: SEPARATE FILE `{anp}_climate_ssr.json`
+- **Contains**: Temp, precip, soil moisture, aridity, water discharge/runoff, tropical nights
+- **Note**: Requires Playwright browser automation
+- **Coverage**: 6 ANPs
 
 ### 3. Heatmap Timeseries (`extract_climate_timeseries.py`)
 - **Source**: NASA CMIP6 via GEE (same as #1, different extraction)
@@ -225,21 +227,86 @@ Three separate climate data sources with different granularities:
 - **Output**: SEPARATE FILE `{anp}_climate_timeseries.json`
 - **Contains**: Temperature values for ~180 grid points at 0.05° resolution
 - **Used by**: Animated heatmap visualization in dashboard
-- **Coverage**: Sierra Gorda only
+- **Coverage**: 6 ANPs
 
-### Data Comparison Notes
-- GEE and Climate Portal may show different results due to:
-  - Different time periods (2055-2064 vs 2071-2100)
-  - Different bias correction (raw vs MIdAS method)
-  - Different model ensembles
-- Sierra Gorda is the only ANP with all three data types for comparison
+### ANPs with Full Climate Data (as of Jan 2024)
+These 6 ANPs have all three climate data types:
+1. Alto Golfo de California y Delta del Río Colorado
+2. Arrecife Alacranes
+3. Arrecife de Puerto Morelos
+4. Calakmul
+5. Sierra Gorda
+6. Sierra Gorda de Guanajuato
 
 ### Climate Scripts Summary
 ```bash
-python3 add_climate_projections.py "sierra_gorda"    # GEE period averages
+python3 add_climate_projections.py "sierra_gorda"    # GEE multi-period projections
 python3 extract_climate_timeseries.py "sierra_gorda" # Heatmap grid data
-# Climate Portal: manual Playwright scraping (no script yet)
+python3 scrape_climate_ssr.py "sierra_gorda"         # CORDEX SSR data (requires Playwright)
 ```
+
+## Batch Climate Data Extraction
+
+To extract/update climate data for the 6 priority ANPs, run these commands in tmux on a server with good connectivity:
+
+### Step 1: Start tmux session
+```bash
+tmux new -s climate
+cd /path/to/fondogis
+```
+
+### Step 2: Extract GEE Climate Projections (multi-period)
+```bash
+# Each takes 3-5 minutes. Run sequentially to avoid GEE rate limits.
+python3 add_climate_projections.py "alto_golfo_de_california_y_delta_del_rio_colorado"
+python3 add_climate_projections.py "arrecife_alacranes"
+python3 add_climate_projections.py "arrecife_de_puerto_morelos"
+python3 add_climate_projections.py "calakmul"
+python3 add_climate_projections.py "sierra_gorda"
+python3 add_climate_projections.py "sierra_gorda_de_guanajuato"
+```
+
+### Step 3: Verify multi-period structure
+```bash
+# Should show "multi" for all 6 ANPs
+for f in anp_data/*_data.json; do
+  name=$(basename "$f" _data.json)
+  has_periods=$(python3 -c "import json; d=json.load(open('$f')); cp=d.get('datasets',{}).get('climate_projections',{}).get('scenarios',{}).get('ssp245',{}); print('multi' if '2041-2070' in cp else 'flat' if 'temperature' in cp else 'none')" 2>/dev/null)
+  if [ "$has_periods" != "none" ]; then
+    echo "$name: $has_periods"
+  fi
+done
+```
+
+### Step 4: Commit and push
+```bash
+git add anp_data/
+git commit -m "Update climate projections with multi-period data for 6 priority ANPs"
+git push
+```
+
+### Expected Data Structure After Extraction
+```json
+{
+  "datasets": {
+    "climate_projections": {
+      "scenarios": {
+        "ssp245": {
+          "2011-2040": { "temperature": {...}, "precipitation": {...}, ... },
+          "2041-2070": { "temperature": {...}, "precipitation": {...}, ... },
+          "2071-2100": { "temperature": {...}, "precipitation": {...}, ... }
+        },
+        "ssp585": { ... }
+      }
+    }
+  }
+}
+```
+
+### Troubleshooting
+- **GEE timeout**: Check internet connectivity. Re-authenticate with `python3 -c "import ee; ee.Authenticate()"`
+- **Rate limits**: Wait 1-2 minutes between ANPs if you hit GEE quotas
+- **Partial data**: Re-run the script for that ANP; it will overwrite existing data
 
 ## Common Issues
 
