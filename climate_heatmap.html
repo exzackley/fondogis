@@ -84,6 +84,10 @@
             <span id="legend-min">15&deg;C</span>
             <span id="legend-max">30&deg;C</span>
         </div>
+        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 11px;">
+            <span style="display: inline-block; width: 16px; height: 12px; background: rgba(60,70,90,0.7); vertical-align: middle; margin-right: 5px;"></span>
+            No data (ocean)
+        </div>
     </div>
     <div class="loading" id="loading">Loading climate data...</div>
 
@@ -210,19 +214,27 @@
                 const res = this._resolution;
                 this._points.forEach((point, i) => {
                     const temp = this._temps[i];
-                    if (temp == null) return;
+                    const sw = this._map.latLngToContainerPoint([point[1] - res/2, point[0] - res/2]);
+                    const ne = this._map.latLngToContainerPoint([point[1] + res/2, point[0] + res/2]);
+                    const x = ne.x - topLeft.x, y = ne.y - topLeft.y;
+                    const w = sw.x - ne.x, h = sw.y - ne.y;
+                    
+                    if (temp == null) {
+                        ctx.fillStyle = 'rgba(60, 70, 90, 0.5)';
+                        ctx.fillRect(x, y, w, h);
+                        ctx.strokeStyle = 'rgba(80, 90, 110, 0.3)';
+                        ctx.lineWidth = 1;
+                        for (let d = -Math.max(w,h); d < Math.max(w,h)*2; d += 6) {
+                            ctx.beginPath();
+                            ctx.moveTo(x + d, y);
+                            ctx.lineTo(x + d + h, y + h);
+                            ctx.stroke();
+                        }
+                        return;
+                    }
                     
                     const color = tempToColor(temp, true);
                     ctx.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${color[3]})`;
-                    
-                    const sw = this._map.latLngToContainerPoint([point[1] - res/2, point[0] - res/2]);
-                    const ne = this._map.latLngToContainerPoint([point[1] + res/2, point[0] + res/2]);
-                    
-                    const x = ne.x - topLeft.x;
-                    const y = ne.y - topLeft.y;
-                    const w = sw.x - ne.x;
-                    const h = sw.y - ne.y;
-                    
                     ctx.fillRect(x, y, w, h);
                 });
                 
