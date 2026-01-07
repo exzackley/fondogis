@@ -11,14 +11,14 @@
     "reported_area_km2": 3147.36,
     "country": "MEX",
     "extracted_at": "2026-01-02T14:25:17.871457",
-    "categoria_de_manejo": "Área de Protección de Flora y Fauna",
+    "categoria_de_manejo": "\u00c1rea de Protecci\u00f3n de Flora y Fauna",
     "estados": [
       "B.C.",
       "B.C.S.",
       "Sonora",
       "Sinaloa"
     ],
-    "region": "Península de Baja California y Pacífico Norte; Noroeste y Alto Golfo de California",
+    "region": "Pen\u00ednsula de Baja California y Pac\u00edfico Norte; Noroeste y Alto Golfo de California",
     "designaciones_internacionales": "UNESCO Patrimonio Mundial Natural (Serial)",
     "num_anp": "57",
     "id_anp_conanp": "ANP02107057",
@@ -159,6 +159,252 @@
       "data_available": false,
       "error": "Image.reduceRegion: Too many pixels in the region. Found 11505265303, but maxPixels allows only 1000000000.\nEnsure that you are not aggregating at a higher resolution than you intended; that is a frequent cause of this error. If not, then you may set the 'maxPixels' argument to a limit suitable for your computation; set 'bestEffort' to true to aggregate at whatever scale results in 'maxPixels' total pixels; or both.",
       "extracted_at": "2026-01-03T11:36:33.318524"
+    },
+    "climate_projections": {
+      "source": "NASA NEX-GDDP-CMIP6",
+      "resolution": "0.25 degrees (~27km)",
+      "baseline_period": "1981-2010",
+      "future_periods": [
+        "2011-2040",
+        "2041-2070",
+        "2071-2100"
+      ],
+      "models_used": 3,
+      "model_list": [
+        "ACCESS-CM2",
+        "GFDL-ESM4",
+        "MRI-ESM2-0"
+      ],
+      "scenarios": {
+        "ssp245": {
+          "2011-2040": {
+            "temperature": {
+              "baseline_mean_c": 20.36,
+              "future_mean_c": 21.6,
+              "change_c": 1.25,
+              "spatial_variation": {
+                "baseline_min_c": 11.37,
+                "baseline_max_c": 26.08,
+                "future_min_c": 12.6,
+                "future_max_c": 27.1
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 409.2,
+              "future_annual_mm": 413.9,
+              "change_mm": 4.6,
+              "change_percent": 1.1
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 12.39,
+              "mean_min_temp_future_c": 13.62,
+              "tropical_nights_baseline_estimate": 14,
+              "tropical_nights_future_estimate": 21,
+              "change_days_estimate": 7,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 1.12,
+              "mean_daily_precip_future_mm": 1.13,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 55,
+              "change_days_estimate": -1,
+              "drought_risk_baseline": "High",
+              "drought_risk_future": "High",
+              "note": "Drought indicators estimated from mean precipitation patterns"
+            }
+          },
+          "2041-2070": {
+            "temperature": {
+              "baseline_mean_c": 20.36,
+              "future_mean_c": 22.42,
+              "change_c": 2.06,
+              "spatial_variation": {
+                "baseline_min_c": 11.37,
+                "baseline_max_c": 26.08,
+                "future_min_c": 13.35,
+                "future_max_c": 27.83
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 409.2,
+              "future_annual_mm": 439.7,
+              "change_mm": 30.4,
+              "change_percent": 7.4
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 12.39,
+              "mean_min_temp_future_c": 14.46,
+              "tropical_nights_baseline_estimate": 14,
+              "tropical_nights_future_estimate": 26,
+              "change_days_estimate": 12,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 1.12,
+              "mean_daily_precip_future_mm": 1.2,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 53,
+              "change_days_estimate": -3,
+              "drought_risk_baseline": "High",
+              "drought_risk_future": "High",
+              "note": "Drought indicators estimated from mean precipitation patterns"
+            }
+          },
+          "2071-2100": {
+            "temperature": {
+              "baseline_mean_c": 20.36,
+              "future_mean_c": 22.94,
+              "change_c": 2.58,
+              "spatial_variation": {
+                "baseline_min_c": 11.37,
+                "baseline_max_c": 26.08,
+                "future_min_c": 13.95,
+                "future_max_c": 28.29
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 409.2,
+              "future_annual_mm": 385.5,
+              "change_mm": -23.8,
+              "change_percent": -5.8
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 12.39,
+              "mean_min_temp_future_c": 14.85,
+              "tropical_nights_baseline_estimate": 14,
+              "tropical_nights_future_estimate": 29,
+              "change_days_estimate": 15,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 1.12,
+              "mean_daily_precip_future_mm": 1.06,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 58,
+              "change_days_estimate": 2,
+              "drought_risk_baseline": "High",
+              "drought_risk_future": "High",
+              "note": "Drought indicators estimated from mean precipitation patterns"
+            }
+          }
+        },
+        "ssp585": {
+          "2011-2040": {
+            "temperature": {
+              "baseline_mean_c": 20.36,
+              "future_mean_c": 21.65,
+              "change_c": 1.3,
+              "spatial_variation": {
+                "baseline_min_c": 11.37,
+                "baseline_max_c": 26.08,
+                "future_min_c": 12.62,
+                "future_max_c": 27.16
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 409.2,
+              "future_annual_mm": 436.1,
+              "change_mm": 26.9,
+              "change_percent": 6.6
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 12.39,
+              "mean_min_temp_future_c": 13.71,
+              "tropical_nights_baseline_estimate": 14,
+              "tropical_nights_future_estimate": 22,
+              "change_days_estimate": 8,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 1.12,
+              "mean_daily_precip_future_mm": 1.19,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 54,
+              "change_days_estimate": -2,
+              "drought_risk_baseline": "High",
+              "drought_risk_future": "High",
+              "note": "Drought indicators estimated from mean precipitation patterns"
+            }
+          },
+          "2041-2070": {
+            "temperature": {
+              "baseline_mean_c": 20.36,
+              "future_mean_c": 22.95,
+              "change_c": 2.6,
+              "spatial_variation": {
+                "baseline_min_c": 11.37,
+                "baseline_max_c": 26.08,
+                "future_min_c": 13.83,
+                "future_max_c": 28.32
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 409.2,
+              "future_annual_mm": 439.2,
+              "change_mm": 29.9,
+              "change_percent": 7.3
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 12.39,
+              "mean_min_temp_future_c": 14.98,
+              "tropical_nights_baseline_estimate": 14,
+              "tropical_nights_future_estimate": 29,
+              "change_days_estimate": 15,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 1.12,
+              "mean_daily_precip_future_mm": 1.2,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 53,
+              "change_days_estimate": -3,
+              "drought_risk_baseline": "High",
+              "drought_risk_future": "High",
+              "note": "Drought indicators estimated from mean precipitation patterns"
+            }
+          },
+          "2071-2100": {
+            "temperature": {
+              "baseline_mean_c": 20.36,
+              "future_mean_c": 24.78,
+              "change_c": 4.42,
+              "spatial_variation": {
+                "baseline_min_c": 11.37,
+                "baseline_max_c": 26.08,
+                "future_min_c": 15.72,
+                "future_max_c": 29.96
+              }
+            },
+            "precipitation": {
+              "baseline_annual_mm": 409.2,
+              "future_annual_mm": 417.0,
+              "change_mm": 7.7,
+              "change_percent": 1.9
+            },
+            "heat_stress": {
+              "mean_min_temp_baseline_c": 12.39,
+              "mean_min_temp_future_c": 16.8,
+              "tropical_nights_baseline_estimate": 14,
+              "tropical_nights_future_estimate": 62,
+              "change_days_estimate": 48,
+              "note": "Tropical nights estimated from mean minimum temperature"
+            },
+            "drought_indicators": {
+              "mean_daily_precip_baseline_mm": 1.12,
+              "mean_daily_precip_future_mm": 1.14,
+              "consecutive_dry_days_baseline_estimate": 56,
+              "consecutive_dry_days_future_estimate": 55,
+              "change_days_estimate": -1,
+              "drought_risk_baseline": "High",
+              "drought_risk_future": "High",
+              "note": "Drought indicators estimated from mean precipitation patterns"
+            }
+          }
+        }
+      },
+      "extracted_at": "2026-01-06T19:25:50.318586",
+      "data_available": true
     }
   },
   "external_data": {
@@ -298,7 +544,7 @@
       },
       "municipalities": [
         {
-          "name": "Juárez",
+          "name": "Ju\u00e1rez",
           "state": "Chihuahua",
           "population": 1512450,
           "irs_index": -1.2664,
@@ -314,7 +560,7 @@
           "national_rank": 2397
         },
         {
-          "name": "Culiacán",
+          "name": "Culiac\u00e1n",
           "state": "Sinaloa",
           "population": 1003530,
           "irs_index": -1.2044,
@@ -338,7 +584,7 @@
           "national_rank": 2406
         },
         {
-          "name": "Mazatlán",
+          "name": "Mazatl\u00e1n",
           "state": "Sinaloa",
           "population": 501441,
           "irs_index": -1.1672,
@@ -402,7 +648,7 @@
           "national_rank": 2408
         },
         {
-          "name": "San Luis Río Colorado",
+          "name": "San Luis R\u00edo Colorado",
           "state": "Sonora",
           "population": 199021,
           "irs_index": -1.0849,
@@ -410,7 +656,7 @@
           "national_rank": 2268
         },
         {
-          "name": "Cuauhtémoc",
+          "name": "Cuauht\u00e9moc",
           "state": "Chihuahua",
           "population": 180638,
           "irs_index": -1.0907,
@@ -442,7 +688,7 @@
           "national_rank": 1705
         },
         {
-          "name": "San Quintín",
+          "name": "San Quint\u00edn",
           "state": "Baja California",
           "population": 117568,
           "irs_index": 0.3495,
@@ -460,7 +706,7 @@
       ],
       "interpretation": {
         "irs_index": "Social Lag Index: negative values = low lag (better conditions), positive = high lag (worse conditions)",
-        "categories": "Muy bajo (best) → Bajo → Medio → Alto → Muy alto (worst)",
+        "categories": "Muy bajo (best) \u2192 Bajo \u2192 Medio \u2192 Alto \u2192 Muy alto (worst)",
         "weighted_mean": "Population-weighted average across all municipalities intersecting ANP"
       },
       "extracted_at": "2026-01-03T11:18:52.733537"
@@ -491,21 +737,21 @@
         },
         {
           "scientific_name": "Pelecanus occidentalis",
-          "common_name": "Pelícano café",
+          "common_name": "Pel\u00edcano caf\u00e9",
           "iconic_taxon": "Aves",
           "observations": 7104,
           "taxon_id": 4328
         },
         {
           "scientific_name": "Pachycereus pringlei",
-          "common_name": "Cardón",
+          "common_name": "Card\u00f3n",
           "iconic_taxon": "Plantae",
           "observations": 6831,
           "taxon_id": 199206
         },
         {
           "scientific_name": "Cynanthus latirostris",
-          "common_name": "Colibrí pico ancho norteño",
+          "common_name": "Colibr\u00ed pico ancho norte\u00f1o",
           "iconic_taxon": "Aves",
           "observations": 6585,
           "taxon_id": 6141
@@ -533,14 +779,14 @@
         },
         {
           "scientific_name": "Pachycereus pecten-aboriginum",
-          "common_name": "Cardón hecho",
+          "common_name": "Card\u00f3n hecho",
           "iconic_taxon": "Plantae",
           "observations": 5923,
           "taxon_id": 199217
         },
         {
           "scientific_name": "Haemorhous mexicanus",
-          "common_name": "Pinzón mexicano",
+          "common_name": "Pinz\u00f3n mexicano",
           "iconic_taxon": "Aves",
           "observations": 5866,
           "taxon_id": 199840
@@ -575,7 +821,7 @@
         },
         {
           "scientific_name": "Passer domesticus",
-          "common_name": "Gorrión Doméstico",
+          "common_name": "Gorri\u00f3n Dom\u00e9stico",
           "iconic_taxon": "Aves",
           "observations": 4657,
           "taxon_id": 13858
@@ -589,7 +835,7 @@
         },
         {
           "scientific_name": "Apis mellifera",
-          "common_name": "Abeja melífera europea",
+          "common_name": "Abeja mel\u00edfera europea",
           "iconic_taxon": "Insecta",
           "observations": 4325,
           "taxon_id": 47219
@@ -617,7 +863,7 @@
         },
         {
           "scientific_name": "Mimus polyglottos",
-          "common_name": "Sinsonte norteño",
+          "common_name": "Sinsonte norte\u00f1o",
           "iconic_taxon": "Aves",
           "observations": 3864,
           "taxon_id": 14886
@@ -652,7 +898,7 @@
         },
         {
           "scientific_name": "Columba livia",
-          "common_name": "Paloma asiática bravía",
+          "common_name": "Paloma asi\u00e1tica brav\u00eda",
           "iconic_taxon": "Aves",
           "observations": 3485,
           "taxon_id": 3017
@@ -680,7 +926,7 @@
         },
         {
           "scientific_name": "Pandion haliaetus",
-          "common_name": "Águila Pescadora",
+          "common_name": "\u00c1guila Pescadora",
           "iconic_taxon": "Aves",
           "observations": 3335,
           "taxon_id": 116999
@@ -740,13 +986,13 @@
         "Alfonsinas",
         "El Coloradito [Campo]",
         "El Huerfanito [Campo]",
-        "Rancho Percebú",
+        "Rancho Perceb\u00fa",
         "Punta Final (Villa Mar y Sol)",
         "Campo la Roca",
         "Campo Zaguaro",
         "Puertecitos",
-        "Punta Bufeo [Campo Turístico]",
-        "Playa México [Campo]"
+        "Punta Bufeo [Campo Tur\u00edstico]",
+        "Playa M\u00e9xico [Campo]"
       ]
     }
   }
