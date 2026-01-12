@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environmental and Social Diagnosis - Data Tables</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #000;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #000;
+            font-weight: bold;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 14px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #000;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #000;
+        }
+
+        .anp-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 12px;
+            background: #fff;
+        }
+
+        th {
+            background-color: #e8e8e8;
+            color: #000;
+            font-weight: bold;
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #000;
+        }
+
+        td {
+            padding: 8px 10px;
+            border: 1px solid #666;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .metric-name {
+            font-weight: bold;
+            width: 40%;
+        }
+
+        .section-note {
+            font-style: italic;
+            color: #666;
+            font-size: 11px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+
+        .data-source {
+            font-size: 10px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .no-data {
+            color: #999;
+            font-style: italic;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+            }
+
+            table {
+                page-break-inside: avoid;
+            }
+
+            h2 {
+                page-break-after: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Environmental and Social Diagnosis</h1>
+        <div style="font-size: 14px; margin-top: 10px;">Protected Natural Area Data Tables</div>
+        <div class="anp-name" id="anpName">Loading...</div>
+    </div>
+
+    <div class="loading" id="loading">Loading data...</div>
+
+    <div id="content" style="display: none;">
+        <h2>Table 1: Basic Information and Administrative Data</h2>
+        <table id="table1"></table>
+
+        <h2>Table 2: Physical and Environmental Characteristics</h2>
+        <table id="table2"></table>
+
+        <h2>Table 3: Land Cover and Ecosystems</h2>
+        <p class="section-note">Based on ESA WorldCover 2021 (10m resolution)</p>
+        <table id="table3"></table>
+
+        <h2>Table 4: Forest Cover and Change</h2>
+        <p class="section-note">Based on Hansen Global Forest Change v1.11 (30m resolution), 2000-2023</p>
+        <table id="table4"></table>
+
+        <h2>Table 5: Biodiversity Indicators</h2>
+        <table id="table5"></table>
+
+        <h2>Table 6: Social and Demographic Indicators</h2>
+        <table id="table6"></table>
+
+        <h2>Table 7: Climate Baseline (Current Conditions)</h2>
+        <p class="section-note">Based on TerraClimate data (2020) and WRI Aqueduct Water Risk Atlas</p>
+        <table id="table7"></table>
+
+        <h2>Table 8: Climate Projections - Temperature Change (°C above baseline)</h2>
+        <p class="section-note">Baseline period: 1981-2010. Source: NASA GDDP-CMIP6</p>
+        <table id="table8"></table>
+
+        <h2>Table 9: Climate Projections - Precipitation and Water Indicators</h2>
+        <p class="section-note">Values show % change from baseline (1981-2010). Source: climateinformation.org CORDEX</p>
+        <table id="table9"></table>
+
+        <h2>Table 10: Disturbances and Threats</h2>
+        <table id="table10"></table>
+    </div>
+
+    <script>
+        const ANP_ID = 'alto_golfo_de_california_y_delta_del_rio_colorado';
+
+        function formatNumber(value, decimals = 2) {
+            if (value == null || value === undefined) return 'N/A';
+            if (typeof value === 'number') {
+                return value.toLocaleString('en-US', {
+                    minimumFractionDigits: decimals,
+                    maximumFractionDigits: decimals
+                });
+            }
+            return value;
+        }
+
+        function addRow(table, label, value, unit = '') {
+            const row = table.insertRow();
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
+            cell1.className = 'metric-name';
+            cell1.textContent = label;
+
+            if (value == null || value === undefined || value === '') {
+                cell2.innerHTML = '<span class="no-data">No data available</span>';
+            } else {
+                cell2.textContent = value + (unit ? ' ' + unit : '');
+            }
+        }
+
+        async function loadData() {
+            try {
+                const dataFile = `anp_data/${ANP_ID}_data.json`;
+                const response = await fetch(dataFile);
+                const data = await response.json();
+
+                // Try to load climate SSR data
+                let climateSSR = null;
+                try {
+                    const ssrResponse = await fetch(`anp_data/${ANP_ID}_climate_ssr.json`);
+                    if (ssrResponse.ok) {
+                        climateSSR = await ssrResponse.json();
+                    }
+                } catch (e) {
+                    console.log('No SSR climate data available');
+                }
+
+                populateTables(data, climateSSR);
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } catch (error) {
+                document.getElementById('loading').textContent = 'Error loading data: ' + error.message;
+            }
+        }
+
+        function populateTables(data, climateSSR) {
+            const meta = data.metadata || {};
+            const geom = data.geometry || {};
+            const datasets = data.datasets || {};
+            const external = data.external_data || {};
+
+            // Set ANP name
+            document.getElementById('anpName').textContent = meta.name || 'Unknown ANP';
+
+            // Table 1: Basic Information
+            const table1 = document.getElementById('table1');
+            addRow(table1, 'Official Name', meta.name);
+            addRow(table1, 'Category', meta.categoria_de_manejo || meta.designation);
+            addRow(table1, 'IUCN Category', meta.iucn_category);
+            addRow(table1, 'Status', meta.status);
+            const states = Array.isArray(meta.estados) ? meta.estados.join(', ') : (meta.estados || 'N/A');
+            addRow(table1, 'States', states);
+            addRow(table1, 'Region', meta.region);
+            addRow(table1, 'Total Area', formatNumber(meta.superficie_total_ha), 'hectares');
+            addRow(table1, 'Terrestrial Area', formatNumber(meta.superficie_terrestre_ha), 'hectares');
+            addRow(table1, 'Marine Area', formatNumber(meta.superficie_marina_ha), 'hectares');
+            addRow(table1, 'First Decree Date', meta.primer_decreto);
+            addRow(table1, 'Governance Type', meta.governance);
+            addRow(table1, 'Management Authority', meta.management_authority);
+            if (meta.designaciones_internacionales) {
+                const designations = Array.isArray(meta.designaciones_internacionales)
+                    ? meta.designaciones_internacionales.join(', ')
+                    : meta.designaciones_internacionales;
+                addRow(table1, 'International Designations', designations);
+            }
+
+            // Table 2: Physical Characteristics
+            const table2 = document.getElementById('table2');
+            const elev = datasets.elevation || {};
+            addRow(table2, 'Centroid (Latitude, Longitude)',
+                geom.centroid ? `${geom.centroid[1].toFixed(4)}, ${geom.centroid[0].toFixed(4)}` : 'N/A');
+            addRow(table2, 'Mean Elevation', formatNumber(elev.mean_meters, 0), 'meters');
+            addRow(table2, 'Minimum Elevation', formatNumber(elev.min_meters, 0), 'meters');
+            addRow(table2, 'Maximum Elevation', formatNumber(elev.max_meters, 0), 'meters');
+            addRow(table2, 'Elevation Std. Deviation', formatNumber(elev.std_dev, 0), 'meters');
+
+            const soil = datasets.soil || {};
+            addRow(table2, 'Soil Organic Carbon', formatNumber(soil.organic_carbon_g_kg, 1), 'g/kg');
+            addRow(table2, 'Soil pH', formatNumber(soil.ph_h2o, 1));
+
+            const water = datasets.surface_water || {};
+            addRow(table2, 'Permanent Surface Water', formatNumber(water.permanent_water_km2, 2), 'km²');
+
+            const hmi = datasets.human_modification || {};
+            addRow(table2, 'Human Modification Index (mean)', formatNumber(hmi.mean_index, 3));
+            addRow(table2, 'Human Modification Index (max)', formatNumber(hmi.max_index, 3));
+
+            // Table 3: Land Cover
+            const table3 = document.getElementById('table3');
+            const landcover = datasets.land_cover || {};
+            if (landcover.classes) {
+                for (const [className, classData] of Object.entries(landcover.classes)) {
+                    addRow(table3, className, formatNumber(classData.area_km2, 2), 'km²');
+                }
+            } else {
+                addRow(table3, 'No land cover data', 'N/A');
+            }
+
+            // Table 4: Forest
+            const table4 = document.getElementById('table4');
+            const forest = datasets.forest || {};
+            addRow(table4, 'Tree Cover 2000 (%)', formatNumber(forest.tree_cover_2000_percent, 1), '%');
+            addRow(table4, 'Total Forest Loss (2001-2023)', formatNumber(forest.total_loss_km2, 2), 'km²');
+            addRow(table4, 'Total Forest Gain', formatNumber(forest.total_gain_km2, 2), 'km²');
+
+            if (forest.loss_by_year) {
+                const recentYears = ['2019', '2020', '2021', '2022', '2023'];
+                for (const year of recentYears) {
+                    if (forest.loss_by_year[year] != null) {
+                        addRow(table4, `Forest Loss ${year}`, formatNumber(forest.loss_by_year[year], 2), 'km²');
+                    }
+                }
+            }
+
+            // GEDI Biomass
+            const gedi = datasets.gedi_biomass || {};
+            if (gedi.data_available) {
+                addRow(table4, 'Aboveground Biomass (mean)', formatNumber(gedi.agbd_mean, 1), 'Mg/ha');
+                addRow(table4, 'Total Carbon Stock', formatNumber(gedi.total_carbon_stock_Mt, 2), 'Mt C');
+            }
+
+            // Mangroves
+            const mangroves = datasets.mangroves || {};
+            if (mangroves.data_available) {
+                addRow(table4, 'Mangrove Coverage', formatNumber(mangroves.area_km2, 2), 'km²');
+                addRow(table4, 'Mangrove % of Total Area', formatNumber(mangroves.percent_of_anp, 1), '%');
+            }
+
+            // Table 5: Biodiversity
+            const table5 = document.getElementById('table5');
+            const bio = datasets.biodiversity || {};
+            if (bio.ecoregions) {
+                const ecoregions = Array.isArray(bio.ecoregions) ? bio.ecoregions.join('; ') : bio.ecoregions;
+                if (ecoregions && ecoregions.length > 0) {
+                    addRow(table5, 'Ecoregions', ecoregions);
+                }
+            }
+            if (bio.biomes) {
+                const biomes = Array.isArray(bio.biomes) ? bio.biomes.join('; ') : bio.biomes;
+                if (biomes && biomes.length > 0) {
+                    addRow(table5, 'Biomes', biomes);
+                }
+            }
+
+            const veg = datasets.vegetation || {};
+            addRow(table5, 'Mean NDVI (2020)', formatNumber(veg.mean_ndvi, 3));
+
+            const gbif = external.gbif_species || {};
+            if (gbif.total_species) {
+                addRow(table5, 'Total Species (GBIF)', formatNumber(gbif.total_species, 0));
+                addRow(table5, 'Plant Species (GBIF)', formatNumber(gbif.by_kingdom?.Plantae || 0, 0));
+                addRow(table5, 'Animal Species (GBIF)', formatNumber(gbif.by_kingdom?.Animalia || 0, 0));
+            }
+
+            const inat = external.inaturalist || {};
+            if (inat.total_observations) {
+                addRow(table5, 'iNaturalist Observations', formatNumber(inat.total_observations, 0));
+                addRow(table5, 'iNaturalist Species', formatNumber(inat.unique_species, 0));
+            }
+
+            const nom059 = external.simec_nom059 || {};
+            if (nom059.total_species) {
+                addRow(table5, 'NOM-059 Threatened Species', formatNumber(nom059.total_species, 0));
+                if (nom059.by_category) {
+                    for (const [category, count] of Object.entries(nom059.by_category)) {
+                        addRow(table5, `  ${category}`, formatNumber(count, 0));
+                    }
+                }
+            }
+
+            // Table 6: Social
+            const table6 = document.getElementById('table6');
+            const pop = datasets.population || {};
+            addRow(table6, 'Population 2015', formatNumber(pop.year_2015?.sum || 0, 0), 'people');
+            addRow(table6, 'Population 2020', formatNumber(pop.year_2020?.sum || 0, 0), 'people');
+            if (pop.year_2015?.sum != null && pop.year_2020?.sum != null) {
+                const change = pop.year_2020.sum - pop.year_2015.sum;
+                const pctChange = (change / pop.year_2015.sum) * 100;
+                addRow(table6, 'Population Change (2015-2020)',
+                    `${change > 0 ? '+' : ''}${formatNumber(change, 0)} (${formatNumber(pctChange, 1)}%)`);
+            }
+
+            const census = external.inegi_census || {};
+            if (census.total_nearby_localities) {
+                addRow(table6, 'Nearby Communities (50km)', formatNumber(census.total_nearby_localities, 0));
+                addRow(table6, 'Population in Nearby Communities', formatNumber(census.total_nearby_population, 0));
+            }
+
+            const coneval = external.coneval_irs || {};
+            if (coneval.municipalities_count) {
+                addRow(table6, 'Municipalities with Data', formatNumber(coneval.municipalities_count, 0));
+                addRow(table6, 'Avg Social Lag Index', formatNumber(coneval.weighted_avg_irs, 3));
+                addRow(table6, 'Social Lag Classification', coneval.predominant_classification || 'N/A');
+            }
+
+            const lights = datasets.night_lights || {};
+            addRow(table6, 'Mean Night Light Radiance (2020)', formatNumber(lights.mean_radiance, 3));
+
+            // Table 7: Climate Baseline
+            const table7 = document.getElementById('table7');
+            const climate = datasets.climate || {};
+            addRow(table7, 'Annual Precipitation (2020)', formatNumber(climate.annual_precipitation_mm, 0), 'mm');
+            addRow(table7, 'Mean Max Temperature (2020)', formatNumber(climate.mean_max_temp_c, 1), '°C');
+            addRow(table7, 'Mean Min Temperature (2020)', formatNumber(climate.mean_min_temp_c, 1), '°C');
+
+            const waterStress = datasets.water_stress || {};
+            if (waterStress.data_available) {
+                addRow(table7, 'Baseline Water Stress', formatNumber(waterStress.baseline_water_stress, 3));
+                addRow(table7, 'Water Stress Category', waterStress.baseline_water_stress_category || 'N/A');
+                addRow(table7, 'Drought Risk', formatNumber(waterStress.drought_risk, 3));
+            }
+
+            // Table 8: Climate Projections - Temperature
+            const table8 = document.getElementById('table8');
+            const climProj = datasets.climate_projections || {};
+
+            if (climProj.scenarios) {
+                // Header row
+                const headerRow = table8.insertRow();
+                headerRow.innerHTML = '<th>Period</th><th>SSP2-4.5 (°C)</th><th>SSP5-8.5 (°C)</th>';
+
+                const periods = ['2011-2040', '2041-2070', '2071-2100'];
+                for (const period of periods) {
+                    const row = table8.insertRow();
+                    const cell1 = row.insertCell(0);
+                    const cell2 = row.insertCell(1);
+                    const cell3 = row.insertCell(2);
+
+                    cell1.className = 'metric-name';
+                    cell1.textContent = period;
+
+                    const ssp245 = climProj.scenarios.ssp245?.[period]?.temperature?.change_from_baseline;
+                    const ssp585 = climProj.scenarios.ssp585?.[period]?.temperature?.change_from_baseline;
+
+                    cell2.textContent = ssp245 != null ? `+${formatNumber(ssp245, 2)}` : 'N/A';
+                    cell3.textContent = ssp585 != null ? `+${formatNumber(ssp585, 2)}` : 'N/A';
+                }
+            } else {
+                addRow(table8, 'Climate projections', 'Not available for this ANP');
+            }
+
+            // Table 9: Climate Projections - SSR Data
+            const table9 = document.getElementById('table9');
+            if (climateSSR && climateSSR.data) {
+                const headerRow = table9.insertRow();
+                headerRow.innerHTML = '<th>Indicator</th><th>2011-2040</th><th>2041-2070</th><th>2071-2100</th>';
+
+                const indicators = [
+                    { key: 'precipitation', label: 'Precipitation Change', unit: '%' },
+                    { key: 'tropical_nights', label: 'Tropical Nights Change', unit: ' days' },
+                    { key: 'soil_moisture', label: 'Soil Moisture Change', unit: '%' },
+                    { key: 'water_discharge', label: 'Water Discharge Change', unit: '%' },
+                    { key: 'water_runoff', label: 'Water Runoff Change', unit: '%' },
+                    { key: 'aridity_actual', label: 'Aridity Index Change', unit: '%' }
+                ];
+
+                const scenario = 'rcp85'; // Use RCP 8.5 for high emissions
+                const periods = ['2011-2040', '2041-2070', '2071-2100'];
+
+                for (const ind of indicators) {
+                    const row = table9.insertRow();
+                    const cells = [row.insertCell(0), row.insertCell(1), row.insertCell(2), row.insertCell(3)];
+
+                    cells[0].className = 'metric-name';
+                    cells[0].textContent = ind.label;
+
+                    periods.forEach((period, idx) => {
+                        const value = climateSSR.data[scenario]?.[period]?.[ind.key];
+                        if (value != null) {
+                            const sign = value > 0 ? '+' : '';
+                            cells[idx + 1].textContent = `${sign}${formatNumber(value, 1)}${ind.unit}`;
+                        } else {
+                            cells[idx + 1].textContent = 'N/A';
+                        }
+                    });
+                }
+            } else {
+                addRow(table9, 'Extended climate indicators', 'Not available for this ANP');
+            }
+
+            // Table 10: Disturbances
+            const table10 = document.getElementById('table10');
+            const fire = datasets.fire || {};
+            if (fire.burned_area_km2_by_year) {
+                let totalBurned = 0;
+                for (const [year, area] of Object.entries(fire.burned_area_km2_by_year)) {
+                    if (year >= '2019') {
+                        addRow(table10, `Burned Area ${year}`, formatNumber(area, 2), 'km²');
+                        totalBurned += area;
+                    }
+                }
+                addRow(table10, 'Total Burned (2019-2023)', formatNumber(totalBurned, 2), 'km²');
+            }
+        }
+
+        // Load data on page load
+        window.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

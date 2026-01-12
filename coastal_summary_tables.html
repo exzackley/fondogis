@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coastal ANPs - Summary Tables</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #000;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            color: #000;
+            font-weight: bold;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #000;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 11px;
+            background: #fff;
+        }
+
+        th {
+            background-color: #d9d9d9;
+            color: #000;
+            font-weight: bold;
+            text-align: left;
+            padding: 10px 8px;
+            border: 1px solid #000;
+            vertical-align: top;
+        }
+
+        td {
+            padding: 8px;
+            border: 1px solid #666;
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .anp-name {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .section-note {
+            font-style: italic;
+            color: #666;
+            font-size: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+
+        .no-data {
+            color: #999;
+            font-style: italic;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+            }
+
+            table {
+                page-break-inside: avoid;
+                font-size: 10px;
+            }
+
+            h2 {
+                page-break-after: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Environmental and Social Diagnosis</h1>
+        <div class="subtitle">Coastal and Marine Protected Natural Areas</div>
+        <div class="subtitle">Summary Data Tables</div>
+    </div>
+
+    <div class="loading" id="loading">Loading data for 39 coastal ANPs...</div>
+
+    <div id="content" style="display: none;">
+        <h2>Table 1: Environmental Characteristics</h2>
+        <p class="section-note">Area in km², Carbon stock in megatonnes (Mt), Ecosystem based on dominant land cover</p>
+        <table id="envTable">
+            <thead>
+                <tr>
+                    <th>Protected Area</th>
+                    <th>State</th>
+                    <th>Ecosystem</th>
+                    <th>Area (km²)</th>
+                    <th>Est. Carbon (Mt)</th>
+                    <th>Water Stress</th>
+                </tr>
+            </thead>
+            <tbody id="envTableBody"></tbody>
+        </table>
+
+        <h2>Table 2: Social Indicators</h2>
+        <p class="section-note">Population data from WorldPop (2020), Night lights indicate human activity level</p>
+        <table id="socialTable">
+            <thead>
+                <tr>
+                    <th>Protected Area</th>
+                    <th>State</th>
+                    <th>Population (2020)</th>
+                    <th>Pop. Change<br/>2015-2020 (%)</th>
+                    <th>Night Light<br/>Radiance</th>
+                    <th>Social Lag<br/>Index</th>
+                </tr>
+            </thead>
+            <tbody id="socialTableBody"></tbody>
+        </table>
+
+        <h2>Table 3: Climate Projections (2041-2070, SSP5-8.5)</h2>
+        <p class="section-note">Temperature change in °C above 1981-2010 baseline, Precipitation change as % of baseline</p>
+        <table id="climateTable">
+            <thead>
+                <tr>
+                    <th>Protected Area</th>
+                    <th>State</th>
+                    <th>Temp. Change<br/>(°C)</th>
+                    <th>Precip. Change<br/>(%)</th>
+                    <th>Tropical Nights<br/>Change (days)</th>
+                    <th>Soil Moisture<br/>Change (%)</th>
+                </tr>
+            </thead>
+            <tbody id="climateTableBody"></tbody>
+        </table>
+
+        <h2>Table 4: Biodiversity and Conservation Status</h2>
+        <p class="section-note">Species counts from GBIF and SIMEC databases</p>
+        <table id="biodivTable">
+            <thead>
+                <tr>
+                    <th>Protected Area</th>
+                    <th>State</th>
+                    <th>Forest Cover<br/>(%)</th>
+                    <th>Mangroves<br/>(km²)</th>
+                    <th>Total Species<br/>(GBIF)</th>
+                    <th>NOM-059<br/>Threatened</th>
+                </tr>
+            </thead>
+            <tbody id="biodivTableBody"></tbody>
+        </table>
+
+        <h2>Table 5: Threats and Disturbances</h2>
+        <p class="section-note">Forest loss 2019-2023, Fire area 2019-2023, Human modification index (0-1 scale)</p>
+        <table id="threatsTable">
+            <thead>
+                <tr>
+                    <th>Protected Area</th>
+                    <th>State</th>
+                    <th>Forest Loss<br/>2019-2023 (km²)</th>
+                    <th>Burned Area<br/>2019-2023 (km²)</th>
+                    <th>Human Mod.<br/>Index</th>
+                </tr>
+            </thead>
+            <tbody id="threatsTableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        function formatNumber(value, decimals = 1) {
+            if (value == null || value === undefined || isNaN(value)) return '—';
+            return value.toLocaleString('en-US', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+        }
+
+        function getDominantEcosystem(landCover) {
+            if (!landCover || !landCover.classes) return '—';
+
+            let maxArea = 0;
+            let dominant = '—';
+
+            const ecosystemMap = {
+                'Tree cover': 'Forest',
+                'Mangroves': 'Mangroves',
+                'Permanent water bodies': 'Marine/Aquatic',
+                'Herbaceous wetland': 'Wetlands',
+                'Shrubland': 'Shrubland',
+                'Grassland': 'Grassland',
+                'Cropland': 'Agricultural',
+                'Bare/sparse vegetation': 'Desert/Arid'
+            };
+
+            for (const [className, data] of Object.entries(landCover.classes)) {
+                if (data.area_km2 > maxArea) {
+                    maxArea = data.area_km2;
+                    dominant = ecosystemMap[className] || className;
+                }
+            }
+
+            return dominant;
+        }
+
+        async function loadAllData() {
+            try {
+                // Load coastal ANPs list
+                const subsetResponse = await fetch('coastal_anps_subset.json');
+                const subset = await subsetResponse.json();
+
+                const anpsWithData = subset.anp_ids_with_data;
+                const allData = [];
+
+                // Load data for each ANP
+                for (const anpId of anpsWithData) {
+                    try {
+                        const anpMeta = subset.matched_anps.find(a => a.id === anpId);
+                        const dataFile = anpMeta.data_file.replace('_data.json', '');
+
+                        const dataResponse = await fetch(`anp_data/${dataFile}_data.json`);
+                        const data = await dataResponse.json();
+
+                        // Try to load SSR climate data
+                        let climateSSR = null;
+                        try {
+                            const ssrResponse = await fetch(`anp_data/${dataFile}_climate_ssr.json`);
+                            if (ssrResponse.ok) {
+                                climateSSR = await ssrResponse.json();
+                            }
+                        } catch (e) {
+                            // SSR data not available
+                        }
+
+                        allData.push({
+                            id: anpId,
+                            name: anpMeta.matched_name,
+                            category: anpMeta.category,
+                            data: data,
+                            climateSSR: climateSSR
+                        });
+                    } catch (error) {
+                        console.error(`Failed to load ${anpId}:`, error);
+                    }
+                }
+
+                populateTables(allData);
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } catch (error) {
+                document.getElementById('loading').textContent = 'Error loading data: ' + error.message;
+            }
+        }
+
+        function populateTables(allData) {
+            // Sort by name
+            allData.sort((a, b) => a.name.localeCompare(b.name));
+
+            const envBody = document.getElementById('envTableBody');
+            const socialBody = document.getElementById('socialTableBody');
+            const climateBody = document.getElementById('climateTableBody');
+            const biodivBody = document.getElementById('biodivTableBody');
+            const threatsBody = document.getElementById('threatsTableBody');
+
+            for (const anp of allData) {
+                const meta = anp.data.metadata || {};
+                const datasets = anp.data.datasets || {};
+                const external = anp.data.external_data || {};
+
+                const states = Array.isArray(meta.estados) ? meta.estados.join(', ') : (meta.estados || '—');
+
+                // Table 1: Environmental
+                const envRow = envBody.insertRow();
+                envRow.innerHTML = `
+                    <td class="anp-name">${anp.name}</td>
+                    <td>${states}</td>
+                    <td>${getDominantEcosystem(datasets.land_cover)}</td>
+                    <td style="text-align: right">${formatNumber(meta.superficie_total_ha / 100, 0)}</td>
+                    <td style="text-align: right">${formatNumber(datasets.gedi_biomass?.total_carbon_stock_Mt, 1)}</td>
+                    <td>${datasets.water_stress?.baseline_water_stress_category || '—'}</td>
+                `;
+
+                // Table 2: Social
+                const pop2020 = datasets.population?.year_2020?.sum || 0;
+                const pop2015 = datasets.population?.year_2015?.sum || 0;
+                const popChange = pop2015 > 0 ? ((pop2020 - pop2015) / pop2015 * 100) : null;
+
+                const socialRow = socialBody.insertRow();
+                socialRow.innerHTML = `
+                    <td class="anp-name">${anp.name}</td>
+                    <td>${states}</td>
+                    <td style="text-align: right">${formatNumber(pop2020, 0)}</td>
+                    <td style="text-align: right">${popChange != null ? (popChange > 0 ? '+' : '') + formatNumber(popChange, 1) : '—'}</td>
+                    <td style="text-align: right">${formatNumber(datasets.night_lights?.mean_radiance, 2)}</td>
+                    <td style="text-align: right">${formatNumber(external.coneval_irs?.weighted_avg_irs, 2)}</td>
+                `;
+
+                // Table 3: Climate
+                const climProj = datasets.climate_projections?.scenarios?.ssp585?.['2041-2070'];
+                const tempChange = climProj?.temperature?.change_from_baseline;
+
+                let precipChange = null;
+                let tropNights = null;
+                let soilMoisture = null;
+
+                if (anp.climateSSR && anp.climateSSR.data) {
+                    const ssr = anp.climateSSR.data.rcp85?.['2041-2070'];
+                    precipChange = ssr?.precipitation;
+                    tropNights = ssr?.tropical_nights;
+                    soilMoisture = ssr?.soil_moisture;
+                }
+
+                const climateRow = climateBody.insertRow();
+                climateRow.innerHTML = `
+                    <td class="anp-name">${anp.name}</td>
+                    <td>${states}</td>
+                    <td style="text-align: right">${tempChange != null ? '+' + formatNumber(tempChange, 1) : '—'}</td>
+                    <td style="text-align: right">${precipChange != null ? (precipChange > 0 ? '+' : '') + formatNumber(precipChange, 0) : '—'}</td>
+                    <td style="text-align: right">${tropNights != null ? '+' + formatNumber(tropNights, 0) : '—'}</td>
+                    <td style="text-align: right">${soilMoisture != null ? (soilMoisture > 0 ? '+' : '') + formatNumber(soilMoisture, 0) : '—'}</td>
+                `;
+
+                // Table 4: Biodiversity
+                const mangroveArea = datasets.mangroves?.area_km2 || 0;
+                const forestCover = datasets.forest?.tree_cover_2000_percent || 0;
+                const totalSpecies = external.gbif_species?.total_species || 0;
+                const nom059 = external.simec_nom059?.total_species || 0;
+
+                const biodivRow = biodivBody.insertRow();
+                biodivRow.innerHTML = `
+                    <td class="anp-name">${anp.name}</td>
+                    <td>${states}</td>
+                    <td style="text-align: right">${formatNumber(forestCover, 0)}</td>
+                    <td style="text-align: right">${mangroveArea > 0 ? formatNumber(mangroveArea, 1) : '—'}</td>
+                    <td style="text-align: right">${totalSpecies > 0 ? formatNumber(totalSpecies, 0) : '—'}</td>
+                    <td style="text-align: right">${nom059 > 0 ? formatNumber(nom059, 0) : '—'}</td>
+                `;
+
+                // Table 5: Threats
+                let forestLoss = 0;
+                if (datasets.forest?.loss_by_year) {
+                    for (const year of ['2019', '2020', '2021', '2022', '2023']) {
+                        forestLoss += datasets.forest.loss_by_year[year] || 0;
+                    }
+                }
+
+                let burnedArea = 0;
+                if (datasets.fire?.burned_area_km2_by_year) {
+                    for (const [year, area] of Object.entries(datasets.fire.burned_area_km2_by_year)) {
+                        if (year >= '2019') {
+                            burnedArea += area;
+                        }
+                    }
+                }
+
+                const hmi = datasets.human_modification?.mean_index;
+
+                const threatsRow = threatsBody.insertRow();
+                threatsRow.innerHTML = `
+                    <td class="anp-name">${anp.name}</td>
+                    <td>${states}</td>
+                    <td style="text-align: right">${forestLoss > 0 ? formatNumber(forestLoss, 1) : '—'}</td>
+                    <td style="text-align: right">${burnedArea > 0 ? formatNumber(burnedArea, 1) : '—'}</td>
+                    <td style="text-align: right">${formatNumber(hmi, 3)}</td>
+                `;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadAllData);
+    </script>
+</body>
+</html>
