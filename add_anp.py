@@ -31,6 +31,13 @@ try:
 except ImportError:
     HAS_REGISTRY = False
 
+# Database support (optional but recommended)
+try:
+    from db.db_utils import save_anp_data, export_anp_to_json, test_connection
+    HAS_DATABASE = True
+except ImportError:
+    HAS_DATABASE = False
+
 DATA_DIR = 'anp_data'
 INDEX_FILE = 'anp_index.json'
 
@@ -524,57 +531,101 @@ def update_index(anp_id, anp_name, data_file, boundary_file):
     print(f"\n  Updated {INDEX_FILE}")
 
 
-def add_anp(search_name):
-    """Add a new ANP to the dashboard."""
+def add_anp(search_name, use_database=True):
+    """Add a new ANP to the dashboard.
+
+    Args:
+        search_name: Name to search for in WDPA
+        use_database: If True (default), save to PostgreSQL and regenerate JSON.
+                      If False, save directly to JSON files (legacy mode).
+    """
     print(f"\n{'='*60}")
     print(f"Adding Protected Area: {search_name}")
     print('='*60)
-    
+
     init()
-    
+
+    # Check database availability
+    if use_database and not HAS_DATABASE:
+        print("\n  WARNING: Database not available, falling back to JSON-only mode")
+        print("  (Install psycopg2-binary and check db/db_utils.py)")
+        use_database = False
+
+    if use_database:
+        print("  Mode: Database (source of truth) + JSON export")
+    else:
+        print("  Mode: JSON files only (legacy)")
+
     print("\n  Searching WDPA...")
     anp_collection = get_anp_by_name(search_name)
     count = anp_collection.size().getInfo()
-    
+
     if count == 0:
         print(f"\n  ERROR: No ANP found matching '{search_name}'")
         print("  Try: python3 add_anp.py --list")
         return None
-    
+
     anp = anp_collection.first()
     info = anp.getInfo()
     name = info['properties'].get('NAME', search_name)
-    
+
     print(f"  Found: {name}")
-    
+
     os.makedirs(DATA_DIR, exist_ok=True)
-    
+
     anp_id = slugify(name)
     data_file = f"{DATA_DIR}/{anp_id}_data.json"
     boundary_file = f"{DATA_DIR}/{anp_id}_boundary.geojson"
-    
+
     print(f"\n  Extracting data (this takes 2-3 minutes)...\n")
     data = extract_all_data(anp)
-    
-    with open(data_file, 'w') as f:
-        json.dump(data, f, indent=2)
-    print(f"\n  Saved: {data_file}")
-    
+
     print("  Extracting boundary...")
     boundary = {
         "type": "FeatureCollection",
         "features": [extract_boundary_geojson(anp)]
     }
-    with open(boundary_file, 'w') as f:
-        json.dump(boundary, f)
-    print(f"  Saved: {boundary_file}")
-    
+
+    if use_database:
+        # Save to database first
+        print("\n  Saving to database...")
+        result = save_anp_data(anp_id, data, boundary, source='gee')
+        if result['success']:
+            print(f"    Saved {result['datasets_saved']} datasets to PostgreSQL")
+        else:
+            print(f"    ERROR saving to database: {result.get('error')}")
+            print("    Falling back to JSON-only mode")
+            use_database = False
+
+        # Export from database to JSON
+        if use_database:
+            print("  Exporting to JSON...")
+            export_result = export_anp_to_json(anp_id, DATA_DIR)
+            if export_result['success']:
+                print(f"    Saved: {export_result['data_file']}")
+                if export_result.get('boundary_file'):
+                    print(f"    Saved: {export_result['boundary_file']}")
+            else:
+                print(f"    ERROR exporting JSON: {export_result.get('error')}")
+
+    if not use_database:
+        # Legacy JSON-only mode
+        with open(data_file, 'w') as f:
+            json.dump(data, f, indent=2)
+        print(f"\n  Saved: {data_file}")
+
+        with open(boundary_file, 'w') as f:
+            json.dump(boundary, f)
+        print(f"  Saved: {boundary_file}")
+
     update_index(anp_id, name, data_file, boundary_file)
-    
+
     print(f"\n{'='*60}")
     print(f"SUCCESS! Added: {name}")
+    if use_database:
+        print("  (Data saved to database and exported to JSON)")
     print('='*60)
-    
+
     return anp_id
 
 
@@ -582,15 +633,27 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: python3 add_anp.py \"<ANP name>\"")
         print("       python3 add_anp.py --list")
+        print("       python3 add_anp.py --no-db \"<ANP name>\"  # Skip database, JSON only")
         sys.exit(1)
-    
-    arg = sys.argv[1]
-    
+
+    args = sys.argv[1:]
+    use_database = True
+
+    if '--no-db' in args:
+        use_database = False
+        args.remove('--no-db')
+
+    if not args:
+        print("Error: No ANP name provided")
+        sys.exit(1)
+
+    arg = args[0]
+
     if arg == '--list':
         init()
         list_mexican_anps()
     else:
-        add_anp(arg)
+        add_anp(arg, use_database=use_database)
 
 
 if __name__ == '__main__':

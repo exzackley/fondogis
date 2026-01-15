@@ -22,6 +22,13 @@ except ImportError:
     def init_ee():
         ee.Initialize(project='gen-lang-client-0866285082')
 
+# Database support
+try:
+    from db.db_utils import upsert_dataset, export_anp_to_json, execute_query
+    HAS_DATABASE = True
+except ImportError:
+    HAS_DATABASE = False
+
 DATA_DIR = 'anp_data'
 CMIP6_COLLECTION = 'NASA/GDDP-CMIP6'
 
@@ -294,35 +301,52 @@ def categorize_drought_risk(mean_precip_mm_day):
         return "Low"
 
 
-def process_anp(data_file, force=False):
+def process_anp(data_file, force=False, use_database=True):
+    """Process climate projections for a single ANP.
+
+    Args:
+        data_file: Path to the ANP data JSON file
+        force: If True, re-extract even if data exists
+        use_database: If True, save to database and regenerate JSON
+    """
+    # Get ANP ID from filename
+    anp_id = os.path.basename(data_file).replace('_data.json', '')
+
     with open(data_file) as f:
         data = json.load(f)
-    
+
     name = data.get('metadata', {}).get('name', os.path.basename(data_file))
-    
+
     existing = data.get('datasets', {}).get('climate_projections', {})
     if not force and existing and existing.get('data_available') and 'error' not in existing:
         print(f"  {name}: Already has climate projections, skipping (use --force to re-extract)")
         return 'skipped'
-    
+
     bounds = data.get('geometry', {}).get('bounds')
     if not bounds:
         print(f"  {name}: No bounds found, skipping")
         return 'skipped'
-    
+
     print(f"  {name}: Extracting climate projections...")
-    
+
     try:
         projections = extract_climate_projections(bounds)
-        
-        if 'datasets' not in data:
-            data['datasets'] = {}
-        
-        data['datasets']['climate_projections'] = projections
-        
-        with open(data_file, 'w') as f:
-            json.dump(data, f, indent=2)
-        
+
+        # Save to database if available
+        if use_database and HAS_DATABASE:
+            upsert_dataset(anp_id, 'climate_projections', projections, source='gee')
+            # Regenerate JSON from database
+            export_anp_to_json(anp_id, DATA_DIR)
+        else:
+            # Legacy: update JSON file directly
+            if 'datasets' not in data:
+                data['datasets'] = {}
+
+            data['datasets']['climate_projections'] = projections
+
+            with open(data_file, 'w') as f:
+                json.dump(data, f, indent=2)
+
         if projections.get('data_available'):
             ssp245 = projections.get('scenarios', {}).get('ssp245', {})
             mid_century = ssp245.get('2041-2070', {})
@@ -334,9 +358,9 @@ def process_anp(data_file, force=False):
                 print("    Data extracted")
         else:
             print(f"    Warning: {projections.get('error', 'Unknown error')}")
-        
+
         return 'success'
-        
+
     except Exception as e:
         print(f"  ERROR: {e}")
         return 'error'
@@ -346,24 +370,30 @@ def main():
     print("\n" + "="*60)
     print("NASA CMIP6 Climate Projections Extraction")
     print("="*60)
-    
+
     init()
     print("GEE initialized")
     print(f"Using {len(MODELS)} climate models")
     print(f"Baseline: 1981-2010 (30 years)")
     print(f"Future periods: {', '.join(FUTURE_PERIODS.keys())}")
     print(f"Scenarios: {', '.join(SCENARIOS)}\n")
-    
+
     data_files = sorted(glob(f"{DATA_DIR}/*_data.json"))
     force = False
-    
+    use_database = HAS_DATABASE  # Default to using database if available
+
     if len(sys.argv) > 1:
         args = sys.argv[1:]
         if '--force' in args:
             force = True
             args.remove('--force')
             print("FORCE MODE: Re-processing (will overwrite existing data)")
-        
+
+        if '--no-db' in args:
+            use_database = False
+            args.remove('--no-db')
+            print("NO-DB MODE: Saving directly to JSON files")
+
         if args:
             arg = args[0]
             if arg == '--test':
@@ -375,25 +405,30 @@ def main():
                 if not data_files:
                     print(f"No ANP found matching '{arg}'")
                     return
-    
+
+    if use_database:
+        print("Mode: Database (source of truth) + JSON export")
+    else:
+        print("Mode: JSON files only")
+
     print(f"Processing {len(data_files)} ANP files...\n")
-    
+
     success = 0
     skipped = 0
     errors = 0
-    
+
     for i, data_file in enumerate(data_files, 1):
         if i > 1:
             time.sleep(1.0)
-        
-        result = process_anp(data_file, force=force)
+
+        result = process_anp(data_file, force=force, use_database=use_database)
         if result == 'success':
             success += 1
         elif result == 'skipped':
             skipped += 1
         else:
             errors += 1
-    
+
     print("\n" + "="*60)
     print(f"Complete: {success} updated, {skipped} skipped, {errors} errors")
     print("="*60)

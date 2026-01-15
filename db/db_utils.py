@@ -293,6 +293,228 @@ def log_extraction(anp_id: str, dataset_type: str, script_name: str,
             """, (anp_id, dataset_type, script_name, status, error_message, rows_affected))
 
 
+def save_anp_data(anp_id: str, data: dict, boundary_geojson: dict = None, source: str = 'gee') -> dict:
+    """
+    Save complete ANP data structure to database.
+
+    This is the main function to call after extracting data from GEE or other sources.
+    It handles metadata, geometry, all datasets, and boundary in one transaction.
+
+    Args:
+        anp_id: ANP identifier (e.g., 'calakmul')
+        data: Full ANP data dict with keys: metadata, geometry, datasets, external_data
+        boundary_geojson: Optional boundary GeoJSON FeatureCollection
+        source: Data source identifier (default: 'gee')
+
+    Returns:
+        Dict with save results: {'success': bool, 'datasets_saved': int, 'error': str}
+
+    Example:
+        data = extract_all_data(anp_feature)  # From add_anp.py
+        boundary = extract_boundary_geojson(anp_feature)
+        result = save_anp_data('calakmul', data, boundary)
+    """
+    metadata = data.get('metadata', {})
+    geometry = data.get('geometry', {})
+    datasets = data.get('datasets', {})
+    external_data = data.get('external_data', {})
+
+    # Store geometry in metadata for perfect round-trip export
+    metadata['_geometry'] = geometry
+
+    datasets_saved = 0
+
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                # 1. Save ANP record
+                cur.execute("""
+                    INSERT INTO anps (
+                        id, name, designation, designation_type,
+                        area_km2, wdpa_id, estados, region,
+                        iucn_category, governance, management_authority,
+                        centroid, bounds, metadata
+                    ) VALUES (
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                    )
+                    ON CONFLICT (id) DO UPDATE SET
+                        name = EXCLUDED.name,
+                        designation = EXCLUDED.designation,
+                        designation_type = EXCLUDED.designation_type,
+                        area_km2 = EXCLUDED.area_km2,
+                        wdpa_id = EXCLUDED.wdpa_id,
+                        estados = EXCLUDED.estados,
+                        region = EXCLUDED.region,
+                        iucn_category = EXCLUDED.iucn_category,
+                        governance = EXCLUDED.governance,
+                        management_authority = EXCLUDED.management_authority,
+                        centroid = EXCLUDED.centroid,
+                        bounds = EXCLUDED.bounds,
+                        metadata = EXCLUDED.metadata,
+                        updated_at = NOW()
+                """, (
+                    anp_id,
+                    metadata.get('name'),
+                    metadata.get('designation') or metadata.get('categoria_de_manejo'),
+                    metadata.get('designation_type'),
+                    metadata.get('reported_area_km2'),
+                    metadata.get('wdpa_id'),
+                    metadata.get('estados', []),
+                    metadata.get('region'),
+                    metadata.get('iucn_category'),
+                    metadata.get('governance'),
+                    metadata.get('management_authority'),
+                    json.dumps(geometry.get('centroid')),
+                    json.dumps(geometry.get('bounds')),
+                    Json(metadata)
+                ))
+
+                # 2. Save all datasets
+                for dataset_type, dataset_data in datasets.items():
+                    if dataset_data:
+                        cur.execute("""
+                            INSERT INTO anp_datasets (anp_id, dataset_type, data, source, extracted_at)
+                            VALUES (%s, %s, %s, %s, NOW())
+                            ON CONFLICT (anp_id, dataset_type) DO UPDATE SET
+                                data = EXCLUDED.data,
+                                source = COALESCE(EXCLUDED.source, anp_datasets.source),
+                                extracted_at = NOW()
+                        """, (anp_id, dataset_type, Json(dataset_data), source))
+                        datasets_saved += 1
+
+                # 3. Save external data as datasets
+                for dataset_type, dataset_data in external_data.items():
+                    if dataset_data:
+                        ext_source = {
+                            'gbif_species': 'gbif',
+                            'inaturalist': 'inaturalist',
+                            'inegi_census': 'inegi',
+                            'coneval_irs': 'coneval',
+                            'simec_nom059': 'simec'
+                        }.get(dataset_type, 'external')
+                        cur.execute("""
+                            INSERT INTO anp_datasets (anp_id, dataset_type, data, source, extracted_at)
+                            VALUES (%s, %s, %s, %s, NOW())
+                            ON CONFLICT (anp_id, dataset_type) DO UPDATE SET
+                                data = EXCLUDED.data,
+                                source = COALESCE(EXCLUDED.source, anp_datasets.source),
+                                extracted_at = NOW()
+                        """, (anp_id, dataset_type, Json(dataset_data), ext_source))
+                        datasets_saved += 1
+
+                # 4. Save boundary if provided
+                if boundary_geojson:
+                    cur.execute("""
+                        INSERT INTO anp_boundaries (anp_id, geojson)
+                        VALUES (%s, %s)
+                        ON CONFLICT (anp_id) DO UPDATE SET
+                            geojson = EXCLUDED.geojson,
+                            created_at = NOW()
+                    """, (anp_id, Json(boundary_geojson)))
+
+            conn.commit()
+
+        return {'success': True, 'datasets_saved': datasets_saved}
+
+    except Exception as e:
+        return {'success': False, 'datasets_saved': datasets_saved, 'error': str(e)}
+
+
+def export_anp_to_json(anp_id: str, output_dir: str = 'anp_data') -> dict:
+    """
+    Export a single ANP from database to JSON files.
+
+    Args:
+        anp_id: ANP identifier
+        output_dir: Directory to write files (default: 'anp_data')
+
+    Returns:
+        Dict with export results: {'success': bool, 'data_file': str, 'boundary_file': str}
+    """
+    from pathlib import Path
+
+    # Get ANP data
+    anp = execute_query(
+        "SELECT * FROM anps WHERE id = %s",
+        (anp_id,),
+        fetch='one'
+    )
+
+    if not anp:
+        return {'success': False, 'error': f'ANP not found: {anp_id}'}
+
+    # Get datasets
+    datasets_rows = execute_query(
+        "SELECT dataset_type, data FROM anp_datasets WHERE anp_id = %s",
+        (anp_id,)
+    )
+
+    # Get boundary
+    boundary = execute_query(
+        "SELECT geojson FROM anp_boundaries WHERE anp_id = %s",
+        (anp_id,),
+        fetch='one'
+    )
+
+    # Reconstruct JSON structure
+    metadata = anp.get('metadata') or {}
+
+    # Build geometry from stored _geometry
+    geometry = metadata.pop('_geometry', {})
+    if not geometry:
+        if anp.get('centroid'):
+            geometry['centroid'] = anp['centroid']
+        if anp.get('bounds'):
+            geometry['bounds'] = anp['bounds']
+
+    # Categorize datasets
+    gee_datasets = {
+        'population', 'elevation', 'land_cover', 'forest', 'climate',
+        'vegetation', 'night_lights', 'fire', 'biodiversity', 'human_modification',
+        'water_stress', 'gedi_biomass', 'climate_projections', 'climate_portal',
+        'soil', 'surface_water', 'mangroves'
+    }
+
+    datasets = {}
+    external_data = {}
+
+    for row in datasets_rows:
+        dtype = row['dataset_type']
+        if dtype in gee_datasets:
+            datasets[dtype] = row['data']
+        else:
+            external_data[dtype] = row['data']
+
+    # Build final structure
+    anp_data = {
+        'metadata': metadata,
+        'geometry': geometry,
+        'datasets': datasets
+    }
+    if external_data:
+        anp_data['external_data'] = external_data
+
+    # Write files
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    data_file = output_path / f'{anp_id}_data.json'
+    with open(data_file, 'w') as f:
+        json.dump(anp_data, f, indent=2, ensure_ascii=False)
+
+    boundary_file = None
+    if boundary and boundary.get('geojson'):
+        boundary_file = output_path / f'{anp_id}_boundary.geojson'
+        with open(boundary_file, 'w') as f:
+            json.dump(boundary['geojson'], f, indent=2, ensure_ascii=False)
+
+    return {
+        'success': True,
+        'data_file': str(data_file),
+        'boundary_file': str(boundary_file) if boundary_file else None
+    }
+
+
 def test_connection() -> bool:
     """Test database connection."""
     try:
