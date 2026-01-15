@@ -26,6 +26,13 @@ except ImportError:
     HAS_REQUESTS = False
     print("Warning: requests not installed. Install with: pip install requests")
 
+# Database support
+try:
+    from db.db_utils import upsert_dataset, export_anp_to_json
+    HAS_DATABASE = True
+except ImportError:
+    HAS_DATABASE = False
+
 DATA_DIR = 'anp_data'
 INAT_API = 'https://api.inaturalist.org/v1'
 INAT_DELAY = 1.1
@@ -162,36 +169,50 @@ def extract_inaturalist_data(anp_data):
     }
 
 
-def process_anp(anp_file):
-    """Add iNaturalist data to a single ANP file."""
+def process_anp(anp_file, use_database=True):
+    """Add iNaturalist data to a single ANP file.
+
+    Args:
+        anp_file: Filename of the ANP data JSON file
+        use_database: If True, save to database and regenerate JSON
+    """
     filepath = os.path.join(DATA_DIR, anp_file)
-    
+    # Get ANP ID from filename
+    anp_id = anp_file.replace('_data.json', '')
+
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             anp_data = json.load(f)
     except Exception as e:
         print(f"  Error reading {anp_file}: {e}")
         return False
-    
+
     anp_name = anp_data.get('metadata', {}).get('name', anp_file)
-    
+
     existing = anp_data.get('external_data', {}).get('inaturalist')
     if existing and existing.get('data_available') == True:
         print(f"  {anp_name}: Already has iNaturalist data, skipping")
         return True
-    
+
     print(f"  {anp_name}: Extracting...", end=' ', flush=True)
-    
+
     result = extract_inaturalist_data(anp_data)
-    
-    if 'external_data' not in anp_data:
-        anp_data['external_data'] = {}
-    anp_data['external_data']['inaturalist'] = result
-    
+
     try:
-        with open(filepath, 'w', encoding='utf-8') as f:
-            json.dump(anp_data, f, indent=2, ensure_ascii=False)
-        
+        # Save to database if available
+        if use_database and HAS_DATABASE:
+            upsert_dataset(anp_id, 'inaturalist', result, source='inaturalist')
+            # Regenerate JSON from database
+            export_anp_to_json(anp_id, DATA_DIR)
+        else:
+            # Legacy: update JSON file directly
+            if 'external_data' not in anp_data:
+                anp_data['external_data'] = {}
+            anp_data['external_data']['inaturalist'] = result
+
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(anp_data, f, indent=2, ensure_ascii=False)
+
         if result.get('data_available'):
             species = result.get('unique_species', 0)
             obs = result.get('total_observations', 0)
@@ -208,15 +229,24 @@ def main():
     parser = argparse.ArgumentParser(description='Add iNaturalist citizen science data to ANP files')
     parser.add_argument('anp_name', nargs='?', help='Specific ANP to process')
     parser.add_argument('--test', action='store_true', help='Test with first 3 ANPs')
+    parser.add_argument('--no-db', action='store_true', help='Save directly to JSON files instead of database')
     args = parser.parse_args()
-    
+
     if not HAS_REQUESTS:
         print("Error: requests library required. Install with: pip install requests")
         sys.exit(1)
-    
+
+    use_database = HAS_DATABASE and not args.no_db
+    if args.no_db:
+        print("NO-DB MODE: Saving directly to JSON files")
+    elif use_database:
+        print("Mode: Database (source of truth) + JSON export")
+    else:
+        print("Mode: JSON files only")
+
     anp_files = sorted([f for f in os.listdir(DATA_DIR) if f.endswith('_data.json')])
     print(f"Found {len(anp_files)} ANP data files\n")
-    
+
     if args.anp_name:
         pattern = args.anp_name.lower().replace(' ', '_')
         matching = [f for f in anp_files if pattern in f.lower()]
@@ -227,13 +257,13 @@ def main():
     elif args.test:
         anp_files = anp_files[:3]
         print("Test mode: processing first 3 ANPs\n")
-    
+
     print("Processing ANPs (rate limited to 1 req/sec)...")
     success = 0
     for anp_file in anp_files:
-        if process_anp(anp_file):
+        if process_anp(anp_file, use_database=use_database):
             success += 1
-    
+
     print(f"\nDone! Processed {success}/{len(anp_files)} ANPs")
 
 

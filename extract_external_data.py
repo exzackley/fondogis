@@ -29,6 +29,13 @@ try:
 except ImportError:
     HAS_PANDAS = False
 
+# Database support
+try:
+    from db.db_utils import upsert_dataset, export_anp_to_json
+    HAS_DATABASE = True
+except ImportError:
+    HAS_DATABASE = False
+
 DATA_DIR = 'anp_data'
 INDEX_FILE = 'anp_index.json'
 REFERENCE_DIR = 'reference_data'
@@ -535,45 +542,50 @@ def get_simec_nom059_for_anp(anp_name, simec_data):
     return None
 
 
-def extract_external_data(anp_id):
-    """Extract all external data for an ANP."""
-    
+def extract_external_data(anp_id, use_database=True):
+    """Extract all external data for an ANP.
+
+    Args:
+        anp_id: ANP identifier
+        use_database: If True, save to database and regenerate JSON
+    """
+
     # Load index to find files
     with open(INDEX_FILE) as f:
         index = json.load(f)
-    
+
     anp = next((a for a in index['anps'] if a['id'] == anp_id), None)
     if not anp:
         print(f"ERROR: ANP '{anp_id}' not found in index")
         return None
-    
+
     print(f"\n{'='*60}")
     print(f"Extracting External Data: {anp['name']}")
     print('='*60)
-    
+
     # Load existing data
     data_file = anp['data_file']
     with open(data_file) as f:
         data = json.load(f)
-    
+
     # Load boundary
     boundary = load_boundary(anp['boundary_file'])
-    
+
     # Initialize external_data section
     if 'external_data' not in data:
         data['external_data'] = {}
-    
+
     ext = data['external_data']
-    
+
     # 1. GBIF Species
     print("\n  GBIF Species Data:")
     ext['gbif_species'] = query_gbif_species(boundary)
     time.sleep(GBIF_DELAY)
-    
+
     # 2. GBIF Threatened Species
     ext['iucn_threatened'] = query_gbif_threatened_species(boundary)
     time.sleep(GBIF_DELAY)
-    
+
     # 3. NOM-059 from SIMEC (official CONANP data - more complete)
     print("\n  CONANP SIMEC NOM-059 Species:")
     simec_data = load_simec_nom059_data()
@@ -584,14 +596,14 @@ def extract_external_data(anp_id):
     else:
         ext['simec_nom059'] = {'error': 'ANP not found in SIMEC data'}
         print("    ANP not found in SIMEC regional data")
-    
+
     # 4. NOM-059 Status from Enciclovida (as backup/cross-reference)
     if ext['gbif_species'].get('top_species'):
         species_names = [sp['scientific_name'] for sp in ext['gbif_species']['top_species']]
         ext['nom059_enciclovida'] = query_enciclovida_nom059(species_names)
     else:
         ext['nom059_enciclovida'] = {'error': 'No species data to check'}
-    
+
     # 5. INEGI Census data (socioeconomic, indigenous population)
     print("\n  INEGI Census Data:")
     bbox = get_bounding_box(boundary)
@@ -607,37 +619,59 @@ def extract_external_data(anp_id):
             print(f"    {inegi_result.get('error')}")
     else:
         ext['inegi_census'] = {'error': 'Could not get bounding box'}
-    
+
     # Add extraction metadata
     ext['extracted_at'] = datetime.now().isoformat()
-    
-    # Save updated data
-    with open(data_file, 'w') as f:
-        json.dump(data, f, indent=2)
-    
-    print(f"\n  Updated: {data_file}")
+
+    # Save to database or JSON
+    if use_database and HAS_DATABASE:
+        # Save each external dataset type to database
+        for dataset_type, dataset_data in ext.items():
+            if dataset_type == 'extracted_at':
+                continue  # Skip metadata field
+            source = {
+                'gbif_species': 'gbif',
+                'iucn_threatened': 'gbif',
+                'simec_nom059': 'simec',
+                'nom059_enciclovida': 'enciclovida',
+                'inegi_census': 'inegi'
+            }.get(dataset_type, 'external')
+            upsert_dataset(anp_id, dataset_type, dataset_data, source=source)
+        # Regenerate JSON from database
+        export_anp_to_json(anp_id, DATA_DIR)
+        print(f"\n  Saved to database and exported JSON")
+    else:
+        # Legacy: update JSON file directly
+        with open(data_file, 'w') as f:
+            json.dump(data, f, indent=2)
+        print(f"\n  Updated: {data_file}")
+
     print(f"\n{'='*60}")
     print(f"SUCCESS! External data added for: {anp['name']}")
     print('='*60)
-    
+
     return data
 
 
-def process_all_anps():
-    """Process all ANPs in the index."""
+def process_all_anps(use_database=True):
+    """Process all ANPs in the index.
+
+    Args:
+        use_database: If True, save to database and regenerate JSON
+    """
     with open(INDEX_FILE) as f:
         index = json.load(f)
-    
+
     total = len(index['anps'])
     print(f"\nProcessing {total} ANPs...")
-    
+
     for i, anp in enumerate(index['anps'], 1):
         print(f"\n[{i}/{total}] {anp['name']}")
         try:
-            extract_external_data(anp['id'])
+            extract_external_data(anp['id'], use_database=use_database)
         except Exception as e:
             print(f"  ERROR: {e}")
-        
+
         # Rate limiting between ANPs
         time.sleep(2)
 
@@ -647,12 +681,29 @@ def main():
         print("Usage: python3 extract_external_data.py \"<ANP name or ID>\"")
         print("       python3 extract_external_data.py --all")
         print("       python3 extract_external_data.py --list")
+        print("       python3 extract_external_data.py --no-db \"<ANP>\"  # Skip database")
         sys.exit(1)
-    
-    arg = sys.argv[1]
-    
+
+    args = sys.argv[1:]
+    use_database = HAS_DATABASE
+
+    if '--no-db' in args:
+        use_database = False
+        args.remove('--no-db')
+        print("NO-DB MODE: Saving directly to JSON files")
+    elif use_database:
+        print("Mode: Database (source of truth) + JSON export")
+    else:
+        print("Mode: JSON files only")
+
+    if not args:
+        print("ERROR: No ANP specified")
+        sys.exit(1)
+
+    arg = args[0]
+
     if arg == '--all':
-        process_all_anps()
+        process_all_anps(use_database=use_database)
     elif arg == '--list':
         with open(INDEX_FILE) as f:
             index = json.load(f)
@@ -665,15 +716,15 @@ def main():
         # Try to find by ID or name
         with open(INDEX_FILE) as f:
             index = json.load(f)
-        
+
         anp_id = None
         for anp in index['anps']:
             if anp['id'] == arg or arg.lower() in anp['name'].lower():
                 anp_id = anp['id']
                 break
-        
+
         if anp_id:
-            extract_external_data(anp_id)
+            extract_external_data(anp_id, use_database=use_database)
         else:
             print(f"ERROR: ANP '{arg}' not found")
             print("Use --list to see available ANPs")

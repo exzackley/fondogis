@@ -27,7 +27,14 @@ try:
     from gee_auth import init_ee
 except ImportError:
     def init_ee():
-        ee.Initialize(project='new-newconsensus')
+        ee.Initialize(project='gen-lang-client-0866285082')
+
+# Database support
+try:
+    from db.db_utils import upsert_dataset, export_anp_to_json
+    HAS_DATABASE = True
+except ImportError:
+    HAS_DATABASE = False
 
 DATA_DIR = 'anp_data'
 
@@ -112,47 +119,62 @@ def extract_gedi_biomass(geometry):
         return {"error": str(e), "extracted_at": datetime.now().isoformat()}
 
 
-def process_anp(data_file):
-    """Add GEDI biomass data to a single ANP file."""
+def process_anp(data_file, use_database=True):
+    """Add GEDI biomass data to a single ANP file.
+
+    Args:
+        data_file: Path to the ANP data JSON file
+        use_database: If True, save to database and regenerate JSON
+    """
+    # Get ANP ID from filename
+    anp_id = os.path.basename(data_file).replace('_data.json', '')
+
     with open(data_file) as f:
         data = json.load(f)
-    
+
     name = data.get('metadata', {}).get('name', os.path.basename(data_file))
-    
+
     # Check if already has GEDI data
     existing = data.get('datasets', {}).get('gedi_biomass', {})
     if existing and 'error' not in existing and existing.get('source') == 'NASA GEDI L4A (Aboveground Biomass Density)':
         print(f"  {name}: Already has GEDI data, skipping")
         return 'skipped'
-    
+
     # Get geometry from bounds
     bounds = data.get('geometry', {}).get('bounds')
     if not bounds:
         print(f"  {name}: No bounds found, skipping")
         return 'skipped'
-    
+
     print(f"  {name}: Extracting...", end=" ", flush=True)
-    
+
     try:
         gedi_data = extract_gedi_biomass(bounds)
-        
-        if 'datasets' not in data:
-            data['datasets'] = {}
-        
-        data['datasets']['gedi_biomass'] = gedi_data
-        
-        with open(data_file, 'w') as f:
-            json.dump(data, f, indent=2)
-        
+
+        # Save to database if available
+        if use_database and HAS_DATABASE:
+            upsert_dataset(anp_id, 'gedi_biomass', gedi_data, source='gee')
+            # Regenerate JSON from database
+            export_anp_to_json(anp_id, DATA_DIR)
+        else:
+            # Legacy: update JSON file directly
+            if 'datasets' not in data:
+                data['datasets'] = {}
+
+            data['datasets']['gedi_biomass'] = gedi_data
+
+            with open(data_file, 'w') as f:
+                json.dump(data, f, indent=2)
+
         if gedi_data.get('data_available'):
             agbd = gedi_data.get('agbd_mean_mg_ha')
             carbon = gedi_data.get('total_carbon_estimate_mt')
             print(f"OK (AGBD: {agbd} Mg/ha, ~{carbon} MT carbon)")
         else:
             print("OK (no GEDI coverage)")
-        
+
         return 'success'
-        
+
     except Exception as e:
         print(f"ERROR: {e}")
         return 'error'
@@ -162,45 +184,58 @@ def main():
     print("\n" + "="*60)
     print("NASA GEDI Aboveground Biomass Extraction")
     print("="*60)
-    
+
     init_ee()
-    print("GEE initialized\n")
-    
+    print("GEE initialized")
+
     # Get list of data files
     data_files = sorted(glob(f"{DATA_DIR}/*_data.json"))
-    
+    use_database = HAS_DATABASE  # Default to using database if available
+
     if len(sys.argv) > 1:
-        arg = sys.argv[1]
-        if arg == '--test':
-            data_files = data_files[:3]
-            print(f"TEST MODE: Processing first 3 ANPs")
-        else:
-            # Find specific ANP
-            search = arg.lower().replace(' ', '_')
-            data_files = [f for f in data_files if search in f.lower()]
-            if not data_files:
-                print(f"No ANP found matching '{arg}'")
-                return
-    
+        args = sys.argv[1:]
+        if '--no-db' in args:
+            use_database = False
+            args.remove('--no-db')
+            print("NO-DB MODE: Saving directly to JSON files")
+
+        if args:
+            arg = args[0]
+            if arg == '--test':
+                data_files = data_files[:3]
+                print(f"TEST MODE: Processing first 3 ANPs")
+            else:
+                # Find specific ANP
+                search = arg.lower().replace(' ', '_')
+                data_files = [f for f in data_files if search in f.lower()]
+                if not data_files:
+                    print(f"No ANP found matching '{arg}'")
+                    return
+
+    if use_database:
+        print("Mode: Database (source of truth) + JSON export")
+    else:
+        print("Mode: JSON files only")
+
     print(f"Processing {len(data_files)} ANP files...\n")
-    
+
     success = 0
     skipped = 0
     errors = 0
-    
+
     for i, data_file in enumerate(data_files, 1):
         # Rate limit
         if i > 1:
             time.sleep(0.5)
-        
-        result = process_anp(data_file)
+
+        result = process_anp(data_file, use_database=use_database)
         if result == 'success':
             success += 1
         elif result == 'skipped':
             skipped += 1
         else:
             errors += 1
-    
+
     print("\n" + "="*60)
     print(f"Complete: {success} updated, {skipped} skipped, {errors} errors")
     print("="*60)

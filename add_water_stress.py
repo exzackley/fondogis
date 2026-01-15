@@ -31,6 +31,13 @@ except ImportError:
     def init_ee():
         ee.Initialize(project='gen-lang-client-0866285082')
 
+# Database support
+try:
+    from db.db_utils import upsert_dataset, export_anp_to_json
+    HAS_DATABASE = True
+except ImportError:
+    HAS_DATABASE = False
+
 DATA_DIR = 'anp_data'
 
 # WRI Aqueduct V4 baseline annual FeatureCollection
@@ -153,47 +160,62 @@ def extract_water_stress(geometry):
         return {"error": str(e), "extracted_at": datetime.now().isoformat()}
 
 
-def process_anp(data_file):
-    """Add water stress data to a single ANP file."""
+def process_anp(data_file, use_database=True):
+    """Add water stress data to a single ANP file.
+
+    Args:
+        data_file: Path to the ANP data JSON file
+        use_database: If True, save to database and regenerate JSON
+    """
+    # Get ANP ID from filename
+    anp_id = os.path.basename(data_file).replace('_data.json', '')
+
     with open(data_file) as f:
         data = json.load(f)
-    
+
     name = data.get('metadata', {}).get('name', os.path.basename(data_file))
-    
+
     # Check if already has valid water_stress data
     existing = data.get('datasets', {}).get('water_stress', {})
     if existing and 'error' not in existing and existing.get('source') == 'WRI Aqueduct Water Risk Atlas V4':
         print(f"  {name}: Already has V4 data, skipping")
         return 'skipped'
-    
+
     # Get geometry from bounds
     bounds = data.get('geometry', {}).get('bounds')
     if not bounds:
         print(f"  {name}: No bounds found, skipping")
         return 'skipped'
-    
+
     print(f"  {name}: Extracting...", end=" ", flush=True)
-    
+
     try:
         water_stress = extract_water_stress(bounds)
-        
-        if 'datasets' not in data:
-            data['datasets'] = {}
-        
-        data['datasets']['water_stress'] = water_stress
-        
-        with open(data_file, 'w') as f:
-            json.dump(data, f, indent=2)
-        
+
+        # Save to database if available
+        if use_database and HAS_DATABASE:
+            upsert_dataset(anp_id, 'water_stress', water_stress, source='gee')
+            # Regenerate JSON from database
+            export_anp_to_json(anp_id, DATA_DIR)
+        else:
+            # Legacy: update JSON file directly
+            if 'datasets' not in data:
+                data['datasets'] = {}
+
+            data['datasets']['water_stress'] = water_stress
+
+            with open(data_file, 'w') as f:
+                json.dump(data, f, indent=2)
+
         if water_stress.get('data_available'):
             bws = water_stress.get('baseline_water_stress')
             cat = water_stress.get('baseline_water_stress_category', '')
             print(f"OK (BWS: {bws:.2f} - {cat})" if bws else "OK (drought data only)")
         else:
             print("OK (no water stress in area - pristine)")
-        
+
         return 'success'
-        
+
     except Exception as e:
         print(f"ERROR: {e}")
         return 'error'
@@ -203,45 +225,58 @@ def main():
     print("\n" + "="*60)
     print("WRI Aqueduct Water Stress Data Extraction (V4)")
     print("="*60)
-    
+
     init()
-    print("GEE initialized\n")
-    
+    print("GEE initialized")
+
     # Get list of data files
     data_files = sorted(glob(f"{DATA_DIR}/*_data.json"))
-    
+    use_database = HAS_DATABASE  # Default to using database if available
+
     if len(sys.argv) > 1:
-        arg = sys.argv[1]
-        if arg == '--test':
-            data_files = data_files[:3]
-            print(f"TEST MODE: Processing first 3 ANPs")
-        else:
-            # Find specific ANP
-            search = arg.lower().replace(' ', '_')
-            data_files = [f for f in data_files if search in f.lower()]
-            if not data_files:
-                print(f"No ANP found matching '{arg}'")
-                return
-    
+        args = sys.argv[1:]
+        if '--no-db' in args:
+            use_database = False
+            args.remove('--no-db')
+            print("NO-DB MODE: Saving directly to JSON files")
+
+        if args:
+            arg = args[0]
+            if arg == '--test':
+                data_files = data_files[:3]
+                print(f"TEST MODE: Processing first 3 ANPs")
+            else:
+                # Find specific ANP
+                search = arg.lower().replace(' ', '_')
+                data_files = [f for f in data_files if search in f.lower()]
+                if not data_files:
+                    print(f"No ANP found matching '{arg}'")
+                    return
+
+    if use_database:
+        print("Mode: Database (source of truth) + JSON export")
+    else:
+        print("Mode: JSON files only")
+
     print(f"Processing {len(data_files)} ANP files...\n")
-    
+
     success = 0
     skipped = 0
     errors = 0
-    
+
     for i, data_file in enumerate(data_files, 1):
         # Rate limit to avoid GEE quotas
         if i > 1:
             time.sleep(0.3)
-        
-        result = process_anp(data_file)
+
+        result = process_anp(data_file, use_database=use_database)
         if result == 'success':
             success += 1
         elif result == 'skipped':
             skipped += 1
         else:
             errors += 1
-    
+
     print("\n" + "="*60)
     print(f"Complete: {success} updated, {skipped} skipped, {errors} errors")
     print("="*60)

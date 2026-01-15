@@ -92,9 +92,50 @@ Categories: `RB` (48), `PN` (79), `APFF` (57), `Sant` (28), `APRN` (15), `MN` (5
 
 ### Data Flow
 
-1. **Extraction**: Scripts write to `anp_data/{anp_id}_data.json`
-2. **Dashboard**: HTML files fetch JSON via JavaScript
-3. **Registry**: `reference_data/official_anp_list.json` is the authoritative source
+1. **Extraction**: Scripts write to PostgreSQL database (source of truth)
+2. **Export**: Database automatically exports to `anp_data/{anp_id}_data.json`
+3. **Dashboard**: HTML files fetch JSON via JavaScript
+4. **Registry**: `reference_data/official_anp_list.json` is the authoritative ANP list
+
+### Database Architecture
+
+**Source of Truth**: PostgreSQL on Linode (172.232.163.60, database: `fondogis`)
+
+All extraction scripts now save to the database first, then export to JSON. This provides:
+- Data integrity and consistency
+- Cross-ANP queries via SQL
+- Audit trail of extractions
+- Concurrent write safety
+
+```python
+# Database connection (requires POSTGRES_PASSWORD env var)
+from db.db_utils import get_connection, execute_query, upsert_dataset, export_anp_to_json
+
+# Save dataset to database
+upsert_dataset('calakmul', 'climate_projections', data, source='gee')
+
+# Export single ANP to JSON
+export_anp_to_json('calakmul', 'anp_data')
+
+# Query database directly
+rows = execute_query("SELECT * FROM anps WHERE designation_type = %s", ('RB',))
+```
+
+**Database Schema** (see `db/schema.sql`):
+- `anps` - ANP metadata (id, name, designation, area, estados, etc.)
+- `anp_datasets` - All extracted data as JSONB (one row per ANP+dataset_type)
+- `anp_boundaries` - GeoJSON boundaries
+- `extraction_log` - Audit log of extraction operations
+
+**Backwards Compatibility**: All scripts support `--no-db` flag to skip database and write directly to JSON files (legacy mode).
+
+```bash
+# Use database (default)
+python3 add_climate_projections.py "calakmul"
+
+# Skip database, write JSON only
+python3 add_climate_projections.py --no-db "calakmul"
+```
 
 ### GEE Authentication (`gee_auth.py`)
 
@@ -202,7 +243,13 @@ Do NOT run GEE batch operations via automated tool calls - they will timeout.
 
 ### File Locations
 
-- `anp_data/` - Generated JSON files (DO NOT hand-edit, regenerate instead)
+- `anp_data/` - Generated JSON files (DO NOT hand-edit, regenerate from database)
+- `db/` - Database schema and utilities
+  - `db/schema.sql` - PostgreSQL schema definition
+  - `db/db_utils.py` - Connection helpers and CRUD functions
+- `scripts/` - Import/export utilities
+  - `scripts/import_json_to_db.py` - One-time JSON → DB import
+  - `scripts/export_db_to_json.py` - Batch DB → JSON export
 - `reference_data/` - Static reference files (census, SIMEC, official ANP list)
 - `reference_data/fondo/` - Private FONDO internal data (gitignored)
 - `service_account.json` - GEE service account key (gitignored)
@@ -232,22 +279,43 @@ from datetime import datetime
 from gee_auth import init_ee
 from anp_registry import get_all_anps, get_anp_by_name
 
+# Database support (optional but recommended)
+try:
+    from db.db_utils import upsert_dataset, export_anp_to_json
+    HAS_DATABASE = True
+except ImportError:
+    HAS_DATABASE = False
+
 DATA_DIR = 'anp_data'
 
-def extract_data(anp_feature):
+def extract_data(geometry):
     """Extract data for a single ANP."""
     try:
-        geom = anp_feature.geometry()
+        geom = ee.Geometry.Polygon(geometry)
         result = {"data_available": True, "extracted_at": datetime.now().isoformat()}
         # ... extraction logic ...
         return result
     except Exception as e:
         return {"data_available": False, "error": str(e)}
 
+def process_anp(data_file, use_database=True):
+    """Process a single ANP file."""
+    anp_id = os.path.basename(data_file).replace('_data.json', '')
+    # ... load data, extract ...
+
+    if use_database and HAS_DATABASE:
+        upsert_dataset(anp_id, 'my_dataset', result, source='gee')
+        export_anp_to_json(anp_id, DATA_DIR)
+    else:
+        # Legacy: write JSON directly
+        with open(data_file, 'w') as f:
+            json.dump(data, f, indent=2)
+
 def main():
     init_ee()
+    use_database = HAS_DATABASE and '--no-db' not in sys.argv
     for anp in get_all_anps():
-        # ... process each ANP ...
+        process_anp(anp, use_database=use_database)
 
 if __name__ == '__main__':
     main()

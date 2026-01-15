@@ -23,7 +23,14 @@ try:
     from gee_auth import init_ee
 except ImportError:
     def init_ee():
-        ee.Initialize(project='new-newconsensus')
+        ee.Initialize(project='gen-lang-client-0866285082')
+
+# Database support
+try:
+    from db.db_utils import upsert_dataset, export_anp_to_json
+    HAS_DATABASE = True
+except ImportError:
+    HAS_DATABASE = False
 
 DATA_DIR = 'anp_data'
 MANGROVE_CLASS = 95  # ESA WorldCover mangrove class
@@ -115,46 +122,58 @@ def is_coastal_anp(anp_data):
     return False
 
 
-def process_anp(anp_file):
-    """Add mangrove data to a single ANP file."""
+def process_anp(anp_file, use_database=True):
+    """Add mangrove data to a single ANP file.
+
+    Args:
+        anp_file: Filename of the ANP data JSON file
+        use_database: If True, save to database and regenerate JSON
+    """
     filepath = os.path.join(DATA_DIR, anp_file)
-    
+    # Get ANP ID from filename
+    anp_id = anp_file.replace('_data.json', '')
+
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             anp_data = json.load(f)
     except Exception as e:
         print(f"  Error reading {anp_file}: {e}")
         return False, "error"
-    
+
     anp_name = anp_data.get('metadata', {}).get('name', anp_file)
-    
+
     existing = anp_data.get('datasets', {}).get('mangroves')
     if existing and existing.get('data_available') == True:
         print(f"  {anp_name}: Already has mangrove data, skipping")
         return True, "skipped"
-    
+
     bounds = anp_data.get('geometry', {}).get('bounds')
     if not bounds:
         print(f"  {anp_name}: No geometry, skipping")
         return False, "no_geometry"
-    
+
     print(f"  {anp_name}: Extracting...", end=' ', flush=True)
-    
+
     result = extract_mangrove_data(bounds)
-    
-    if 'datasets' not in anp_data:
-        anp_data['datasets'] = {}
-    anp_data['datasets']['mangroves'] = result
-    
+
     try:
-        with open(filepath, 'w', encoding='utf-8') as f:
-            json.dump(anp_data, f, indent=2, ensure_ascii=False)
-        
+        # Save to database if available
+        if use_database and HAS_DATABASE:
+            upsert_dataset(anp_id, 'mangroves', result, source='gee')
+            # Regenerate JSON from database
+            export_anp_to_json(anp_id, DATA_DIR)
+        else:
+            # Legacy: update JSON file directly
+            if 'datasets' not in anp_data:
+                anp_data['datasets'] = {}
+            anp_data['datasets']['mangroves'] = result
+
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(anp_data, f, indent=2, ensure_ascii=False)
+
         if result.get('data_available'):
-            area = result.get('latest_extent_km2', 0)
-            change = result.get('change_since_1996_pct')
-            change_str = f", {change:+.1f}% since 1996" if change is not None else ""
-            print(f"OK ({area:.2f} km2{change_str})")
+            area = result.get('mangrove_extent_km2', 0)
+            print(f"OK ({area:.2f} km2)")
             return True, "success"
         else:
             print(f"No mangroves detected")
@@ -169,14 +188,23 @@ def main():
     parser.add_argument('anp_name', nargs='?', help='Specific ANP to process')
     parser.add_argument('--test', action='store_true', help='Test with first 3 coastal ANPs')
     parser.add_argument('--all', action='store_true', help='Process ALL ANPs, not just coastal')
+    parser.add_argument('--no-db', action='store_true', help='Save directly to JSON files instead of database')
     args = parser.parse_args()
-    
+
     print("Initializing Google Earth Engine...")
     init_ee()
-    
+
+    use_database = HAS_DATABASE and not args.no_db
+    if args.no_db:
+        print("NO-DB MODE: Saving directly to JSON files")
+    elif use_database:
+        print("Mode: Database (source of truth) + JSON export")
+    else:
+        print("Mode: JSON files only")
+
     anp_files = sorted([f for f in os.listdir(DATA_DIR) if f.endswith('_data.json')])
     print(f"Found {len(anp_files)} ANP data files\n")
-    
+
     if args.anp_name:
         pattern = args.anp_name.lower().replace(' ', '_')
         matching = [f for f in anp_files if pattern in f.lower()]
@@ -196,18 +224,18 @@ def main():
                 pass
         print(f"Filtering to {len(coastal_files)} coastal ANPs\n")
         anp_files = coastal_files
-    
+
     if args.test:
         anp_files = anp_files[:3]
         print("Test mode: processing first 3 ANPs\n")
-    
+
     print("Processing ANPs...")
     stats = {"success": 0, "no_mangroves": 0, "skipped": 0, "error": 0}
-    
+
     for anp_file in anp_files:
-        success, status = process_anp(anp_file)
+        success, status = process_anp(anp_file, use_database=use_database)
         stats[status] = stats.get(status, 0) + 1
-    
+
     print(f"\nDone! Results:")
     print(f"  With mangroves: {stats['success']}")
     print(f"  No mangroves: {stats['no_mangroves']}")
