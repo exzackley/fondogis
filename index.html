@@ -358,7 +358,7 @@
         footer a { color: var(--accent); text-decoration: none; }
         
         @media (max-width: 1024px) {
-            .map-card, .side-panel, .land-cover-card, .forest-card, .fire-card, .climate-card, .water-stress-card { grid-column: span 12; }
+            .map-card, .side-panel, .land-cover-card, .forest-card, .fire-card, .climate-card, .water-stress-card, #cenapred-section, #slr-section, #elevation-section, #ndvi-trend-section, #soil-section, #surface-water-section, #mangrove-section { grid-column: span 12; }
             h1 { font-size: 1.8rem; }
             .top-bar { flex-direction: column; gap: 15px; }
         }
@@ -993,6 +993,56 @@
                 </div>
             </div>
             
+            <!-- Elevation Card -->
+            <div class="card fade-in" id="elevation-section" style="animation-delay: 0.45s; grid-column: span 6; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🏔️</div><span data-i18n="elevation_profile">Elevation</span></div><span class="source">SRTM 30m</span></div>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="text-align: center; flex: 1;">
+                        <div class="mini-value" id="elev-min">—</div>
+                        <div class="mini-label">Min</div>
+                    </div>
+                    <div style="text-align: center; flex: 1;">
+                        <div class="mini-value" style="font-size: 2.2rem;" id="elev-mean">—</div>
+                        <div class="mini-label">Mean</div>
+                    </div>
+                    <div style="text-align: center; flex: 1;">
+                        <div class="mini-value" id="elev-max">—</div>
+                        <div class="mini-label">Max</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; position: relative; height: 8px; background: var(--bg-primary); border-radius: 4px;">
+                    <div id="elev-range-bar" style="position: absolute; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 4px; transition: all 0.5s;"></div>
+                    <div id="elev-mean-marker" style="position: absolute; top: -4px; width: 3px; height: 16px; background: var(--text-primary); border-radius: 2px; transition: left 0.5s;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.7rem; color: var(--text-muted);">
+                    <span id="elev-min-label">—</span>
+                    <span id="elev-max-label">—</span>
+                </div>
+            </div>
+            
+            <!-- NDVI Vegetation Trend Card -->
+            <div class="card fade-in" id="ndvi-trend-section" style="animation-delay: 0.47s; grid-column: span 6; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🌿</div><span data-i18n="ndvi_trend">NDVI Vegetation Trend</span></div><span class="source">MODIS MOD13A2 v061</span></div>
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                    <div id="ndvi-trend-indicator" style="font-size: 2rem; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">—</div>
+                    <div>
+                        <div style="font-size: 1.2rem; font-weight: 600;" id="ndvi-trend-direction">—</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);" id="ndvi-trend-decade">—</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">NDVI 2000-2005</div>
+                        <div class="mini-value" style="font-size: 1.3rem;" id="ndvi-early">—</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">NDVI 2018-2023</div>
+                        <div class="mini-value" style="font-size: 1.3rem;" id="ndvi-late">—</div>
+                    </div>
+                </div>
+                <div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);" id="ndvi-trend-period">—</div>
+            </div>
+            
             <div class="card land-cover-card fade-in" style="animation-delay: 0.5s">
                 <div class="card-header"><div class="card-title"><div class="card-icon">🌳</div><span data-i18n="land_cover">Land Cover (2021)</span></div><span class="source">ESA WorldCover 10m</span></div>
                 <div class="land-cover-chart"><canvas id="landCoverChart"></canvas></div>
@@ -1049,9 +1099,122 @@
                 </div>
             </div>
             
+            <!-- Soil Card -->
+            <div class="card fade-in" id="soil-section" style="animation-delay: 0.86s; grid-column: span 6; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🪨</div><span data-i18n="soil">Soil</span></div><span class="source">OpenLandMap 250m</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px;">Organic Carbon</div>
+                        <div class="mini-value" id="soil-carbon">—</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">g/kg</div>
+                        <div id="soil-carbon-interp" style="margin-top: 8px; font-size: 0.8rem; padding: 4px 10px; border-radius: 12px; display: inline-block;">—</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px;">Soil pH</div>
+                        <div class="mini-value" id="soil-ph-value">—</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">pH (H₂O)</div>
+                        <div id="soil-ph-interp" style="margin-top: 8px; font-size: 0.8rem; padding: 4px 10px; border-radius: 12px; display: inline-block;">—</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Surface Water Card -->
+            <div class="card fade-in" id="surface-water-section" style="animation-delay: 0.87s; grid-column: span 6; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">💧</div><span data-i18n="surface_water">Surface Water</span></div><span class="source">JRC Global Surface Water 30m</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">💧</div>
+                        <div class="mini-value" id="sw-area">—</div>
+                        <div class="mini-label">Permanent Water</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">📊</div>
+                        <div class="mini-value" id="sw-pct">—</div>
+                        <div class="mini-label">% of ANP Area</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mangroves Card (conditional) -->
+            <div class="card fade-in" id="mangrove-section" style="animation-delay: 0.88s; grid-column: span 6; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🌴</div><span data-i18n="mangroves">Mangroves</span></div><span class="source">ESA WorldCover 2021</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">🌴</div>
+                        <div class="mini-value" id="mangrove-area">—</div>
+                        <div class="mini-label">Mangrove Area</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">📊</div>
+                        <div class="mini-value" id="mangrove-pct">—</div>
+                        <div class="mini-label">% of ANP Area</div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="card fire-card fade-in" style="animation-delay: 0.9s">
                 <div class="card-header"><div class="card-title"><div class="card-icon">🔥</div><span data-i18n="fire_history">Fire History</span></div><span class="source">MODIS Burned Area</span></div>
                 <div class="fire-chart"><canvas id="fireChart"></canvas></div>
+            </div>
+            
+            <!-- CENAPRED Disasters Card -->
+            <div class="card fade-in" id="cenapred-section" style="animation-delay: 0.92s; grid-column: span 12; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🌪️</div><span data-i18n="cenapred_disasters">CENAPRED Disasters</span></div><span class="source">CENAPRED Atlas 2000-2023</span></div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                        <div class="mini-value" id="cenapred-events">—</div>
+                        <div class="mini-label" data-i18n="events">Events</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                        <div class="mini-value" style="color: var(--danger);" id="cenapred-deaths">—</div>
+                        <div class="mini-label" data-i18n="deaths">Deaths</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                        <div class="mini-value" id="cenapred-affected">—</div>
+                        <div class="mini-label" data-i18n="affected">Affected</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                        <div class="mini-value" style="color: var(--warning);" id="cenapred-damage">—</div>
+                        <div class="mini-label" data-i18n="damage_mdp">Damage (M MXN)</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;" data-i18n="events_by_type">Events by Type</div>
+                        <div style="height: 220px;"><canvas id="cenapredTypeChart"></canvas></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;" data-i18n="events_by_year">Events by Year</div>
+                        <div style="height: 220px;"><canvas id="cenapredYearChart"></canvas></div>
+                    </div>
+                </div>
+                <div id="cenapred-worst" style="margin-top: 15px; padding: 15px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; display: none;">
+                    <div style="font-size: 0.85rem; font-weight: 600; color: var(--danger); margin-bottom: 8px;">⚠️ <span data-i18n="worst_event">Worst Event</span></div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);" id="cenapred-worst-text">—</div>
+                </div>
+            </div>
+            
+            <!-- Sea Level Rise Card (conditional - coastal only) -->
+            <div class="card fade-in" id="slr-section" style="animation-delay: 0.94s; grid-column: span 6; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">🌊</div><span data-i18n="sea_level_rise">Sea Level Rise</span></div><span class="source">IPCC AR6 + Copernicus DEM</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 5px;" data-i18n="current_rate">Current Rate</div>
+                        <div class="mini-value" style="font-size: 1.5rem;" id="slr-rate">—</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">mm/year</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 5px;" data-i18n="projection_2050">2050 Projection</div>
+                        <div class="mini-value" style="font-size: 1.5rem;" id="slr-2050">—</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">cm (SSP5-8.5)</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 5px;" data-i18n="inundation_risk">Inundation Risk</div>
+                        <div class="mini-value" style="font-size: 1.5rem;" id="slr-inundation">—</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">% area at +1m</div>
+                    </div>
+                </div>
+                <div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);" id="slr-period">—</div>
             </div>
             
             <div class="card species-card fade-in" id="species-section" style="animation-delay: 1.0s; grid-column: span 6; display: none;">
@@ -1396,7 +1559,7 @@
     
     <script>
         let map, geojsonLayer;
-        let landCoverChart, forestChart, fireChart;
+        let landCoverChart, forestChart, fireChart, cenapredTypeChart, cenapredYearChart;
         let anpIndex = { anps: [] };
         let anpDecrees = {};
         let currentLang = 'en';
@@ -1696,6 +1859,13 @@
             // Water Stress
             renderWaterStress(datasets.water_stress);
             
+            // New data cards
+            renderElevationCard(datasets.elevation);
+            renderNdviTrend(data);
+            renderSoilCard(datasets.soil);
+            renderSurfaceWaterCard(datasets.surface_water, meta.reported_area_km2);
+            renderMangroveCard(datasets.mangroves, meta.reported_area_km2);
+            
             renderLandCoverChart(datasets.land_cover);
             renderForestChart(datasets.forest);
             renderFireChart(datasets.fire);
@@ -1704,11 +1874,15 @@
                 renderSpeciesData(data.external_data);
                 renderInatData(data.external_data);
                 renderPovertyData(data.external_data);
+                renderCenapredCard(data.external_data);
+                renderSeaLevelRiseCard(data.external_data);
             } else {
                 document.getElementById('species-section').style.display = 'none';
                 document.getElementById('threatened-section').style.display = 'none';
                 document.getElementById('inat-section').style.display = 'none';
                 document.getElementById('poverty-section').style.display = 'none';
+                document.getElementById('cenapred-section').style.display = 'none';
+                document.getElementById('slr-section').style.display = 'none';
             }
             
             renderBiomassData(datasets.gedi_biomass);
@@ -2555,6 +2729,298 @@
                     } 
                 }
             });
+        }
+        
+        // === New Data Card Render Functions ===
+        
+        function renderElevationCard(elevation) {
+            const section = document.getElementById('elevation-section');
+            if (!elevation || elevation.elevation_mean == null) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'block';
+            
+            const min = elevation.elevation_min;
+            const mean = elevation.elevation_mean;
+            const max = elevation.elevation_max;
+            
+            document.getElementById('elev-min').textContent = min != null ? formatNumber(min, 0) + 'm' : '—';
+            document.getElementById('elev-mean').textContent = mean != null ? formatNumber(mean, 0) + 'm' : '—';
+            document.getElementById('elev-max').textContent = max != null ? formatNumber(max, 0) + 'm' : '—';
+            
+            if (min != null && max != null) {
+                document.getElementById('elev-min-label').textContent = formatNumber(min, 0) + 'm';
+                document.getElementById('elev-max-label').textContent = formatNumber(max, 0) + 'm';
+                
+                const range = max - min;
+                if (range > 0) {
+                    document.getElementById('elev-range-bar').style.left = '0%';
+                    document.getElementById('elev-range-bar').style.width = '100%';
+                    
+                    if (mean != null) {
+                        const meanPct = ((mean - min) / range * 100);
+                        document.getElementById('elev-mean-marker').style.left = meanPct + '%';
+                    }
+                }
+            }
+        }
+        
+        function renderNdviTrend(data) {
+            const section = document.getElementById('ndvi-trend-section');
+            
+            // Check both external_data and datasets
+            const ndviTrend = (data.external_data && data.external_data.ndvi_trend) || (data.datasets && data.datasets.ndvi_trend);
+            
+            if (!ndviTrend || !ndviTrend.data_available) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'block';
+            
+            const direction = ndviTrend.trend_direction || 'stable';
+            const indicator = document.getElementById('ndvi-trend-indicator');
+            const directionEl = document.getElementById('ndvi-trend-direction');
+            
+            if (direction === 'improving') {
+                indicator.textContent = '📈';
+                indicator.style.background = 'rgba(16, 185, 129, 0.2)';
+                directionEl.style.color = '#10b981';
+                directionEl.textContent = 'Improving';
+            } else if (direction === 'declining') {
+                indicator.textContent = '📉';
+                indicator.style.background = 'rgba(239, 68, 68, 0.2)';
+                directionEl.style.color = '#ef4444';
+                directionEl.textContent = 'Declining';
+            } else {
+                indicator.textContent = '➡️';
+                indicator.style.background = 'rgba(245, 158, 11, 0.2)';
+                directionEl.style.color = '#f59e0b';
+                directionEl.textContent = 'Stable';
+            }
+            
+            const trendPerDecade = ndviTrend.trend_per_decade;
+            document.getElementById('ndvi-trend-decade').textContent = trendPerDecade != null 
+                ? `Trend: ${trendPerDecade >= 0 ? '+' : ''}${trendPerDecade.toFixed(4)} per decade` 
+                : '—';
+            
+            document.getElementById('ndvi-early').textContent = ndviTrend.mean_ndvi_2000_2005 != null 
+                ? ndviTrend.mean_ndvi_2000_2005.toFixed(4) : '—';
+            document.getElementById('ndvi-late').textContent = ndviTrend.mean_ndvi_2018_2023 != null 
+                ? ndviTrend.mean_ndvi_2018_2023.toFixed(4) : '—';
+            
+            const period = ndviTrend.period || '';
+            const nYears = ndviTrend.n_years || '';
+            document.getElementById('ndvi-trend-period').textContent = period 
+                ? `Period: ${period} (${nYears} years)` : '—';
+        }
+        
+        function renderSoilCard(soil) {
+            const section = document.getElementById('soil-section');
+            if (!soil || (soil.organic_carbon_g_kg == null && soil.ph_h2o == null)) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'block';
+            
+            const carbon = soil.organic_carbon_g_kg;
+            const ph = soil.ph_h2o;
+            
+            document.getElementById('soil-carbon').textContent = carbon != null ? carbon.toFixed(1) : '—';
+            
+            const carbonInterp = document.getElementById('soil-carbon-interp');
+            if (carbon != null) {
+                if (carbon < 10) {
+                    carbonInterp.textContent = 'Low';
+                    carbonInterp.style.background = 'rgba(239, 68, 68, 0.2)';
+                    carbonInterp.style.color = '#fca5a5';
+                } else if (carbon < 30) {
+                    carbonInterp.textContent = 'Medium';
+                    carbonInterp.style.background = 'rgba(245, 158, 11, 0.2)';
+                    carbonInterp.style.color = '#fcd34d';
+                } else {
+                    carbonInterp.textContent = 'High';
+                    carbonInterp.style.background = 'rgba(16, 185, 129, 0.2)';
+                    carbonInterp.style.color = '#6ee7b7';
+                }
+            } else {
+                carbonInterp.textContent = '—';
+            }
+            
+            document.getElementById('soil-ph-value').textContent = ph != null ? ph.toFixed(1) : '—';
+            
+            const phInterp = document.getElementById('soil-ph-interp');
+            if (ph != null) {
+                if (ph < 5.5) {
+                    phInterp.textContent = 'Acidic';
+                    phInterp.style.background = 'rgba(249, 115, 22, 0.2)';
+                    phInterp.style.color = '#fdba74';
+                } else if (ph < 7.3) {
+                    phInterp.textContent = 'Neutral';
+                    phInterp.style.background = 'rgba(16, 185, 129, 0.2)';
+                    phInterp.style.color = '#6ee7b7';
+                } else {
+                    phInterp.textContent = 'Alkaline';
+                    phInterp.style.background = 'rgba(59, 130, 246, 0.2)';
+                    phInterp.style.color = '#93c5fd';
+                }
+            } else {
+                phInterp.textContent = '—';
+            }
+        }
+        
+        function renderSurfaceWaterCard(surfaceWater, areaKm2) {
+            const section = document.getElementById('surface-water-section');
+            if (!surfaceWater || surfaceWater.permanent_water_km2 == null) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'block';
+            
+            const waterKm2 = surfaceWater.permanent_water_km2;
+            document.getElementById('sw-area').textContent = formatNumber(waterKm2, 2) + ' km²';
+            
+            if (areaKm2 && areaKm2 > 0) {
+                const pct = (waterKm2 / areaKm2) * 100;
+                document.getElementById('sw-pct').textContent = pct.toFixed(1) + '%';
+            } else {
+                document.getElementById('sw-pct').textContent = '—';
+            }
+        }
+        
+        function renderMangroveCard(mangroves, areaKm2) {
+            const section = document.getElementById('mangrove-section');
+            if (!mangroves || !mangroves.data_available || !mangroves.mangrove_extent_km2 || mangroves.mangrove_extent_km2 <= 0) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'block';
+            
+            const mangKm2 = mangroves.mangrove_extent_km2;
+            document.getElementById('mangrove-area').textContent = formatNumber(mangKm2, 2) + ' km²';
+            
+            if (areaKm2 && areaKm2 > 0) {
+                const pct = (mangKm2 / areaKm2) * 100;
+                document.getElementById('mangrove-pct').textContent = pct.toFixed(1) + '%';
+            } else {
+                document.getElementById('mangrove-pct').textContent = '—';
+            }
+        }
+        
+        function renderCenapredCard(extData) {
+            const section = document.getElementById('cenapred-section');
+            const cenapred = extData ? extData.cenapred_disasters : null;
+            
+            if (!cenapred || !cenapred.data_available) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'block';
+            
+            document.getElementById('cenapred-events').textContent = formatNumber(cenapred.total_events, 0);
+            document.getElementById('cenapred-deaths').textContent = formatNumber(cenapred.total_deaths, 0);
+            document.getElementById('cenapred-affected').textContent = formatNumber(cenapred.total_affected, 0);
+            document.getElementById('cenapred-damage').textContent = cenapred.total_damage_million_pesos != null 
+                ? '$' + formatNumber(cenapred.total_damage_million_pesos, 1) + 'M' : '—';
+            
+            // Events by type chart (horizontal bar)
+            const byType = cenapred.by_type || {};
+            const typeLabels = Object.keys(byType).sort((a, b) => byType[b].events - byType[a].events);
+            const typeValues = typeLabels.map(t => byType[t].events);
+            const typeColors = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', '#14b8a6', '#06b6d4', '#3b82f6', '#8b5cf6', '#a855f7', '#ec4899'];
+            
+            if (cenapredTypeChart) cenapredTypeChart.destroy();
+            cenapredTypeChart = new Chart(document.getElementById('cenapredTypeChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: typeLabels,
+                    datasets: [{ data: typeValues, backgroundColor: typeLabels.map((_, i) => typeColors[i % typeColors.length]), borderWidth: 0 }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+                    }
+                }
+            });
+            
+            // Events by year chart
+            const byYear = cenapred.by_year || {};
+            const yearLabels = Object.keys(byYear).sort();
+            const yearValues = yearLabels.map(y => byYear[y].events);
+            
+            if (cenapredYearChart) cenapredYearChart.destroy();
+            cenapredYearChart = new Chart(document.getElementById('cenapredYearChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: yearLabels,
+                    datasets: [{ data: yearValues, backgroundColor: '#f59e0b' }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', maxRotation: 45 } },
+                        y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+            
+            // Worst event
+            const worstEl = document.getElementById('cenapred-worst');
+            if (cenapred.worst_event) {
+                worstEl.style.display = 'block';
+                const we = cenapred.worst_event;
+                let worstText = `<strong>${we.type}</strong> (${we.date})`;
+                if (we.state) worstText += ` — ${we.state}`;
+                if (we.deaths) worstText += ` · ${we.deaths} deaths`;
+                if (we.affected) worstText += ` · ${formatNumber(we.affected, 0)} affected`;
+                if (we.description) worstText += `<br><span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; display: inline-block;">${we.description}</span>`;
+                document.getElementById('cenapred-worst-text').innerHTML = worstText;
+            } else {
+                worstEl.style.display = 'none';
+            }
+        }
+        
+        function renderSeaLevelRiseCard(extData) {
+            const section = document.getElementById('slr-section');
+            const slr = extData ? extData.sea_level_rise : null;
+            
+            if (!slr || !slr.data_available) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'block';
+            
+            document.getElementById('slr-rate').textContent = slr.observed_trend_mm_per_year != null 
+                ? slr.observed_trend_mm_per_year.toFixed(1) : '—';
+            document.getElementById('slr-2050').textContent = slr.projected_slr_2050_cm != null 
+                ? slr.projected_slr_2050_cm.toFixed(1) : '—';
+            
+            const inundation = slr.inundation_pct_at_1m;
+            const inundationEl = document.getElementById('slr-inundation');
+            if (inundation != null) {
+                inundationEl.textContent = inundation.toFixed(1) + '%';
+                if (inundation < 10) {
+                    inundationEl.style.color = '#10b981';
+                } else if (inundation < 50) {
+                    inundationEl.style.color = '#f59e0b';
+                } else {
+                    inundationEl.style.color = '#ef4444';
+                }
+            } else {
+                inundationEl.textContent = '—';
+            }
+            
+            const period = slr.observed_period || '';
+            const scenario = slr.projected_scenario || '';
+            document.getElementById('slr-period').textContent = period 
+                ? `Observed: ${period} · Scenario: ${scenario}` : '—';
         }
         
         function formatNumber(num, decimals = 0) {
