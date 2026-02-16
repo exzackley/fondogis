@@ -1277,6 +1277,13 @@ function buildMap(allAnps) {
 
     if (bounds.isValid()) map.fitBounds(bounds, { padding: [20, 20] });
 
+    // Fix Leaflet tile rendering — force resize after layout settles
+    setTimeout(() => { map.invalidateSize(); if (bounds.isValid()) map.fitBounds(bounds, { padding: [20, 20] }); }, 50);
+    setTimeout(() => { map.invalidateSize(); if (bounds.isValid()) map.fitBounds(bounds, { padding: [20, 20] }); }, 200);
+    setTimeout(() => { map.invalidateSize(); }, 1000);
+    // Also fix on window resize
+    window.addEventListener('resize', () => map.invalidateSize());
+
     // Legend
     const legend = L.control({ position: 'bottomright' });
     legend.onAdd = function() {

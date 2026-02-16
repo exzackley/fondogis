@@ -15,11 +15,16 @@ import sys
 import os
 import time
 import argparse
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 
 from gee_auth import init_ee
 
 DATA_DIR = 'anp_data'
 ALL_ANPS_FILE = 'all_anps_subset.json'
+
+# Timeout per GEE extraction call (seconds)
+SOIL_TIMEOUT = 300      # 5 min
+WATER_TIMEOUT = 600     # 10 min
 
 
 def safe_reduce(image, geometry, scale, reducer=None):
@@ -33,6 +38,21 @@ def safe_reduce(image, geometry, scale, reducer=None):
         maxPixels=1e9
     ).getInfo()
     return result
+
+
+def run_with_timeout(func, args, timeout_sec):
+    """Run a function with a hard timeout using a thread pool.
+    Note: the worker thread may continue in the background after timeout,
+    but we don't wait for it."""
+    executor = ThreadPoolExecutor(max_workers=1)
+    future = executor.submit(func, *args)
+    try:
+        result = future.result(timeout=timeout_sec)
+        executor.shutdown(wait=False)
+        return result
+    except FuturesTimeoutError:
+        executor.shutdown(wait=False)
+        raise
 
 
 def extract_soil(geom):
@@ -65,6 +85,35 @@ def extract_surface_water(geom):
         "resolution": "30m",
         "permanent_water_km2": round(water_area.get('occurrence', 0) / 1e6, 2)
     }
+
+
+def load_geometry(geojson):
+    """Load a GeoJSON object into an ee.Geometry, handling all types."""
+    gtype = geojson.get('type')
+
+    if gtype == 'FeatureCollection':
+        features = geojson['features']
+        if len(features) == 1:
+            return load_geometry(features[0])
+        else:
+            fc = ee.FeatureCollection([
+                ee.Feature(load_geometry(f)) for f in features
+            ])
+            return fc.geometry().dissolve()
+
+    if gtype == 'Feature':
+        return load_geometry(geojson['geometry'])
+
+    if gtype == 'GeometryCollection':
+        # Convert to FeatureCollection of individual geometries
+        geoms = geojson['geometries']
+        fc = ee.FeatureCollection([
+            ee.Feature(ee.Geometry(g)) for g in geoms
+        ])
+        return fc.geometry().dissolve()
+
+    # Polygon, MultiPolygon, Point, etc.
+    return ee.Geometry(geojson)
 
 
 def has_valid_data(datasets, key):
@@ -100,27 +149,28 @@ def process_anp(anp_id):
     with open(boundary_file) as f:
         boundary_geojson = json.load(f)
 
-    # Handle both Feature and FeatureCollection
-    if boundary_geojson.get('type') == 'FeatureCollection':
-        features = boundary_geojson['features']
-        if len(features) == 1:
-            geom = ee.Geometry(features[0]['geometry'])
-        else:
-            # Merge multiple features
-            geom = ee.FeatureCollection([
-                ee.Feature(ee.Geometry(f['geometry'])) for f in features
-            ]).geometry()
-    elif boundary_geojson.get('type') == 'Feature':
-        geom = ee.Geometry(boundary_geojson['geometry'])
-    else:
-        geom = ee.Geometry(boundary_geojson)
+    file_size = os.path.getsize(boundary_file)
+
+    try:
+        geom = load_geometry(boundary_geojson)
+        # Simplify large geometries to avoid GEE compute limits
+        if file_size > 500_000:  # >500KB
+            simplify_m = 500 if file_size > 2_000_000 else 100
+            print(f"  ℹ Large boundary ({file_size/1e6:.1f}MB), simplifying ({simplify_m}m)...", flush=True)
+            geom = geom.simplify(maxError=simplify_m)
+    except Exception as e:
+        print(f"  ✗ Failed to load geometry: {e}")
+        return 'failed'
 
     # Extract soil if missing
     if not has_valid_data(datasets, 'soil'):
         print(f"    Soil (OpenLandMap)...", end=" ", flush=True)
         try:
-            datasets['soil'] = extract_soil(geom)
+            datasets['soil'] = run_with_timeout(extract_soil, (geom,), SOIL_TIMEOUT)
             print("OK")
+        except FuturesTimeoutError:
+            datasets['soil'] = {"error": f"timeout (>{SOIL_TIMEOUT}s)"}
+            print("TIMEOUT")
         except Exception as e:
             datasets['soil'] = {"error": str(e)}
             print(f"ERROR: {e}")
@@ -129,8 +179,11 @@ def process_anp(anp_id):
     if not has_valid_data(datasets, 'surface_water'):
         print(f"    Surface Water (JRC)...", end=" ", flush=True)
         try:
-            datasets['surface_water'] = extract_surface_water(geom)
+            datasets['surface_water'] = run_with_timeout(extract_surface_water, (geom,), WATER_TIMEOUT)
             print("OK")
+        except FuturesTimeoutError:
+            datasets['surface_water'] = {"error": f"timeout (>{WATER_TIMEOUT}s)"}
+            print("TIMEOUT")
         except Exception as e:
             datasets['surface_water'] = {"error": str(e)}
             print(f"ERROR: {e}")
