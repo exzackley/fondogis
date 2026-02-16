@@ -154,14 +154,14 @@
             <thead>
                 <tr>
                     <th style="width: 12%">Protected Area</th>
-                    <th style="width: 8%">Total Area<br/>(km²)</th>
-                    <th style="width: 6%">Marine<br/>%</th>
-                    <th style="width: 6%">Terr.<br/>%</th>
-                    <th style="width: 12%">Dominant<br/>Ecosystem</th>
-                    <th style="width: 7%">Forest<br/>Cover %</th>
-                    <th style="width: 8%">Carbon<br/>Stock (Mt)</th>
+                    <th style="width: 8%">Total Area<br/>(km²)<br/>(WDPA)</th>
+                    <th style="width: 5%">Marine %<br/>(WDPA)</th>
+                    <th style="width: 5%">Terr. %<br/>(WDPA)</th>
+                    <th style="width: 14%">Dominant Ecosystem<br/>(WorldCover 2021)</th>
+                    <th style="width: 7%">Forest<br/>Cover %<br/>(Hansen GFC 2000)</th>
+                    <th style="width: 8%">Carbon<br/>Stock (Mt)<br/>(GEDI L4A)</th>
                     <th style="width: 7%">Species<br/>(GBIF)</th>
-                    <th style="width: 7%">NOM-059<br/>Threat.</th>
+                    <th style="width: 7%">NOM-059<br/>Threat.<br/>(SIMEC)</th>
                 </tr>
             </thead>
             <tbody id="table1Body"></tbody>
@@ -172,15 +172,18 @@
         <table id="table2">
             <thead>
                 <tr>
-                    <th style="width: 12%">Protected Area</th>
-                    <th style="width: 12%">State(s)</th>
-                    <th style="width: 8%">Decree<br/>Date</th>
-                    <th style="width: 6%">Category</th>
-                    <th style="width: 12%">Intl.<br/>Designations</th>
-                    <th style="width: 8%">Pop.<br/>2020</th>
-                    <th style="width: 8%">Nearby<br/>Comm.</th>
-                    <th style="width: 7%">Social<br/>Lag</th>
-                    <th style="width: 7%">Human<br/>Mod.</th>
+                    <th style="width: 10%">Protected Area</th>
+                    <th style="width: 10%">State(s)</th>
+                    <th style="width: 6%">Decree<br/>Date</th>
+                    <th style="width: 5%">Category</th>
+                    <th style="width: 10%">Intl.<br/>Designations</th>
+                    <th style="width: 7%">Pop. 2020<br/>(WorldPop)</th>
+                    <th style="width: 6%">% Female<br/>(INEGI 2020)</th>
+                    <th style="width: 7%">% Indigenous<br/>(INEGI 2020,<br/>hogares indígenas)</th>
+                    <th style="width: 7%">% Afro-<br/>descendant<br/>(INEGI 2020)</th>
+                    <th style="width: 6%">Localities<br/>(INEGI 2020)</th>
+                    <th style="width: 7%">Social Lag<br/>(CONEVAL 2020)</th>
+                    <th style="width: 7%">Human Mod.<br/>(gHM 2016)</th>
                 </tr>
             </thead>
             <tbody id="table2Body"></tbody>
@@ -192,20 +195,21 @@
             <thead>
                 <tr>
                     <th style="width: 10%">Protected Area</th>
-                    <th style="width: 5%">Precip<br/>(mm)</th>
-                    <th style="width: 5%">Temp<br/>(°C)</th>
-                    <th style="width: 6%">Water<br/>Stress</th>
-                    <th style="width: 5%">2041-70<br/>Temp Δ</th>
-                    <th style="width: 5%">2041<br/>Precip Δ</th>
-                    <th style="width: 5%">2041<br/>Trop.Nts</th>
-                    <th style="width: 5%">2041<br/>Soil Δ</th>
-                    <th style="width: 5%">2071-00<br/>Temp Δ</th>
-                    <th style="width: 5%">2071<br/>Precip Δ</th>
-                    <th style="width: 5%">Drought<br/>Risk</th>
-                    <th style="width: 5%">Mean<br/>Elev(m)</th>
-                    <th style="width: 5%">Burned<br/>(km²)</th>
-                    <th style="width: 6%">Pop.<br/>Displ.</th>
-                    <th style="width: 6%">Ecosys.<br/>Loss</th>
+                    <th style="width: 5%">Precip (mm)<br/>(WorldClim)</th>
+                    <th style="width: 5%">Temp (°C)<br/>(WorldClim)</th>
+                    <th style="width: 5%">Water Stress<br/>(Aqueduct)</th>
+                    <th style="width: 5%">2041-70<br/>Temp Δ<br/>(CMIP6 SSP5)</th>
+                    <th style="width: 5%">2041<br/>Precip Δ<br/>(CORDEX RCP8.5)</th>
+                    <th style="width: 5%">2041<br/>Trop.Nts<br/>(CORDEX)</th>
+                    <th style="width: 5%">2041<br/>Soil Δ<br/>(CORDEX)</th>
+                    <th style="width: 5%">2071-00<br/>Temp Δ<br/>(CMIP6 SSP5)</th>
+                    <th style="width: 5%">2071<br/>Precip Δ<br/>(CORDEX)</th>
+                    <th style="width: 5%">Drought Risk<br/>(Aqueduct)</th>
+                    <th style="width: 5%">Mean Elev(m)<br/>(SRTM 2000)</th>
+                    <th style="width: 5%">Burned (km²)<br/>(MODIS 2019-23)</th>
+                    <th style="width: 5%">SLR Rate<br/>(mm/yr)<br/>(IPCC AR6 2020)</th>
+                    <th style="width: 5%">SLR 2050<br/>(cm)<br/>(IPCC AR6 SSP5)</th>
+                    <th style="width: 5%">Inundation<br/>Risk %<br/>(DEM &lt;1m)</th>
                 </tr>
             </thead>
             <tbody id="table3Body"></tbody>
@@ -250,9 +254,6 @@
         function getDominantEcosystem(landCover) {
             if (!landCover || !landCover.classes) return '—';
 
-            let maxArea = 0;
-            let dominant = '—';
-
             const ecosystemMap = {
                 'Tree cover': 'Forest',
                 'Mangroves': 'Mangroves',
@@ -265,41 +266,13 @@
                 'Built-up': 'Urban'
             };
 
-            for (const [className, data] of Object.entries(landCover.classes)) {
-                if (data.area_km2 > maxArea) {
-                    maxArea = data.area_km2;
-                    dominant = ecosystemMap[className] || className;
-                }
-            }
+            const sorted = Object.entries(landCover.classes)
+                .sort((a, b) => b[1].area_km2 - a[1].area_km2);
 
-            return dominant;
-        }
+            if (sorted.length === 0) return '—';
 
-        function calculatePopDisplacementRisk(pop2020, waterStressCurrent, waterStress2041) {
-            // Simple risk index: population × increase in water stress
-            if (!pop2020 || pop2020 === 0) return null;
-            if (waterStressCurrent == null || waterStress2041 == null) return null;
-
-            const stressIncrease = waterStress2041 - waterStressCurrent;
-            if (stressIncrease <= 0) return 0; // No increased risk
-
-            // Risk score: pop × stress increase (normalized to 0-100 scale)
-            const risk = (pop2020 * stressIncrease) / 100;
-            return risk;
-        }
-
-        function calculateEcosystemServiceLoss(carbonStock, forestLossRate) {
-            // Annual carbon emissions from forest loss (Mt CO2/year)
-            if (!carbonStock || carbonStock === 0) return null;
-            if (!forestLossRate || forestLossRate === 0) return null;
-
-            // Assume forest loss rate is total loss over 5 years (2019-2023)
-            const annualLossRate = forestLossRate / 5;
-
-            // Rough estimate: emissions = carbon stock × (annual loss / total area)
-            // This is simplified - in reality would need to know carbon density distribution
-            const emissions = carbonStock * annualLossRate;
-            return emissions;
+            const top = sorted.slice(0, 2).map(([className]) => ecosystemMap[className] || className);
+            return top.join(' / ');
         }
 
         async function loadAllData() {
@@ -404,6 +377,18 @@
                 const conavalExtracted = hasExtractedData(external.coneval_irs);
                 const hasMunicipalities = external.coneval_irs?.municipalities_count > 0;
 
+                const femalePct = external.inegi_census?.female_percent;
+                const indigenousHouseholdPop = external.inegi_census?.indigenous_households_pop;
+                const censusTotalPop = external.inegi_census?.total_population;
+                const indigenousPct = (indigenousHouseholdPop != null && censusTotalPop > 0)
+                    ? (indigenousHouseholdPop / censusTotalPop * 100)
+                    : null;
+                const afromexicanPop = external.inegi_census?.afromexican_population;
+                const afroPct = (afromexicanPop != null && censusTotalPop > 0)
+                    ? (afromexicanPop / censusTotalPop * 100)
+                    : null;
+                const localitiesCount = external.inegi_census?.localities_in_area;
+
                 const row2 = table2Body.insertRow();
                 row2.innerHTML = `
                     <td class="anp-name">${anp.name}</td>
@@ -412,7 +397,10 @@
                     <td>${anp.category}</td>
                     <td style="font-size: 7px">${designations}</td>
                     <td class="num">${formatNumber(pop2020, 0, marineOnlyArea)}</td>
-                    <td class="num">${formatNumber(external.inegi_census?.localities_in_area?.length || external.inegi_census?.total_population, 0, !censusExtracted)}</td>
+                    <td class="num">${formatNumber(femalePct, 1, !censusExtracted)}</td>
+                    <td class="num">${formatNumber(indigenousPct, 1, !censusExtracted)}</td>
+                    <td class="num">${formatNumber(afroPct, 1, !censusExtracted)}</td>
+                    <td class="num">${formatNumber(localitiesCount, 0, !censusExtracted)}</td>
                     <td class="num">${formatNumber(external.coneval_irs?.irs_weighted_mean, 2, !conavalExtracted || !hasMunicipalities)}</td>
                     <td class="num">${formatNumber(datasets.human_modification?.gHM_mean, 3)}</td>
                 `;
@@ -441,14 +429,6 @@
                     precipChange2071 = ssr2071?.precipitation;
                 }
 
-                // Calculate forest loss 2019-2023
-                let forestLoss = 0;
-                if (datasets.forest?.loss_by_year) {
-                    for (const year of ['2019', '2020', '2021', '2022', '2023']) {
-                        forestLoss += datasets.forest.loss_by_year[year] || 0;
-                    }
-                }
-
                 // Calculate burned area 2019-2023
                 let burnedArea = 0;
                 if (datasets.fire?.burned_area_km2_by_year) {
@@ -458,14 +438,6 @@
                         }
                     }
                 }
-
-                // Calculated indicators
-                const waterStressCurrent = waterStress.baseline_water_stress;
-                const waterStress2041 = waterStressCurrent; // Simplified - would need projected water stress
-                const popDisplacementRisk = calculatePopDisplacementRisk(pop2020, waterStressCurrent, waterStress2041);
-
-                const carbonStockValue = datasets.gedi_biomass?.total_carbon_estimate_mt;
-                const ecosystemLoss = calculateEcosystemServiceLoss(carbonStockValue, forestLoss);
 
                 const meanElev = datasets.elevation?.elevation_mean;
                 const hasWaterStress = hasExtractedData(waterStress);
@@ -508,8 +480,9 @@
                     <td class="num">${formatNumber(waterStress.drought_risk, 2, !hasWaterStress)}</td>
                     <td class="num">${formatNumber(meanElev, 0)}</td>
                     <td class="num">${burnedAreaDisplay}</td>
-                    <td class="num">${popDisplacementRisk != null && popDisplacementRisk > 0 ? formatNumber(popDisplacementRisk, 1) : (marineOnlyArea ? 'N/A' : 'N/A')}</td>
-                    <td class="num">${ecosystemLoss != null && ecosystemLoss > 0 ? formatNumber(ecosystemLoss, 3) : (!carbonStockValue || forestLoss === 0 ? 'N/A' : '—')}</td>
+                    <td class="num">${formatNumber(datasets.sea_level_rise?.observed_trend_mm_per_year, 1)}</td>
+                    <td class="num">${formatNumber(datasets.sea_level_rise?.projected_slr_2050_cm, 1)}</td>
+                    <td class="num">${formatNumber(datasets.sea_level_rise?.inundation_pct_at_1m, 1)}</td>
                 `;
             }
         }
