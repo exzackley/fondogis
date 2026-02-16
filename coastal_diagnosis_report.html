@@ -68,6 +68,7 @@
         /* ── Map ── */
         .map-container { width: 100%; height: 550px; margin: 20px 0; border: 1px solid var(--border); }
         .figure-caption { text-align: center; font-style: italic; font-size: 0.9em; color: #444; margin: 5px 0 20px; }
+        .anp-tooltip { font-family: 'Times New Roman', serif; font-size: 11px; }
 
         /* ── Charts ── */
         .chart-container { margin: 20px 0; text-align: center; page-break-inside: avoid; }
@@ -1556,15 +1557,22 @@ function buildMap(allAnps) {
     var mapEl = document.getElementById('mapContainer');
     if (!mapEl) return;
 
-    var map = L.map('mapContainer', { scrollWheelZoom: true }).setView([22, -100], 5);
+    // Non-interactive, print-friendly static map
+    var map = L.map('mapContainer', {
+        zoomControl: false,
+        attributionControl: false,
+        dragging: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        touchZoom: false,
+        boxZoom: false,
+        keyboard: false
+    }).setView([22, -100], 5);
 
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Esri World Imagery',
+    // Light CartoDB basemap — clean for formal documents
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        opacity: 0.6,
         maxZoom: 18
-    }).addTo(map);
-
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 18, opacity: 0.7
     }).addTo(map);
 
     var bounds = L.latLngBounds();
@@ -1576,12 +1584,12 @@ function buildMap(allAnps) {
         try {
             var layer = L.geoJSON(a.boundary, {
                 style: {
-                    color: catColors[a.category] || '#fff',
+                    color: '#333',
                     weight: 2,
-                    fillColor: catColors[a.category] || '#fff',
-                    fillOpacity: 0.25
+                    fillColor: catColors[a.category] || '#888',
+                    fillOpacity: 0.30
                 }
-            }).bindPopup('<strong>' + a.name + '</strong><br/>Category: ' + a.category);
+            }).bindTooltip(a.name, { sticky: true, className: 'anp-tooltip' });
             layer.addTo(map);
             bounds.extend(layer.getBounds());
         } catch(e) { console.warn('Map error for ' + a.name + ':', e); }
@@ -1610,15 +1618,13 @@ function buildMap(allAnps) {
     });
     observer.observe(document.getElementById('content'), { attributes: true, attributeFilter: ['style'] });
 
-    window.addEventListener('resize', function() { map.invalidateSize(); });
-
     // Legend
     var legend = L.control({ position: 'bottomright' });
     legend.onAdd = function() {
         var div = L.DomUtil.create('div', 'legend');
-        div.style.cssText = 'background:rgba(255,255,255,0.9);padding:8px 12px;border-radius:4px;font:11px Times New Roman;line-height:1.6;';
+        div.style.cssText = 'background:rgba(255,255,255,0.92);padding:10px 14px;border-radius:4px;font:11px Times New Roman;line-height:1.7;border:1px solid #ccc;';
         div.innerHTML = Object.keys(catColors).map(function(cat) {
-            return '<span style="display:inline-block;width:12px;height:12px;background:' + catColors[cat] + ';margin-right:4px;vertical-align:middle;"></span>' + cat;
+            return '<span style="display:inline-block;width:14px;height:14px;background:' + catColors[cat] + ';border:1px solid #333;margin-right:6px;vertical-align:middle;opacity:0.7;"></span>' + cat;
         }).join('<br/>');
         return div;
     };
