@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environmental and Social Diagnosis — Coastal ANPs of Mexico</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        /* ── Reset & Base ── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @page { size: portrait; margin: 0.75in; }
+        @page landscape { size: landscape; margin: 0.5in; }
+
+        :root {
+            --text: #222;
+            --bg: #fff;
+            --accent: #1a6b3c;
+            --accent2: #0e4d8b;
+            --border: #ccc;
+            --muted: #666;
+            --card-bg: #f8f9fa;
+            --chart-colors: #2d6a4f,#40916c,#52b788,#74c69d,#95d5b2,#b7e4c7,#d8f3dc,#1b4332,#081c15,#e76f51,#f4a261,#e9c46a,#2a9d8f,#264653,#a8dadc,#457b9d;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, Georgia, serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* ── Typography ── */
+        h1 { font-size: 26px; text-align: center; margin-bottom: 4px; color: #000; }
+        h2 { font-size: 20px; margin: 40px 0 12px; color: var(--accent2); border-bottom: 2px solid var(--accent2); padding-bottom: 4px; }
+        h3 { font-size: 16px; margin: 24px 0 8px; color: var(--accent); }
+        h4 { font-size: 14px; margin: 16px 0 6px; color: #333; }
+        p { margin: 8px 0; text-align: justify; font-size: 13px; }
+        .subtitle { text-align: center; font-style: italic; font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+        .date-line { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 30px; }
+
+        /* ── Cover ── */
+        .cover { text-align: center; padding: 30px 0 20px; border-bottom: 3px solid #000; margin-bottom: 30px; }
+        .cover h1 { font-size: 28px; line-height: 1.3; }
+        .sources-summary { font-size: 11px; color: var(--muted); margin-top: 10px; max-width: 700px; margin-left: auto; margin-right: auto; }
+
+        /* ── Loading ── */
+        #loading { text-align: center; padding: 60px 20px; font-size: 16px; color: var(--muted); }
+        #loading .spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid #ddd; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 10px; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #loading .progress { font-size: 12px; margin-top: 8px; }
+        #content { display: none; }
+
+        /* ── Map ── */
+        .map-container { width: 100%; height: 500px; margin: 16px 0; border: 1px solid var(--border); border-radius: 4px; }
+
+        /* ── Charts ── */
+        .chart-container { margin: 16px 0; text-align: center; }
+        .chart-container canvas { max-width: 100%; }
+        .chart-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin: 16px 0; }
+        .chart-row .chart-container { flex: 1; min-width: 300px; max-width: 520px; }
+        .chart-title { font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 6px; color: #333; }
+
+        /* ── Dashboard cards ── */
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 20px 0; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px 16px; text-align: center; }
+        .card .big-number { font-size: 32px; font-weight: bold; color: var(--accent2); line-height: 1.2; }
+        .card .card-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+        .card.highlight { border-color: var(--accent); background: #edf7f0; }
+        .card.warning { border-color: #d4380d; background: #fff7f0; }
+        .card.warning .big-number { color: #d4380d; }
+
+        /* ── Tables ── */
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 11px; }
+        th { background: #d9d9d9; font-weight: bold; text-align: left; padding: 6px 5px; border: 1px solid #999; font-size: 10px; }
+        td { padding: 5px; border: 1px solid #bbb; vertical-align: top; }
+        tr:nth-child(even) { background: #f5f5f5; }
+        .num { text-align: right; }
+        .small-table { max-width: 700px; margin: 12px auto; }
+
+        /* ── Data gaps ── */
+        .gap-note { background: #fffbe6; border-left: 3px solid #faad14; padding: 8px 12px; margin: 12px 0; font-size: 12px; }
+        .gap-note strong { color: #ad6800; }
+
+        /* ── Key finding box ── */
+        .finding { background: #f0f7ff; border-left: 3px solid var(--accent2); padding: 10px 14px; margin: 14px 0; font-size: 12px; }
+        .finding strong { color: var(--accent2); }
+
+        /* ── Print ── */
+        @media print {
+            body { padding: 0; max-width: 100%; font-size: 11px; }
+            .map-container { height: 400px; page-break-inside: avoid; }
+            h2 { page-break-after: avoid; }
+            .dashboard { page-break-inside: avoid; }
+            .chart-container { page-break-inside: avoid; }
+            table { page-break-inside: auto; font-size: 9px; }
+            tr { page-break-inside: avoid; }
+            thead { display: table-header-group; }
+            #loading { display: none !important; }
+            #content { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════ COVER ═══════════════════ -->
+<div class="cover">
+    <h1>Environmental and Social Diagnosis:<br/>Coastal and Marine Protected Natural Areas of Mexico</h1>
+    <div class="subtitle">Aggregate Analysis of 38 Federal ANPs</div>
+    <div class="date-line" id="reportDate"></div>
+    <div class="sources-summary">
+        Data sources: CONANP/SIMEC registry, WorldPop, ESA WorldCover 2021, Hansen Global Forest Change, NASA GEDI L4A,
+        TerraClimate, NASA NEX-GDDP-CMIP6, SSR/CORDEX, MODIS NDVI/Fire, VIIRS Night Lights, WRI Aqueduct, RESOLVE Ecoregions,
+        GBIF, iNaturalist, INEGI Censo 2020, CONEVAL IRS 2020, CENAPRED Atlas 2000–2023, Global Human Modification Index.
+    </div>
+</div>
+
+<!-- ═══════════════════ LOADING ═══════════════════ -->
+<div id="loading">
+    <div class="spinner"></div>Loading data for 38 coastal ANPs…
+    <div class="progress" id="loadProgress"></div>
+</div>
+
+<!-- ═══════════════════ CONTENT ═══════════════════ -->
+<div id="content">
+
+    <!-- ── Section 1: Geographic Overview ── -->
+    <h2>1. Geographic Overview</h2>
+    <div id="mapContainer" class="map-container"></div>
+    <div id="geoNarrative"></div>
+    <div class="chart-row">
+        <div class="chart-container">
+            <div class="chart-title">ANP Categories Distribution</div>
+            <canvas id="chartCategories" width="400" height="280"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-title">Top 10 Largest ANPs by Area (km²)</div>
+            <canvas id="chartTopAreas" width="500" height="280"></canvas>
+        </div>
+    </div>
+    <div id="stateTable"></div>
+
+    <!-- ── Section 2: Environmental ── -->
+    <h2>2. Environmental Characterization</h2>
+    <div id="envNarrative"></div>
+    <div class="chart-row">
+        <div class="chart-container">
+            <div class="chart-title">Aggregate Land Cover (ESA WorldCover 2021)</div>
+            <canvas id="chartLandCover" width="420" height="300"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-title">Annual Forest Loss Across All 38 ANPs (km²)</div>
+            <canvas id="chartForestLoss" width="500" height="300"></canvas>
+        </div>
+    </div>
+    <div id="envDetails"></div>
+
+    <!-- ── Section 3: Biodiversity ── -->
+    <h2>3. Biodiversity</h2>
+    <div id="bioNarrative"></div>
+    <div class="chart-container">
+        <div class="chart-title">Most Biodiverse ANPs (Total Species: GBIF + iNaturalist)</div>
+        <canvas id="chartBiodiversity" width="700" height="320"></canvas>
+    </div>
+    <div id="bioDetails"></div>
+
+    <!-- ── Section 4: Social Context ── -->
+    <h2>4. Social Context</h2>
+    <div id="socialNarrative"></div>
+    <div class="chart-row">
+        <div class="chart-container">
+            <div class="chart-title">Social Lag Distribution (CONEVAL IRS 2020)</div>
+            <canvas id="chartSocialLag" width="400" height="280"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-title">Infrastructure Gaps — % of Homes Lacking Services</div>
+            <canvas id="chartInfrastructure" width="500" height="280"></canvas>
+        </div>
+    </div>
+    <div id="socialDetails"></div>
+
+    <!-- ── Section 5: Threats ── -->
+    <h2>5. Threats and Disturbances</h2>
+    <div id="threatsNarrative"></div>
+    <div class="chart-row">
+        <div class="chart-container">
+            <div class="chart-title">Aggregate Annual Burned Area (km²)</div>
+            <canvas id="chartFire" width="500" height="280"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-title">CENAPRED Disasters by Type</div>
+            <canvas id="chartDisasters" width="400" height="280"></canvas>
+        </div>
+    </div>
+    <div id="threatsDetails"></div>
+
+    <!-- ── Section 6: Climate ── -->
+    <h2>6. Climate Baseline and Projections</h2>
+    <div id="climateNarrative"></div>
+    <div class="chart-row">
+        <div class="chart-container">
+            <div class="chart-title">Projected Temperature Increase by 2041–2070 (°C, SSP5-8.5)</div>
+            <canvas id="chartTempProj" width="500" height="300"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-title">Projected Tropical Nights Change (CORDEX RCP 8.5, 2041–2070)</div>
+            <canvas id="chartTropNights" width="500" height="300"></canvas>
+        </div>
+    </div>
+    <div id="climateDetails"></div>
+
+    <!-- ── Section 7: Data Gaps ── -->
+    <h2>7. Data Gaps and Limitations</h2>
+    <div id="dataGaps"></div>
+
+    <!-- ── Section 8: Summary Dashboard ── -->
+    <h2>8. Summary Dashboard</h2>
+    <div id="summaryDashboard" class="dashboard"></div>
+
+</div><!-- /content -->
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  UTILITY FUNCTIONS
+// ═══════════════════════════════════════════════════════════
+
+function fmt(v, dec=1) {
+    if (v == null || isNaN(v)) return '—';
+    return v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+}
+function fmtInt(v) {
+    if (v == null || isNaN(v)) return '—';
+    return Math.round(v).toLocaleString('en-US');
+}
+function pct(v, dec=1) {
+    if (v == null || isNaN(v)) return '—';
+    return v.toFixed(dec) + '%';
+}
+function sign(v, dec=1) {
+    if (v == null || isNaN(v)) return '—';
+    return (v > 0 ? '+' : '') + v.toFixed(dec);
+}
+
+const COLORS = ['#2d6a4f','#40916c','#52b788','#74c69d','#95d5b2','#b7e4c7','#d8f3dc',
+    '#264653','#2a9d8f','#e9c46a','#f4a261','#e76f51','#a8dadc','#457b9d','#1d3557',
+    '#6d6875','#b5838d','#e5989b','#ffb4a2','#ffcdb2'];
+
+// ═══════════════════════════════════════════════════════════
+//  CHART DRAWING (Canvas API — no external libs)
+// ═══════════════════════════════════════════════════════════
+
+function drawPieChart(canvasId, labels, values, colors) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const cx = W * 0.38, cy = H * 0.5, R = Math.min(cx, cy) - 20;
+    const total = values.reduce((a,b) => a+b, 0);
+    if (total === 0) return;
+
+    ctx.clearRect(0, 0, W, H);
+    let startAngle = -Math.PI / 2;
+
+    for (let i = 0; i < values.length; i++) {
+        const sliceAngle = (values[i] / total) * 2 * Math.PI;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, R, startAngle, startAngle + sliceAngle);
+        ctx.closePath();
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fill();
+        startAngle += sliceAngle;
+    }
+
+    // Legend
+    const legendX = W * 0.7;
+    let legendY = 16;
+    ctx.font = '11px Times New Roman';
+    for (let i = 0; i < labels.length; i++) {
+        if (legendY > H - 10) break;
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fillRect(legendX, legendY, 10, 10);
+        ctx.fillStyle = '#333';
+        const p = ((values[i] / total) * 100).toFixed(1);
+        ctx.fillText(`${labels[i]} (${p}%)`, legendX + 14, legendY + 9);
+        legendY += 16;
+    }
+}
+
+function drawBarChart(canvasId, labels, values, color, opts = {}) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const horizontal = opts.horizontal || false;
+    const leftMargin = horizontal ? 180 : 50;
+    const bottomMargin = horizontal ? 30 : 80;
+    const topMargin = 10;
+    const rightMargin = 20;
+
+    ctx.clearRect(0, 0, W, H);
+
+    const maxVal = Math.max(...values, 1);
+    const n = labels.length;
+
+    if (horizontal) {
+        const plotH = H - topMargin - bottomMargin;
+        const plotW = W - leftMargin - rightMargin;
+        const barH = Math.min(22, (plotH / n) * 0.7);
+        const gap = (plotH / n) - barH;
+
+        ctx.font = '10px Times New Roman';
+        ctx.fillStyle = '#666';
+        // Grid lines
+        for (let g = 0; g <= 4; g++) {
+            const x = leftMargin + (plotW * g / 4);
+            ctx.beginPath(); ctx.moveTo(x, topMargin); ctx.lineTo(x, H - bottomMargin);
+            ctx.strokeStyle = '#e0e0e0'; ctx.stroke();
+            ctx.fillText(fmtInt(maxVal * g / 4), x - 10, H - bottomMargin + 14);
+        }
+
+        for (let i = 0; i < n; i++) {
+            const y = topMargin + i * (barH + gap) + gap / 2;
+            const barW = (values[i] / maxVal) * plotW;
+            ctx.fillStyle = typeof color === 'string' ? color : color[i % color.length];
+            ctx.fillRect(leftMargin, y, barW, barH);
+            ctx.fillStyle = '#333';
+            ctx.font = '10px Times New Roman';
+            const label = labels[i].length > 28 ? labels[i].substring(0, 26) + '…' : labels[i];
+            ctx.textAlign = 'right';
+            ctx.fillText(label, leftMargin - 6, y + barH / 2 + 4);
+            ctx.textAlign = 'left';
+            if (values[i] > 0) {
+                ctx.fillStyle = '#555';
+                ctx.font = '9px Times New Roman';
+                ctx.fillText(fmtInt(values[i]), leftMargin + barW + 4, y + barH / 2 + 3);
+            }
+        }
+        ctx.textAlign = 'left';
+    } else {
+        const plotW = W - leftMargin - rightMargin;
+        const plotH = H - topMargin - bottomMargin;
+        const barW = Math.min(30, (plotW / n) * 0.7);
+        const gap = (plotW / n) - barW;
+
+        ctx.font = '10px Times New Roman';
+        ctx.fillStyle = '#666';
+        // Y axis
+        for (let g = 0; g <= 4; g++) {
+            const y = H - bottomMargin - (plotH * g / 4);
+            ctx.beginPath(); ctx.moveTo(leftMargin, y); ctx.lineTo(W - rightMargin, y);
+            ctx.strokeStyle = '#e0e0e0'; ctx.stroke();
+            ctx.textAlign = 'right';
+            ctx.fillText(fmt(maxVal * g / 4, maxVal > 100 ? 0 : 1), leftMargin - 4, y + 4);
+        }
+        ctx.textAlign = 'left';
+
+        for (let i = 0; i < n; i++) {
+            const x = leftMargin + i * (barW + gap) + gap / 2;
+            const barH = (values[i] / maxVal) * plotH;
+            ctx.fillStyle = typeof color === 'string' ? color : color[i % color.length];
+            ctx.fillRect(x, H - bottomMargin - barH, barW, barH);
+            ctx.save();
+            ctx.translate(x + barW / 2, H - bottomMargin + 6);
+            ctx.rotate(Math.PI / 4);
+            ctx.fillStyle = '#333';
+            ctx.font = '9px Times New Roman';
+            const label = labels[i].length > 12 ? labels[i].substring(0, 10) + '…' : labels[i];
+            ctx.fillText(label, 0, 0);
+            ctx.restore();
+        }
+    }
+}
+
+function drawLineChart(canvasId, labels, values, color, opts = {}) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const leftMargin = 55, bottomMargin = 50, topMargin = 15, rightMargin = 20;
+    const plotW = W - leftMargin - rightMargin;
+    const plotH = H - topMargin - bottomMargin;
+
+    ctx.clearRect(0, 0, W, H);
+
+    const maxVal = Math.max(...values.filter(v => v != null), 1) * 1.1;
+    const minVal = opts.minVal != null ? opts.minVal : 0;
+    const range = maxVal - minVal;
+    const n = labels.length;
+
+    ctx.font = '10px Times New Roman';
+    ctx.fillStyle = '#666';
+    for (let g = 0; g <= 4; g++) {
+        const y = H - bottomMargin - (plotH * g / 4);
+        ctx.beginPath(); ctx.moveTo(leftMargin, y); ctx.lineTo(W - rightMargin, y);
+        ctx.strokeStyle = '#e0e0e0'; ctx.stroke();
+        ctx.textAlign = 'right';
+        ctx.fillText(fmt(minVal + range * g / 4, range > 100 ? 0 : 1), leftMargin - 4, y + 4);
+    }
+    ctx.textAlign = 'left';
+
+    // Draw line
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    let started = false;
+    for (let i = 0; i < n; i++) {
+        if (values[i] == null) continue;
+        const x = leftMargin + (i / (n - 1)) * plotW;
+        const y = H - bottomMargin - ((values[i] - minVal) / range) * plotH;
+        if (!started) { ctx.moveTo(x, y); started = true; } else { ctx.lineTo(x, y); }
+    }
+    ctx.stroke();
+
+    // Dots
+    ctx.fillStyle = color;
+    for (let i = 0; i < n; i++) {
+        if (values[i] == null) continue;
+        const x = leftMargin + (i / (n - 1)) * plotW;
+        const y = H - bottomMargin - ((values[i] - minVal) / range) * plotH;
+        ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // X labels
+    const step = Math.max(1, Math.floor(n / 12));
+    ctx.fillStyle = '#333';
+    ctx.font = '9px Times New Roman';
+    for (let i = 0; i < n; i += step) {
+        const x = leftMargin + (i / (n - 1)) * plotW;
+        ctx.save();
+        ctx.translate(x, H - bottomMargin + 8);
+        ctx.rotate(Math.PI / 4);
+        ctx.fillText(labels[i], 0, 0);
+        ctx.restore();
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════
+//  DATA LOADING & AGGREGATION
+// ═══════════════════════════════════════════════════════════
+
+async function loadAllData() {
+    const progressEl = document.getElementById('loadProgress');
+    try {
+        const subsetResp = await fetch('coastal_anps_subset.json');
+        const subset = await subsetResp.json();
+        const idsWithData = subset.anp_ids_with_data;
+
+        const allAnps = [];
+        let loaded = 0;
+
+        // Load all in parallel batches of 10
+        for (let i = 0; i < idsWithData.length; i += 10) {
+            const batch = idsWithData.slice(i, i + 10);
+            const results = await Promise.all(batch.map(async (anpId) => {
+                const meta = subset.matched_anps.find(a => a.id === anpId);
+                if (!meta || !meta.data_file) return null;
+                const base = meta.data_file.replace('_data.json', '');
+                try {
+                    const [dataResp, boundaryResp, ssrResp] = await Promise.allSettled([
+                        fetch(`anp_data/${base}_data.json`).then(r => r.ok ? r.json() : null),
+                        fetch(`anp_data/${base}_boundary.geojson`).then(r => r.ok ? r.json() : null),
+                        fetch(`anp_data/${base}_climate_ssr.json`).then(r => r.ok ? r.json() : null)
+                    ]);
+                    return {
+                        id: anpId,
+                        name: meta.matched_name,
+                        category: meta.category,
+                        data: dataResp.status === 'fulfilled' ? dataResp.value : null,
+                        boundary: boundaryResp.status === 'fulfilled' ? boundaryResp.value : null,
+                        climateSSR: ssrResp.status === 'fulfilled' ? ssrResp.value : null
+                    };
+                } catch(e) { console.error(`Failed ${anpId}:`, e); return null; }
+            }));
+            results.forEach(r => { if (r && r.data) allAnps.push(r); });
+            loaded += batch.length;
+            if (progressEl) progressEl.textContent = `${loaded}/${idsWithData.length} loaded…`;
+        }
+
+        document.getElementById('reportDate').textContent = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+
+        buildReport(allAnps);
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+    } catch(e) {
+        document.getElementById('loading').innerHTML = `<strong>Error:</strong> ${e.message}`;
+    }
+}
+
+function buildReport(allAnps) {
+    const N = allAnps.length;
+
+    // ── Aggregate helper ──
+    function sumField(fn) {
+        let total = 0, count = 0;
+        for (const a of allAnps) { const v = fn(a); if (v != null && !isNaN(v)) { total += v; count++; } }
+        return { total, count };
+    }
+    function avgField(fn) {
+        const s = sumField(fn);
+        return s.count > 0 ? { avg: s.total / s.count, count: s.count, total: s.total } : { avg: null, count: 0, total: 0 };
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  SECTION 1: GEOGRAPHIC OVERVIEW
+    // ═══════════════════════════════════════════════════════════
+
+    // Area calculations
+    let totalAreaHa = 0, marineHa = 0, terrHa = 0;
+    const stateCount = {};
+    const catCount = { RB: 0, PN: 0, APFF: 0, Sant: 0, APRN: 0, MN: 0 };
+    const areaByAnp = [];
+
+    for (const a of allAnps) {
+        const m = a.data.metadata || {};
+        const tHa = m.superficie_total_ha || 0;
+        const mHa = m.superficie_marina_ha || 0;
+        const terHa = m.superficie_terrestre_ha || 0;
+        totalAreaHa += tHa;
+        marineHa += mHa;
+        terrHa += terHa;
+
+        const estados = Array.isArray(m.estados) ? m.estados : (m.estados ? [m.estados] : []);
+        estados.forEach(s => { stateCount[s] = (stateCount[s] || 0) + 1; });
+
+        catCount[a.category] = (catCount[a.category] || 0) + 1;
+        areaByAnp.push({ name: a.name, area: tHa / 100 }); // km²
+    }
+
+    areaByAnp.sort((a, b) => b.area - a.area);
+    const top10 = areaByAnp.slice(0, 10);
+
+    const totalAreaKm2 = totalAreaHa / 100;
+    const marineKm2 = marineHa / 100;
+    const terrKm2 = terrHa / 100;
+
+    const statesSorted = Object.entries(stateCount).sort((a,b) => b[1] - a[1]);
+    const topState = statesSorted[0];
+
+    document.getElementById('geoNarrative').innerHTML = `
+        <p>The 38 coastal and marine protected natural areas (ANPs) analyzed in this report collectively encompass
+        <strong>${fmtInt(totalAreaKm2)} km²</strong> of protected territory — of which
+        <strong>${fmtInt(terrKm2)} km²</strong> (${pct(terrKm2/totalAreaKm2*100, 1)}) is terrestrial and
+        <strong>${fmtInt(marineKm2)} km²</strong> (${pct(marineKm2/totalAreaKm2*100, 1)}) is marine.
+        These areas span <strong>${statesSorted.length} states</strong>, with
+        <strong>${topState[0]}</strong> hosting the most ANPs (${topState[1]}).</p>
+        <p>By management category, the set includes <strong>${catCount.RB || 0} Biosphere Reserves (RB)</strong>,
+        <strong>${catCount.PN || 0} National Parks (PN)</strong>,
+        <strong>${catCount.APFF || 0} Areas for Flora & Fauna Protection (APFF)</strong>, and
+        <strong>${catCount.Sant || 0} Sanctuaries (Sant)</strong>.
+        The largest ANP is <strong>${top10[0].name}</strong> at ${fmtInt(top10[0].area)} km²,
+        while many sanctuaries are small beach-nesting sites.</p>
+    `;
+
+    // State table
+    let stateHTML = '<h4>Distribution by State</h4><table class="small-table"><thead><tr><th>State</th><th class="num">Number of ANPs</th></tr></thead><tbody>';
+    statesSorted.forEach(([s, c]) => { stateHTML += `<tr><td>${s}</td><td class="num">${c}</td></tr>`; });
+    stateHTML += '</tbody></table>';
+    document.getElementById('stateTable').innerHTML = stateHTML;
+
+    // Category pie
+    const catLabels = [], catValues = [];
+    for (const [k,v] of Object.entries(catCount)) { if (v > 0) { catLabels.push(k); catValues.push(v); } }
+    drawPieChart('chartCategories', catLabels, catValues, ['#2d6a4f','#457b9d','#e9c46a','#e76f51','#6d6875','#a8dadc']);
+
+    // Top 10 bar
+    drawBarChart('chartTopAreas', top10.map(t => t.name), top10.map(t => t.area), '#2d6a4f', { horizontal: true });
+
+    // Map
+    buildMap(allAnps);
+
+
+    // ═══════════════════════════════════════════════════════════
+    //  SECTION 2: ENVIRONMENTAL CHARACTERIZATION
+    // ═══════════════════════════════════════════════════════════
+
+    // Land cover aggregation
+    const landCoverTotals = {};
+    let lcAnps = 0;
+    for (const a of allAnps) {
+        const lc = a.data.datasets?.land_cover?.classes;
+        if (!lc) continue;
+        lcAnps++;
+        for (const [cls, info] of Object.entries(lc)) {
+            landCoverTotals[cls] = (landCoverTotals[cls] || 0) + (info.area_km2 || 0);
+        }
+    }
+    const lcEntries = Object.entries(landCoverTotals).sort((a,b) => b[1] - a[1]);
+    const lcTotal = lcEntries.reduce((a, [,v]) => a + v, 0);
+
+    // Forest aggregation
+    let totalForestLoss = 0, totalForestCover2000pct = 0, forestAnps = 0;
+    const yearlyLoss = {};
+    for (const a of allAnps) {
+        const f = a.data.datasets?.forest;
+        if (!f) continue;
+        if (f.tree_cover_2000_percent != null) { totalForestCover2000pct += f.tree_cover_2000_percent; forestAnps++; }
+        if (f.total_loss_km2 != null) totalForestLoss += f.total_loss_km2;
+        if (f.loss_by_year) {
+            for (const [yr, loss] of Object.entries(f.loss_by_year)) {
+                yearlyLoss[yr] = (yearlyLoss[yr] || 0) + loss;
+            }
+        }
+    }
+
+    // Carbon
+    const carbonSum = sumField(a => a.data.datasets?.gedi_biomass?.total_carbon_estimate_mt);
+    const agbdAvg = avgField(a => a.data.datasets?.gedi_biomass?.agbd_mean_mg_ha);
+
+    // Ecoregions & biomes
+    const ecoregionSet = new Set(), biomeSet = new Set();
+    const biomeAnps = {};
+    for (const a of allAnps) {
+        const bio = a.data.datasets?.biodiversity;
+        if (!bio) continue;
+        (bio.ecoregions || []).forEach(e => ecoregionSet.add(e));
+        (bio.biomes || []).forEach(b => {
+            biomeSet.add(b);
+            if (!biomeAnps[b]) biomeAnps[b] = [];
+            biomeAnps[b].push(a.name);
+        });
+    }
+
+    // NDVI
+    const ndviValues = [];
+    for (const a of allAnps) {
+        const v = a.data.datasets?.vegetation;
+        if (!v) continue;
+        const mean = v.mean_ndvi ?? v.NDVI_mean;
+        if (mean != null) ndviValues.push({ name: a.name, ndvi: mean });
+    }
+
+    document.getElementById('envNarrative').innerHTML = `
+        <h3>2.1 Land Cover Synthesis</h3>
+        <p>Across ${lcAnps} ANPs with available land cover data, the total mapped area is approximately
+        <strong>${fmtInt(lcTotal)} km²</strong>. The dominant classes are:
+        ${lcEntries.slice(0, 4).map(([cls, area]) => `<strong>${cls}</strong> (${fmtInt(area)} km², ${pct(area/lcTotal*100)})`).join(', ')}.
+        ${lcEntries.find(([c]) => c === 'Mangroves') ? `Mangroves account for <strong>${fmtInt(lcEntries.find(([c]) => c === 'Mangroves')[1])} km²</strong>, reflecting the coastal character of these ANPs.` : ''}</p>
+
+        <h3>2.2 Forest Cover and Loss</h3>
+        <p>Average forest cover in 2000 (Hansen GFC baseline) across ${forestAnps} ANPs was
+        <strong>${pct(totalForestCover2000pct / Math.max(forestAnps, 1))}</strong>.
+        Cumulative forest loss since 2001 totals <strong>${fmt(totalForestLoss)} km²</strong>.
+        The annual trend chart reveals inter-annual variability driven by hurricanes, fires, and land-use change.</p>
+
+        <h3>2.3 Carbon Stocks</h3>
+        <p>Total aboveground carbon stored across the 38 ANPs (from NASA GEDI L4A estimates) is approximately
+        <strong>${fmtInt(carbonSum.total)} megatonnes</strong> (based on ${carbonSum.count} ANPs with data).
+        Mean aboveground biomass density is <strong>${fmt(agbdAvg.avg)} Mg/ha</strong>.
+        These coastal forests and mangroves represent significant blue and green carbon reservoirs.</p>
+
+        <h3>2.4 Ecosystems</h3>
+        <p>The 38 ANPs collectively represent <strong>${ecoregionSet.size} ecoregions</strong> and
+        <strong>${biomeSet.size} biomes</strong>, including: ${[...biomeSet].join(', ')}.
+        This diversity underscores Mexico's role as a megadiverse country with coastal ecosystems
+        spanning tropical rainforests, mangrove systems, arid scrublands, and marine environments.</p>
+
+        <h3>2.5 Vegetation Health (NDVI)</h3>
+        <p>MODIS NDVI data is available for <strong>${ndviValues.length}</strong> of the 38 ANPs.
+        Mean NDVI values range from <strong>${fmt(Math.min(...ndviValues.map(v => v.ndvi)), 3)}</strong>
+        to <strong>${fmt(Math.max(...ndviValues.map(v => v.ndvi)), 3)}</strong>.
+        ANPs with very low NDVI (< 0.2) are predominantly marine or arid environments, while
+        high-NDVI areas correspond to dense tropical forests and mangrove systems.</p>
+    `;
+
+    // Land cover pie
+    drawPieChart('chartLandCover', lcEntries.map(([c]) => c), lcEntries.map(([,v]) => v), COLORS);
+
+    // Forest loss line chart
+    const years = Object.keys(yearlyLoss).sort();
+    drawLineChart('chartForestLoss', years, years.map(y => yearlyLoss[y]), '#d62828');
+
+    // Biome table
+    let biomeHTML = '<h4>Biomes and Associated ANPs</h4><table class="small-table"><thead><tr><th>Biome</th><th class="num">ANPs</th></tr></thead><tbody>';
+    Object.entries(biomeAnps).sort((a,b) => b[1].length - a[1].length).forEach(([b, anps]) => {
+        biomeHTML += `<tr><td>${b}</td><td class="num">${anps.length}</td></tr>`;
+    });
+    biomeHTML += '</tbody></table>';
+    document.getElementById('envDetails').innerHTML = biomeHTML;
+
+
+    // ═══════════════════════════════════════════════════════════
+    //  SECTION 3: BIODIVERSITY
+    // ═══════════════════════════════════════════════════════════
+
+    // Species aggregation
+    let totalGbifSpecies = 0, totalInatSpecies = 0, totalIUCN = 0, totalNOM059 = 0;
+    const speciesByAnp = [];
+    const criticallyEndangered = {};
+    const iucnByAnp = [];
+
+    for (const a of allAnps) {
+        const ext = a.data.external_data || {};
+        const gbif = ext.gbif_species?.unique_species || 0;
+        const inat = ext.inaturalist?.unique_species || 0;
+        const iucn = ext.iucn_threatened?.total_threatened || 0;
+        const nom = ext.simec_nom059?.total_species || 0;
+
+        totalGbifSpecies += gbif;
+        totalInatSpecies += inat;
+        totalIUCN += iucn;
+        totalNOM059 += nom;
+        speciesByAnp.push({ name: a.name, total: gbif + inat, gbif, inat });
+        iucnByAnp.push({ name: a.name, iucn, nom });
+
+        // Critically endangered
+        const ce = ext.iucn_threatened?.critically_endangered || [];
+        ce.forEach(sp => {
+            const spName = typeof sp === 'string' ? sp : (sp.species || sp.name || JSON.stringify(sp));
+            if (!criticallyEndangered[spName]) criticallyEndangered[spName] = [];
+            criticallyEndangered[spName].push(a.name);
+        });
+    }
+
+    speciesByAnp.sort((a, b) => b.total - a.total);
+    const top15bio = speciesByAnp.slice(0, 15);
+
+    const ceMulti = Object.entries(criticallyEndangered)
+        .filter(([, anps]) => anps.length > 1)
+        .sort((a, b) => b[1].length - a[1].length);
+
+    document.getElementById('bioNarrative').innerHTML = `
+        <p>Biodiversity across the 38 coastal ANPs is substantial. GBIF records document
+        <strong>${fmtInt(totalGbifSpecies)} species occurrences</strong>, while iNaturalist citizen science
+        contributes <strong>${fmtInt(totalInatSpecies)} species</strong> (note: these counts may overlap
+        and reflect species recorded per ANP rather than unique across all ANPs).</p>
+
+        <h3>Threatened Species</h3>
+        <p>A total of <strong>${fmtInt(totalIUCN)} IUCN-listed threatened species</strong> have been recorded
+        across these ANPs (sum of per-ANP records; unique species count is lower due to shared ranges).
+        Under Mexico's NOM-059-SEMARNAT-2010, <strong>${fmtInt(totalNOM059)} listed species</strong>
+        (endangered, threatened, or under special protection) are found within these 38 areas.</p>
+
+        <p>The most biodiverse ANPs are <strong>${speciesByAnp[0]?.name}</strong> (${fmtInt(speciesByAnp[0]?.total)} combined species),
+        <strong>${speciesByAnp[1]?.name}</strong> (${fmtInt(speciesByAnp[1]?.total)}), and
+        <strong>${speciesByAnp[2]?.name}</strong> (${fmtInt(speciesByAnp[2]?.total)}).</p>
+    `;
+
+    drawBarChart('chartBiodiversity', top15bio.map(t => t.name), top15bio.map(t => t.total), '#264653', { horizontal: true });
+
+    // CE table
+    let ceHTML = '';
+    if (ceMulti.length > 0) {
+        ceHTML += '<h4>Critically Endangered Species Found Across Multiple ANPs</h4>';
+        ceHTML += '<table class="small-table"><thead><tr><th>Species</th><th class="num"># ANPs</th><th>ANPs</th></tr></thead><tbody>';
+        ceMulti.slice(0, 20).forEach(([sp, anps]) => {
+            ceHTML += `<tr><td><em>${sp}</em></td><td class="num">${anps.length}</td><td style="font-size:9px">${anps.join('; ')}</td></tr>`;
+        });
+        ceHTML += '</tbody></table>';
+    }
+    document.getElementById('bioDetails').innerHTML = ceHTML;
+
+
+    // ═══════════════════════════════════════════════════════════
+    //  SECTION 4: SOCIAL CONTEXT
+    // ═══════════════════════════════════════════════════════════
+
+    let totalPop = 0, totalEmployed = 0, totalUnemployed = 0, totalPopCensus = 0;
+    let totalIndigenous = 0, totalAfro = 0;
+    let totalHomesNoWater = 0, totalHomesNoElec = 0, totalHomesNoDrain = 0;
+    let totalHomes = 0, totalNoHealth = 0, totalWithHealth = 0;
+    let schoolingSum = 0, schoolingCount = 0;
+    let illiterate = 0, pop15plus = 0;
+    let censusAnps = 0;
+    const irsCategories = {};
+    const socialVuln = [];
+
+    for (const a of allAnps) {
+        const ds = a.data.datasets || {};
+        const ext = a.data.external_data || {};
+        const pop = ds.population?.year_2020?.population || 0;
+        totalPop += pop;
+
+        const census = ext.inegi_census;
+        if (census && census.total_population) {
+            censusAnps++;
+            totalPopCensus += census.total_population || 0;
+            totalEmployed += census.employed || 0;
+            totalUnemployed += census.unemployed || 0;
+            totalIndigenous += census.indigenous_households_pop || 0;
+            totalAfro += census.afromexican_population || 0;
+            totalHomesNoWater += census.homes_no_water || 0;
+            totalHomesNoElec += census.homes_no_electricity || 0;
+            totalHomesNoDrain += census.homes_no_drainage || 0;
+            totalHomes += census.total_households || 0;
+            totalNoHealth += census.no_health_services || 0;
+            totalWithHealth += census.with_health_services || 0;
+            if (census.avg_schooling_years) { schoolingSum += census.avg_schooling_years; schoolingCount++; }
+            illiterate += census.illiterate_15plus || 0;
+            // Estimate 15+ pop from total - we don't have exact, use total
+        }
+
+        const coneval = ext.coneval_irs;
+        if (coneval && coneval.irs_category_distribution) {
+            for (const [cat, cnt] of Object.entries(coneval.irs_category_distribution)) {
+                irsCategories[cat] = (irsCategories[cat] || 0) + cnt;
+            }
+        }
+
+        // Vulnerability scoring
+        const irs = coneval?.irs_weighted_mean;
+        socialVuln.push({ name: a.name, irs: irs, pop: pop });
+    }
+
+    const avgSchooling = schoolingCount > 0 ? schoolingSum / schoolingCount : null;
+    const noWaterPct = totalHomes > 0 ? (totalHomesNoWater / totalHomes * 100) : null;
+    const noElecPct = totalHomes > 0 ? (totalHomesNoElec / totalHomes * 100) : null;
+    const noDrainPct = totalHomes > 0 ? (totalHomesNoDrain / totalHomes * 100) : null;
+    const healthCovPct = (totalWithHealth + totalNoHealth) > 0 ? (totalWithHealth / (totalWithHealth + totalNoHealth) * 100) : null;
+
+    const mostVulnerable = socialVuln.filter(v => v.irs != null).sort((a, b) => b.irs - a.irs).slice(0, 5);
+
+    document.getElementById('socialNarrative').innerHTML = `
+        <p>The 38 coastal ANPs are home to an estimated <strong>${fmtInt(Math.round(totalPop))} people</strong>
+        (WorldPop 2020 gridded estimate). INEGI Census 2020 data — available for ${censusAnps} ANPs —
+        records a population of <strong>${fmtInt(totalPopCensus)}</strong> across ${fmtInt(totalHomes)} households
+        in the localities intersecting these protected areas.</p>
+
+        <h3>Employment</h3>
+        <p>Of the census-enumerated population, <strong>${fmtInt(totalEmployed)}</strong> are employed and
+        <strong>${fmtInt(totalUnemployed)}</strong> unemployed, suggesting an employment rate of
+        <strong>${pct(totalEmployed / Math.max(totalEmployed + totalUnemployed, 1) * 100)}</strong> among the
+        economically active population.</p>
+
+        <h3>Education and Literacy</h3>
+        <p>Average schooling across these communities is <strong>${fmt(avgSchooling)} years</strong>
+        (weighted average across ${schoolingCount} ANPs with data). A total of
+        <strong>${fmtInt(illiterate)} persons aged 15+</strong> are illiterate.</p>
+
+        <h3>Health Services</h3>
+        <p>Health service coverage stands at approximately <strong>${pct(healthCovPct)}</strong>,
+        with <strong>${fmtInt(totalNoHealth)}</strong> persons lacking access to any health services.</p>
+
+        <h3>Housing Infrastructure</h3>
+        <p>Across ${fmtInt(totalHomes)} households, significant infrastructure gaps persist:
+        <strong>${pct(noWaterPct)}</strong> lack piped water,
+        <strong>${pct(noElecPct)}</strong> lack electricity, and
+        <strong>${pct(noDrainPct)}</strong> lack drainage systems.</p>
+
+        <h3>Indigenous and Afro-Mexican Populations</h3>
+        <p>These ANPs are home to significant indigenous populations: <strong>${fmtInt(totalIndigenous)}</strong>
+        persons live in indigenous households. Afro-Mexican self-identification accounts for
+        <strong>${fmtInt(totalAfro)}</strong> persons.</p>
+
+        <h3>Social Lag (CONEVAL IRS 2020)</h3>
+        <p>The municipalities overlapping these ANPs show the following distribution of social lag categories:</p>
+    `;
+
+    // IRS pie
+    const irsLabels = ['Muy bajo', 'Bajo', 'Medio', 'Alto', 'Muy alto'];
+    const irsColors = ['#2d6a4f', '#52b788', '#e9c46a', '#f4a261', '#e76f51'];
+    const irsVals = irsLabels.map(l => irsCategories[l] || 0);
+    if (irsVals.some(v => v > 0)) {
+        drawPieChart('chartSocialLag', irsLabels, irsVals, irsColors);
+    }
+
+    // Infrastructure bar
+    const infraLabels = ['No Water', 'No Electricity', 'No Drainage'];
+    const infraValues = [noWaterPct || 0, noElecPct || 0, noDrainPct || 0];
+    drawBarChart('chartInfrastructure', infraLabels, infraValues, ['#457b9d', '#e9c46a', '#e76f51']);
+
+    // Most vulnerable
+    let vulnHTML = '';
+    if (mostVulnerable.length > 0) {
+        vulnHTML += '<div class="finding"><strong>Key Finding — Most Vulnerable Populations:</strong> ';
+        vulnHTML += 'The ANPs with highest social lag (IRS index) are: ';
+        vulnHTML += mostVulnerable.map(v => `<strong>${v.name}</strong> (IRS: ${fmt(v.irs, 2)})`).join(', ');
+        vulnHTML += '. Higher IRS values indicate greater social marginalization and service deficits.</div>';
+    }
+    document.getElementById('socialDetails').innerHTML = vulnHTML;
+
+
+    // ═══════════════════════════════════════════════════════════
+    //  SECTION 5: THREATS AND DISTURBANCES
+    // ═══════════════════════════════════════════════════════════
+
+    // Fire
+    let totalBurned = 0;
+    const yearlyBurned = {};
+    const burnedByAnp = [];
+    for (const a of allAnps) {
+        const fire = a.data.datasets?.fire?.burned_area_km2_by_year;
+        if (!fire) continue;
+        let anpBurned = 0;
+        for (const [yr, area] of Object.entries(fire)) {
+            yearlyBurned[yr] = (yearlyBurned[yr] || 0) + area;
+            anpBurned += area;
+        }
+        totalBurned += anpBurned;
+        burnedByAnp.push({ name: a.name, burned: anpBurned });
+    }
+    burnedByAnp.sort((a, b) => b.burned - a.burned);
+
+    // Human modification
+    const ghmValues = [];
+    for (const a of allAnps) {
+        const hm = a.data.datasets?.human_modification;
+        const mean = hm?.mean_index ?? hm?.gHM_mean;
+        if (mean != null) ghmValues.push({ name: a.name, ghm: mean });
+    }
+    ghmValues.sort((a, b) => a.ghm - b.ghm);
+
+    // Night lights
+    const nlValues = [];
+    for (const a of allAnps) {
+        const nl = a.data.datasets?.night_lights;
+        const mean = nl?.mean_radiance ?? nl?.mean;
+        if (mean != null) nlValues.push({ name: a.name, radiance: mean });
+    }
+    nlValues.sort((a, b) => b.radiance - a.radiance);
+
+    // CENAPRED
+    let totalEvents = 0, totalDeaths = 0, totalAffected = 0, totalDamageMDP = 0, totalHousesDamaged = 0;
+    const disasterTypes = {};
+    const disasterByAnp = [];
+    for (const a of allAnps) {
+        const ced = a.data.external_data?.cenapred_disasters;
+        if (!ced || !ced.data_available) continue;
+        totalEvents += ced.total_events || 0;
+        totalDeaths += ced.total_deaths || 0;
+        totalAffected += ced.total_affected || 0;
+        totalDamageMDP += ced.total_damage_million_pesos || 0;
+        totalHousesDamaged += ced.total_houses_damaged || 0;
+        if (ced.by_type) {
+            for (const [type, info] of Object.entries(ced.by_type)) {
+                if (!disasterTypes[type]) disasterTypes[type] = { events: 0, deaths: 0 };
+                if (typeof info === 'number') {
+                    disasterTypes[type].events += info;
+                } else if (info && typeof info === 'object') {
+                    disasterTypes[type].events += info.events || info.count || 1;
+                    disasterTypes[type].deaths += info.deaths || 0;
+                }
+            }
+        }
+        disasterByAnp.push({ name: a.name, events: ced.total_events || 0, deaths: ced.total_deaths || 0, damage: ced.total_damage_million_pesos || 0 });
+    }
+    disasterByAnp.sort((a, b) => b.damage - a.damage);
+    const dtEntries = Object.entries(disasterTypes).sort((a,b) => b[1].events - a[1].events);
+
+    document.getElementById('threatsNarrative').innerHTML = `
+        <h3>5.1 Wildfire</h3>
+        <p>MODIS burned area data (2019–2023) shows a total of <strong>${fmt(totalBurned)} km²</strong>
+        burned across the 38 ANPs. The most fire-affected areas are
+        ${burnedByAnp.slice(0, 3).map(b => `<strong>${b.name}</strong> (${fmt(b.burned)} km²)`).join(', ')}.</p>
+
+        <h3>5.2 Human Modification</h3>
+        <p>The Global Human Modification Index (gHM, 0–1 scale) reveals a range of anthropogenic pressure.
+        The <em>least</em> modified ANPs include ${ghmValues.slice(0, 3).map(g => `<strong>${g.name}</strong> (gHM: ${fmt(g.ghm, 3)})`).join(', ')}.
+        The <em>most</em> modified include ${ghmValues.slice(-3).reverse().map(g => `<strong>${g.name}</strong> (gHM: ${fmt(g.ghm, 3)})`).join(', ')}.</p>
+
+        <h3>5.3 Night Lights (Urbanization Pressure)</h3>
+        <p>VIIRS night-time radiance indicates urbanization pressure near protected areas.
+        The ANPs with highest mean radiance are ${nlValues.slice(0, 3).map(n => `<strong>${n.name}</strong> (${fmt(n.radiance, 2)} nW/cm²/sr)`).join(', ')},
+        suggesting significant urban or tourist infrastructure encroachment.</p>
+
+        <h3>5.4 CENAPRED Hydrometeorological Disasters (2000–2023)</h3>
+        <p>Across the municipalities overlapping these 38 ANPs, CENAPRED records document
+        <strong>${fmtInt(totalEvents)} disaster events</strong>, causing
+        <strong>${fmtInt(totalDeaths)} deaths</strong>,
+        affecting <strong>${fmtInt(totalAffected)} persons</strong>,
+        damaging <strong>${fmtInt(totalHousesDamaged)} homes</strong>, and
+        inflicting <strong>${fmtInt(Math.round(totalDamageMDP))} million pesos</strong> in economic losses.
+        The most common disaster types are ${dtEntries.slice(0, 3).map(([t, d]) => `<strong>${t}</strong> (${d.events} events)`).join(', ')}.</p>
+    `;
+
+    // Fire line chart
+    const fireYears = Object.keys(yearlyBurned).sort();
+    drawLineChart('chartFire', fireYears, fireYears.map(y => yearlyBurned[y]), '#d62828');
+
+    // Disaster pie
+    drawPieChart('chartDisasters', dtEntries.map(([t]) => t), dtEntries.map(([,d]) => d.events),
+        ['#264653','#2a9d8f','#e9c46a','#f4a261','#e76f51','#6d6875','#b5838d','#a8dadc','#457b9d','#1d3557']);
+
+    // Worst-hit table
+    let threatHTML = '<h4>Worst-Hit ANPs by Economic Damage (CENAPRED 2000–2023)</h4>';
+    threatHTML += '<table class="small-table"><thead><tr><th>ANP</th><th class="num">Events</th><th class="num">Deaths</th><th class="num">Damage (M MXN)</th></tr></thead><tbody>';
+    disasterByAnp.slice(0, 10).forEach(d => {
+        threatHTML += `<tr><td>${d.name}</td><td class="num">${fmtInt(d.events)}</td><td class="num">${fmtInt(d.deaths)}</td><td class="num">${fmtInt(Math.round(d.damage))}</td></tr>`;
+    });
+    threatHTML += '</tbody></table>';
+    document.getElementById('threatsDetails').innerHTML = threatHTML;
+
+
+    // ═══════════════════════════════════════════════════════════
+    //  SECTION 6: CLIMATE
+    // ═══════════════════════════════════════════════════════════
+
+    // Baseline climate
+    const precips = [], temps = [];
+    for (const a of allAnps) {
+        const c = a.data.datasets?.climate;
+        if (c?.annual_precipitation_mm != null) precips.push(c.annual_precipitation_mm);
+        if (c?.mean_max_temp_c != null) temps.push(c.mean_max_temp_c);
+    }
+
+    // Projections
+    const tempChange2041 = [], tempChange2071 = [];
+    const tempProj245_2041 = [], tempProj245_2071 = [];
+    for (const a of allAnps) {
+        const cp = a.data.datasets?.climate_projections?.scenarios;
+        if (!cp) continue;
+
+        const ssp585_2041 = cp.ssp585?.['2041-2070']?.temperature?.change_c;
+        const ssp585_2071 = cp.ssp585?.['2071-2100']?.temperature?.change_c;
+        const ssp245_2041 = cp.ssp245?.['2041-2070']?.temperature?.change_c;
+        const ssp245_2071 = cp.ssp245?.['2071-2100']?.temperature?.change_c;
+
+        if (ssp585_2041 != null) tempChange2041.push({ name: a.name, change: ssp585_2041 });
+        if (ssp585_2071 != null) tempChange2071.push({ name: a.name, change: ssp585_2071 });
+        if (ssp245_2041 != null) tempProj245_2041.push(ssp245_2041);
+        if (ssp245_2071 != null) tempProj245_2071.push(ssp245_2071);
+    }
+    tempChange2041.sort((a, b) => b.change - a.change);
+    tempChange2071.sort((a, b) => b.change - a.change);
+
+    const avg585_2041 = tempChange2041.length > 0 ? tempChange2041.reduce((s, t) => s + t.change, 0) / tempChange2041.length : null;
+    const avg585_2071 = tempChange2071.length > 0 ? tempChange2071.reduce((s, t) => s + t.change, 0) / tempChange2071.length : null;
+    const avg245_2041 = tempProj245_2041.length > 0 ? tempProj245_2041.reduce((s, v) => s + v, 0) / tempProj245_2041.length : null;
+    const avg245_2071 = tempProj245_2071.length > 0 ? tempProj245_2071.reduce((s, v) => s + v, 0) / tempProj245_2071.length : null;
+
+    // SSR data: tropical nights, precipitation change, soil moisture
+    const tropNightsData = [];
+    const precipChangeData = [];
+    let ssrCount = 0;
+    for (const a of allAnps) {
+        if (!a.climateSSR?.data) continue;
+        ssrCount++;
+        const rcp85_2041 = a.climateSSR.data.rcp85?.['2041-2070'];
+        if (rcp85_2041) {
+            if (rcp85_2041.tropical_nights != null) tropNightsData.push({ name: a.name, nights: rcp85_2041.tropical_nights });
+            if (rcp85_2041.precipitation != null) precipChangeData.push({ name: a.name, change: rcp85_2041.precipitation });
+        }
+    }
+    tropNightsData.sort((a, b) => b.nights - a.nights);
+
+    // Water stress
+    const wsCategories = {};
+    let wsCount = 0;
+    for (const a of allAnps) {
+        const ws = a.data.datasets?.water_stress;
+        if (ws?.baseline_water_stress_category) {
+            wsCategories[ws.baseline_water_stress_category] = (wsCategories[ws.baseline_water_stress_category] || 0) + 1;
+            wsCount++;
+        }
+    }
+
+    // Sea level rise
+    const slrData = [];
+    for (const a of allAnps) {
+        const slr = a.data.datasets?.sea_level_rise;
+        if (slr && slr.data_available) {
+            slrData.push({ name: a.name, trend: slr.observed_trend_mm_per_year, proj2050: slr.projected_slr_2050_cm, inund: slr.inundation_pct_at_1m });
+        }
+    }
+
+    // Hurricane/cyclone exposure from CENAPRED
+    const cycloneExposure = [];
+    for (const a of allAnps) {
+        const ced = a.data.external_data?.cenapred_disasters;
+        if (!ced?.by_type) continue;
+        let cyclones = 0;
+        for (const [type, info] of Object.entries(ced.by_type)) {
+            if (type.toLowerCase().includes('ciclón') || type.toLowerCase().includes('tormenta tropical')) {
+                cyclones += (typeof info === 'number') ? info : (info.events || info.count || 1);
+            }
+        }
+        if (cyclones > 0) cycloneExposure.push({ name: a.name, cyclones });
+    }
+    cycloneExposure.sort((a, b) => b.cyclones - a.cyclones);
+    const totalCyclones = cycloneExposure.reduce((s, c) => s + c.cyclones, 0);
+
+    document.getElementById('climateNarrative').innerHTML = `
+        <h3>6.1 Current Climate</h3>
+        <p>Across the 38 ANPs, annual precipitation ranges from
+        <strong>${fmtInt(Math.min(...precips))} mm</strong> to <strong>${fmtInt(Math.max(...precips))} mm</strong>
+        (mean: ${fmtInt(precips.reduce((a,b) => a+b, 0) / precips.length)} mm).
+        Mean maximum temperature ranges from <strong>${fmt(Math.min(...temps))}°C</strong> to
+        <strong>${fmt(Math.max(...temps))}°C</strong> (average: ${fmt(temps.reduce((a,b) => a+b, 0) / temps.length)}°C).</p>
+
+        <h3>6.2 Temperature Projections</h3>
+        <p>Under the <strong>SSP2-4.5</strong> (moderate) scenario, average warming by 2041–2070 is
+        <strong>${sign(avg245_2041)}°C</strong> and by 2071–2100 is <strong>${sign(avg245_2071)}°C</strong>.</p>
+        <p>Under the <strong>SSP5-8.5</strong> (high emissions) scenario, average warming by 2041–2070 is
+        <strong>${sign(avg585_2041)}°C</strong> and by 2071–2100 is <strong>${sign(avg585_2071)}°C</strong>.
+        The most severely affected ANPs face up to
+        <strong>${sign(tempChange2071[0]?.change)}°C</strong> warming by end-of-century
+        (${tempChange2071[0]?.name}).</p>
+
+        <h3>6.3 Precipitation Patterns</h3>
+        <p>CORDEX precipitation projections (RCP 8.5, 2041–2070) are available for ${precipChangeData.length} ANPs.
+        ${precipChangeData.length > 0 ? `Changes range from
+        <strong>${sign(Math.min(...precipChangeData.map(p => p.change)))}%</strong> to
+        <strong>${sign(Math.max(...precipChangeData.map(p => p.change)))}%</strong>,
+        with a mean change of <strong>${sign(precipChangeData.reduce((s,p) => s + p.change, 0) / precipChangeData.length)}%</strong>.` :
+        'Data is limited for these ANPs.'}</p>
+
+        <h3>6.4 Heat Stress (Tropical Nights)</h3>
+        <p>CORDEX projections indicate increasing tropical nights (nights above 20°C) across most ANPs.
+        ${tropNightsData.length > 0 ?
+        `By 2041–2070, the increase ranges from ${sign(Math.min(...tropNightsData.map(t => t.nights)))} to
+        ${sign(Math.max(...tropNightsData.map(t => t.nights)))} nights/year.
+        The most affected: ${tropNightsData.slice(0, 3).map(t => `<strong>${t.name}</strong> (${sign(t.nights)} nights)`).join(', ')}.` :
+        'Limited SSR data available for tropical nights projections.'}</p>
+
+        <h3>6.5 Water Stress</h3>
+        <p>WRI Aqueduct water stress data is available for ${wsCount} ANPs.
+        ${Object.entries(wsCategories).sort((a,b) => b[1] - a[1]).map(([cat, n]) => `<strong>${cat}</strong>: ${n} ANPs`).join('; ')}.</p>
+
+        <h3>6.6 Sea Level Rise</h3>
+        ${slrData.length > 0 ?
+        `<p>Sea level rise data is available for ${slrData.length} ANPs. Observed trends range from
+        ${fmt(Math.min(...slrData.filter(s => s.trend != null).map(s => s.trend)))} to
+        ${fmt(Math.max(...slrData.filter(s => s.trend != null).map(s => s.trend)))} mm/year.</p>` :
+        '<p class="gap-note"><strong>Data Gap:</strong> Sea level rise datasets are not populated for these ANPs in the current extraction. This is a critical gap for coastal vulnerability assessment.</p>'}
+
+        <h3>6.7 Hurricane Exposure</h3>
+        <p>CENAPRED records show <strong>${fmtInt(totalCyclones)} tropical cyclone and storm events</strong>
+        affecting these 38 ANPs between 2000–2023.
+        ${cycloneExposure.length > 0 ?
+        `The most exposed are: ${cycloneExposure.slice(0, 5).map(c => `<strong>${c.name}</strong> (${c.cyclones} events)`).join(', ')}.` :
+        ''}</p>
+    `;
+
+    // Temperature projection bar chart
+    const top15temp = tempChange2041.slice(0, 15);
+    drawBarChart('chartTempProj', top15temp.map(t => t.name), top15temp.map(t => t.change), '#d62828', { horizontal: true });
+
+    // Tropical nights bar chart
+    const top15trop = tropNightsData.slice(0, 15);
+    if (top15trop.length > 0) {
+        drawBarChart('chartTropNights', top15trop.map(t => t.name), top15trop.map(t => t.nights), '#e76f51', { horizontal: true });
+    }
+
+    // Climate details
+    let climHTML = '<h4>Top 10 ANPs — Projected Warming by 2071–2100 (SSP5-8.5)</h4>';
+    climHTML += '<table class="small-table"><thead><tr><th>ANP</th><th class="num">ΔT 2041–70 (°C)</th><th class="num">ΔT 2071–00 (°C)</th></tr></thead><tbody>';
+    tempChange2071.slice(0, 10).forEach(t => {
+        const t2041 = tempChange2041.find(x => x.name === t.name);
+        climHTML += `<tr><td>${t.name}</td><td class="num">${sign(t2041?.change)}</td><td class="num">${sign(t.change)}</td></tr>`;
+    });
+    climHTML += '</tbody></table>';
+    document.getElementById('climateDetails').innerHTML = climHTML;
+
+
+    // ═══════════════════════════════════════════════════════════
+    //  SECTION 7: DATA GAPS
+    // ═══════════════════════════════════════════════════════════
+
+    const gaps = [];
+
+    // Check coverage for each dataset
+    const datasetCoverage = {
+        'Land Cover': 0, 'Forest': 0, 'GEDI Biomass': 0, 'Climate Projections': 0,
+        'Water Stress': 0, 'GBIF Species': 0, 'iNaturalist': 0, 'INEGI Census': 0,
+        'CONEVAL IRS': 0, 'CENAPRED': 0, 'Sea Level Rise': 0, 'Climate SSR': 0
+    };
+    for (const a of allAnps) {
+        const ds = a.data.datasets || {};
+        const ext = a.data.external_data || {};
+        if (ds.land_cover?.classes) datasetCoverage['Land Cover']++;
+        if (ds.forest?.loss_by_year) datasetCoverage['Forest']++;
+        if (ds.gedi_biomass?.data_available) datasetCoverage['GEDI Biomass']++;
+        if (ds.climate_projections?.data_available) datasetCoverage['Climate Projections']++;
+        if (ds.water_stress?.data_available) datasetCoverage['Water Stress']++;
+        if (ext.gbif_species?.unique_species) datasetCoverage['GBIF Species']++;
+        if (ext.inaturalist?.data_available) datasetCoverage['iNaturalist']++;
+        if (ext.inegi_census?.total_population) datasetCoverage['INEGI Census']++;
+        if (ext.coneval_irs?.data_available) datasetCoverage['CONEVAL IRS']++;
+        if (ext.cenapred_disasters?.data_available) datasetCoverage['CENAPRED']++;
+        if (ds.sea_level_rise?.data_available) datasetCoverage['Sea Level Rise']++;
+        if (a.climateSSR?.data) datasetCoverage['Climate SSR']++;
+    }
+
+    let gapHTML = '<p>The following table summarizes data availability across the 38 coastal ANPs:</p>';
+    gapHTML += '<table class="small-table"><thead><tr><th>Dataset</th><th class="num">ANPs with Data</th><th class="num">Coverage</th><th>Notes</th></tr></thead><tbody>';
+    for (const [ds, count] of Object.entries(datasetCoverage)) {
+        const covPct = (count / N * 100);
+        const note = covPct < 50 ? '⚠️ Low coverage' : (covPct < 90 ? 'Partial coverage' : '✓ Good');
+        gapHTML += `<tr><td>${ds}</td><td class="num">${count}/${N}</td><td class="num">${pct(covPct)}</td><td>${note}</td></tr>`;
+    }
+    gapHTML += '</tbody></table>';
+
+    gapHTML += `
+        <h3>Methodological Notes</h3>
+        <div class="gap-note">
+            <strong>Species counts:</strong> GBIF and iNaturalist totals are per-ANP sums and likely overcount unique species
+            across the full network due to shared ranges. A cross-ANP deduplication would require species-level matching.
+        </div>
+        <div class="gap-note">
+            <strong>Population estimates:</strong> WorldPop gridded data (100m) and INEGI Census locality-level data may differ
+            because of boundary intersection methods and temporal differences.
+        </div>
+        <div class="gap-note">
+            <strong>CENAPRED disasters:</strong> Matched by municipality overlap — events not necessarily within the ANP boundary
+            itself. Economic damage figures in nominal pesos (not inflation-adjusted).
+        </div>
+        <div class="gap-note">
+            <strong>Climate projections:</strong> CMIP6 (GEE) and CORDEX (SSR) use different model ensembles and downscaling methods.
+            RCP 4.5 ≈ SSP2-4.5 and RCP 8.5 ≈ SSP5-8.5, but they are not identical scenarios.
+        </div>
+        <div class="gap-note">
+            <strong>Sea level rise:</strong> SLR data extraction appears incomplete across these ANPs. Coastal inundation
+            risk assessment requires high-resolution coastal DEMs that may not be uniformly available.
+        </div>
+    `;
+    document.getElementById('dataGaps').innerHTML = gapHTML;
+
+
+    // ═══════════════════════════════════════════════════════════
+    //  SECTION 8: SUMMARY DASHBOARD
+    // ═══════════════════════════════════════════════════════════
+
+    const dashCards = [
+        { label: 'Total Area Protected', value: fmtInt(totalAreaKm2) + ' km²', cls: 'highlight' },
+        { label: 'Population (WorldPop 2020)', value: fmtInt(Math.round(totalPop)), cls: '' },
+        { label: 'Species (GBIF + iNaturalist)', value: fmtInt(totalGbifSpecies + totalInatSpecies), cls: 'highlight' },
+        { label: 'IUCN Threatened Species', value: fmtInt(totalIUCN), cls: 'warning' },
+        { label: 'NOM-059 Listed Species', value: fmtInt(totalNOM059), cls: 'warning' },
+        { label: 'Disaster Deaths (2000–2023)', value: fmtInt(totalDeaths), cls: 'warning' },
+        { label: 'Total Carbon Stored', value: fmtInt(carbonSum.total) + ' Mt', cls: 'highlight' },
+        { label: 'Avg Warming by 2050 (SSP5-8.5)', value: sign(avg585_2041) + '°C', cls: 'warning' },
+        { label: 'Total Disaster Damage', value: fmtInt(Math.round(totalDamageMDP)) + ' M MXN', cls: 'warning' },
+        { label: 'Persons Without Health Services', value: fmtInt(totalNoHealth), cls: '' },
+        { label: 'Forest Loss Since 2001', value: fmt(totalForestLoss) + ' km²', cls: 'warning' },
+        { label: 'Indigenous Population', value: fmtInt(totalIndigenous), cls: '' }
+    ];
+
+    const dashEl = document.getElementById('summaryDashboard');
+    dashEl.innerHTML = dashCards.map(c =>
+        `<div class="card ${c.cls}"><div class="big-number">${c.value}</div><div class="card-label">${c.label}</div></div>`
+    ).join('');
+}
+
+
+// ═══════════════════════════════════════════════════════════
+//  MAP
+// ═══════════════════════════════════════════════════════════
+
+function buildMap(allAnps) {
+    const map = L.map('mapContainer', { scrollWheelZoom: true }).setView([22, -100], 5);
+
+    // Satellite base layer
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Esri World Imagery',
+        maxZoom: 18
+    }).addTo(map);
+
+    // Labels overlay
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18, opacity: 0.7
+    }).addTo(map);
+
+    const bounds = L.latLngBounds();
+    const catColors = { RB: '#2d6a4f', PN: '#457b9d', APFF: '#e9c46a', Sant: '#e76f51' };
+
+    for (const a of allAnps) {
+        if (!a.boundary) continue;
+        try {
+            const layer = L.geoJSON(a.boundary, {
+                style: {
+                    color: catColors[a.category] || '#fff',
+                    weight: 2,
+                    fillColor: catColors[a.category] || '#fff',
+                    fillOpacity: 0.25
+                }
+            }).bindPopup(`<strong>${a.name}</strong><br/>Category: ${a.category}`);
+            layer.addTo(map);
+            bounds.extend(layer.getBounds());
+        } catch(e) { console.warn(`Map error for ${a.name}:`, e); }
+    }
+
+    if (bounds.isValid()) map.fitBounds(bounds, { padding: [20, 20] });
+
+    // Legend
+    const legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function() {
+        const div = L.DomUtil.create('div', 'legend');
+        div.style.cssText = 'background:rgba(255,255,255,0.9);padding:8px 12px;border-radius:4px;font:11px Times New Roman;line-height:1.6;';
+        div.innerHTML = Object.entries(catColors).map(([cat, col]) =>
+            `<span style="display:inline-block;width:12px;height:12px;background:${col};margin-right:4px;vertical-align:middle;"></span>${cat}`
+        ).join('<br/>');
+        return div;
+    };
+    legend.addTo(map);
+}
+
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', loadAllData);
+</script>
+</body>
+</html>
