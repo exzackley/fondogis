@@ -84,12 +84,7 @@
             color: var(--text-muted);
         }
 
-        .breadcrumb a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
+        .breadcrumb a { color: var(--text-secondary); text-decoration: none; transition: color 0.2s; }
         .breadcrumb a:hover { color: var(--accent); }
         .breadcrumb .sep { color: var(--text-muted); }
         .breadcrumb .current { color: var(--accent); font-weight: 500; }
@@ -113,10 +108,7 @@
             transition: all 0.2s;
         }
 
-        .back-link:hover {
-            color: var(--accent);
-            border-color: var(--accent);
-        }
+        .back-link:hover { color: var(--accent); border-color: var(--accent); }
 
         .hamburger {
             display: none;
@@ -130,10 +122,7 @@
         }
 
         /* Layout */
-        .layout {
-            display: flex;
-            margin-top: 57px;
-        }
+        .layout { display: flex; margin-top: 57px; }
 
         /* Sidebar */
         .sidebar {
@@ -171,17 +160,8 @@
             border-left: 3px solid transparent;
         }
 
-        .sidebar-link:hover {
-            color: var(--text-primary);
-            background: rgba(255,255,255,0.03);
-        }
-
-        .sidebar-link.active {
-            color: var(--accent);
-            background: rgba(16, 185, 129, 0.08);
-            border-left-color: var(--accent);
-        }
-
+        .sidebar-link:hover { color: var(--text-primary); background: rgba(255,255,255,0.03); }
+        .sidebar-link.active { color: var(--accent); background: rgba(16, 185, 129, 0.08); border-left-color: var(--accent); }
         .sidebar-link .icon { font-size: 1rem; width: 22px; text-align: center; }
 
         /* Main Content */
@@ -213,9 +193,7 @@
             transition: border-color 0.2s;
         }
 
-        .search-box:focus-within {
-            border-color: var(--accent);
-        }
+        .search-box:focus-within { border-color: var(--accent); }
 
         .search-box input {
             flex: 1;
@@ -228,7 +206,6 @@
         }
 
         .search-box input::placeholder { color: var(--text-muted); }
-
         .search-icon { color: var(--text-muted); font-size: 1rem; }
 
         .search-count {
@@ -287,48 +264,9 @@
             position: relative;
         }
 
-        .hero-stat {
-            text-align: center;
-            background: var(--bg-tertiary);
-            padding: 12px 20px;
-            border-radius: 10px;
-        }
-
+        .hero-stat { text-align: center; background: var(--bg-tertiary); padding: 12px 20px; border-radius: 10px; }
         .hero-stat .val { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
         .hero-stat .lbl { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; }
-
-        /* Tabs */
-        .tab-bar {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 28px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 0;
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-family: inherit;
-            font-size: 0.9rem;
-            font-weight: 500;
-            padding: 10px 18px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-            margin-bottom: -1px;
-        }
-
-        .tab-btn:hover { color: var(--text-primary); }
-
-        .tab-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
 
         /* Section Header */
         .section-header {
@@ -351,23 +289,12 @@
             flex-shrink: 0;
         }
 
-        .section-header .info h2 {
-            font-size: 1.15rem;
-            font-weight: 600;
-        }
+        .section-header .info h2 { font-size: 1.15rem; font-weight: 600; }
+        .section-header .info p { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
 
-        .section-header .info p {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
+        .section-block { margin-bottom: 40px; scroll-margin-top: 130px; }
 
-        .section-block {
-            margin-bottom: 40px;
-            scroll-margin-top: 130px;
-        }
-
-        /* Field Table */
+        /* Field Table — reorganized with Name, Unit, Source, Description, Link */
         .field-table {
             width: 100%;
             border-collapse: separate;
@@ -390,13 +317,8 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .field-table tbody tr {
-            transition: background 0.15s;
-        }
-
-        .field-table tbody tr:hover {
-            background: rgba(255,255,255,0.02);
-        }
+        .field-table tbody tr { transition: background 0.15s; }
+        .field-table tbody tr:hover { background: rgba(255,255,255,0.02); }
 
         .field-table tbody td {
             padding: 10px 14px;
@@ -405,32 +327,18 @@
             vertical-align: top;
         }
 
-        .field-table tbody tr:last-child td {
-            border-bottom: none;
-        }
+        .field-table tbody tr:last-child td { border-bottom: none; }
 
         .field-name {
-            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
             color: var(--accent-light);
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .field-type {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.72rem;
-            font-weight: 500;
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--accent-light);
-            white-space: nowrap;
         }
 
         .field-unit {
             color: var(--text-muted);
             font-size: 0.8rem;
+            white-space: nowrap;
         }
 
         .field-source-tag {
@@ -448,231 +356,13 @@
             line-height: 1.5;
         }
 
-        .common-values {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 4px;
-        }
-
-        .common-value {
-            display: inline-block;
-            padding: 1px 6px;
-            border-radius: 3px;
-            font-size: 0.7rem;
-            background: var(--bg-primary);
-            color: var(--text-secondary);
-            border: 1px solid var(--border);
-        }
-
-        /* Source Cards */
-        .source-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 24px;
-            margin-bottom: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .source-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-        }
-
-        .source-card-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            gap: 12px;
-        }
-
-        .source-card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .source-card-subtitle {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-
-        .source-card-subtitle a {
+        .field-link a {
             color: var(--accent);
             text-decoration: none;
+            font-size: 0.78rem;
+            word-break: break-all;
         }
-
-        .source-card-subtitle a:hover { text-decoration: underline; }
-
-        .reliability-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-
-        .reliability-high {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--accent-light);
-        }
-
-        .reliability-medium {
-            background: rgba(245, 158, 11, 0.15);
-            color: #fbbf24;
-        }
-
-        .source-meta-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .source-meta-item {
-            background: var(--bg-tertiary);
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        .source-meta-label {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .source-meta-value {
-            font-size: 0.85rem;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .source-fields {
-            margin-top: 14px;
-        }
-
-        .source-fields-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-        }
-
-        .field-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .field-tag {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            background: var(--bg-primary);
-            color: var(--accent-light);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .source-limitations {
-            margin-top: 14px;
-            padding: 12px;
-            background: rgba(239, 68, 68, 0.05);
-            border: 1px solid rgba(239, 68, 68, 0.15);
-            border-radius: 8px;
-        }
-
-        .source-limitations-label {
-            font-size: 0.72rem;
-            color: var(--danger);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .source-limitations ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .source-limitations li {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            padding: 3px 0;
-            padding-left: 14px;
-            position: relative;
-        }
-
-        .source-limitations li::before {
-            content: '⚠';
-            position: absolute;
-            left: 0;
-            font-size: 0.7rem;
-        }
-
-        .source-caveats {
-            margin-top: 10px;
-            padding: 12px;
-            background: rgba(245, 158, 11, 0.05);
-            border: 1px solid rgba(245, 158, 11, 0.15);
-            border-radius: 8px;
-        }
-
-        .source-caveats-label {
-            font-size: 0.72rem;
-            color: var(--warning);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .source-caveats ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .source-caveats li {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            padding: 3px 0;
-            padding-left: 14px;
-            position: relative;
-        }
-
-        .source-caveats li::before {
-            content: '•';
-            position: absolute;
-            left: 2px;
-            color: var(--warning);
-        }
-
-        .extraction-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.72rem;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-
-        .extraction-gee { background: rgba(66, 133, 244, 0.15); color: #93bbfd; }
-        .extraction-api { background: rgba(168, 85, 247, 0.15); color: #c4b5fd; }
-        .extraction-local { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+        .field-link a:hover { text-decoration: underline; }
 
         /* Footer */
         footer {
@@ -686,69 +376,32 @@
 
         footer a { color: var(--accent); text-decoration: none; }
 
-        /* Hide row when searching */
         .field-table tbody tr.hidden { display: none; }
         .section-block.hidden { display: none; }
-        .source-card.hidden { display: none; }
 
         /* Responsive */
         @media (max-width: 900px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 260px;
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-                box-shadow: 4px 0 20px rgba(0,0,0,0.5);
-            }
-
-            .main {
-                margin-left: 0;
-                padding: 20px 16px 50px;
-            }
-
+            .sidebar { transform: translateX(-100%); width: 260px; }
+            .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,0.5); }
+            .main { margin-left: 0; padding: 20px 16px 50px; }
             .hamburger { display: block; }
-
             .page-hero { padding: 20px; }
             .page-hero h1 { font-size: 1.4rem; }
             .hero-stats { flex-wrap: wrap; gap: 10px; }
             .hero-stat { padding: 10px 14px; }
-
             .field-table { font-size: 0.82rem; }
-            .field-table thead th,
-            .field-table tbody td { padding: 8px 10px; }
-
-            .source-meta-grid { grid-template-columns: 1fr 1fr; }
-
+            .field-table thead th, .field-table tbody td { padding: 8px 10px; }
             .breadcrumb { display: none; }
         }
 
         @media (max-width: 600px) {
-            .field-table {
-                display: block;
-                overflow-x: auto;
-            }
-
-            .source-meta-grid { grid-template-columns: 1fr; }
+            .field-table { display: block; overflow-x: auto; }
             .hero-stats { flex-direction: column; }
-            .tab-btn { padding: 8px 12px; font-size: 0.82rem; }
         }
 
-        /* Overlay for mobile sidebar */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 45;
-        }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 45; }
+        .sidebar-overlay.active { display: block; }
 
-        .sidebar-overlay.active {
-            display: block;
-        }
-
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
         ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
@@ -771,6 +424,7 @@
         </div>
     </div>
     <div class="top-bar-right">
+        <a href="data_dictionary_static.html" class="back-link">📄 Static/Print Version</a>
         <a href="index.html" class="back-link">← Back to Dashboard</a>
     </div>
 </div>
@@ -782,10 +436,8 @@
 <div class="layout">
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar-section-title">Data Fields</div>
-        <div id="sidebar-fields-nav"></div>
-        <div class="sidebar-section-title" style="margin-top: 12px;">Data Sources</div>
-        <div id="sidebar-sources-nav"></div>
+        <div class="sidebar-section-title">Variable Groups</div>
+        <div id="sidebar-nav"></div>
     </nav>
 
     <!-- Main Content -->
@@ -793,12 +445,11 @@
         <!-- Hero -->
         <div class="page-hero">
             <h1>📖 Data Dictionary</h1>
-            <p>Complete documentation of all data fields and sources used in the Mexican Protected Areas (ANP) environmental dashboard. Covers 63 fields across 17 sections from 16 data providers.</p>
+            <p>Complete documentation of all variables used in the Mexican Protected Areas (ANP) environmental dashboard. Each variable is documented with its name, unit, source, description, and link to the original data provider.</p>
             <div class="hero-stats" id="hero-stats">
-                <div class="hero-stat"><div class="val" id="stat-fields">—</div><div class="lbl">Data Fields</div></div>
-                <div class="hero-stat"><div class="val" id="stat-sections">—</div><div class="lbl">Sections</div></div>
+                <div class="hero-stat"><div class="val" id="stat-vars">—</div><div class="lbl">Variables</div></div>
+                <div class="hero-stat"><div class="val" id="stat-groups">—</div><div class="lbl">Theme Groups</div></div>
                 <div class="hero-stat"><div class="val" id="stat-sources">—</div><div class="lbl">Data Sources</div></div>
-                <div class="hero-stat"><div class="val" id="stat-gee">—</div><div class="lbl">GEE Datasets</div></div>
             </div>
         </div>
 
@@ -806,236 +457,232 @@
         <div class="search-container">
             <div class="search-box">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="search-input" placeholder="Search fields, sources, descriptions…" autocomplete="off">
+                <input type="text" id="search-input" placeholder="Search variables, sources, descriptions…" autocomplete="off">
                 <span class="search-count" id="search-count"></span>
             </div>
         </div>
 
-        <!-- Tabs -->
-        <div class="tab-bar">
-            <button class="tab-btn active" onclick="switchTab('fields')">📋 Data Fields</button>
-            <button class="tab-btn" onclick="switchTab('sources')">🗂️ Data Sources</button>
-        </div>
-
-        <!-- Fields Tab -->
-        <div class="tab-content active" id="tab-fields">
-            <div id="fields-container"></div>
-        </div>
-
-        <!-- Sources Tab -->
-        <div class="tab-content" id="tab-sources">
-            <div id="sources-container"></div>
-        </div>
+        <!-- Variables container -->
+        <div id="fields-container"></div>
 
         <footer>
-            Data compiled from Google Earth Engine, GBIF, INEGI, CONANP, iNaturalist, and other sources. 
+            Data compiled from Google Earth Engine, GBIF, INEGI, CONANP, CONEVAL, and other sources.
             <br>
+            <a href="data_dictionary_static.html">📄 Static/print version</a> &nbsp;|&nbsp;
             <a href="index.html">← Return to Dashboard</a>
         </footer>
     </main>
 </div>
 
 <script>
-// Section display config
-const SECTION_CONFIG = {
-    'metadata':                     { icon: '🏷️', label: 'Metadata' },
-    'geometry':                     { icon: '📍', label: 'Geometry' },
-    'datasets.population':         { icon: '👥', label: 'Population' },
-    'datasets.elevation':          { icon: '⛰️', label: 'Elevation' },
-    'datasets.land_cover':         { icon: '🌳', label: 'Land Cover' },
-    'datasets.forest':             { icon: '🪓', label: 'Forest Change' },
-    'datasets.climate':            { icon: '🌡️', label: 'Climate' },
-    'datasets.vegetation':         { icon: '🌿', label: 'Vegetation (NDVI)' },
-    'datasets.night_lights':       { icon: '🌃', label: 'Night Lights' },
-    'datasets.fire':               { icon: '🔥', label: 'Fire' },
-    'datasets.biodiversity':       { icon: '🦜', label: 'Biodiversity' },
-    'datasets.human_modification': { icon: '🏗️', label: 'Human Modification' },
-    'external_data.gbif_species':  { icon: '🦎', label: 'GBIF Species' },
-    'external_data.iucn_threatened':{ icon: '⚠️', label: 'IUCN Threatened' },
-    'external_data.simec_nom059':  { icon: '🇲🇽', label: 'NOM-059 Species' },
-    'external_data.inegi_census':  { icon: '📊', label: 'INEGI Census' },
-    'external_data.extracted_at':  { icon: '🕐', label: 'Extraction Timestamp' }
-};
+// ═══════════════════════════════════════════════════════════════
+// DATA DICTIONARY — Reorganized with Name, Unit, Source, Description, Link
+// ═══════════════════════════════════════════════════════════════
 
-let dictData = null;
-let sourcesData = null;
-
-async function init() {
-    try {
-        const [dictRes, sourcesRes] = await Promise.all([
-            fetch('data_dictionary.json'),
-            fetch('data_sources.json')
-        ]);
-        dictData = await dictRes.json();
-        sourcesData = await sourcesRes.json();
-        render();
-    } catch (err) {
-        console.error('Failed to load data:', err);
-        document.getElementById('fields-container').innerHTML = 
-            '<p style="color: var(--danger); padding: 30px;">Failed to load data dictionary files. Make sure data_dictionary.json and data_sources.json exist.</p>';
+const VARIABLE_GROUPS = [
+    {
+        id: 'admin',
+        icon: '🏷️',
+        label: 'Administrative / Metadata',
+        description: 'Protected area identity, designation, and governance from WDPA',
+        variables: [
+            { name: 'Protected Area Name', unit: '—', source: 'WDPA (UNEP-WCMC & IUCN)', description: 'Official name of the protected area as registered in the World Database on Protected Areas.', link: 'https://www.protectedplanet.net' },
+            { name: 'Designation', unit: '—', source: 'WDPA', description: 'Type of protected area designation (e.g., Reserva de la Biosfera, Parque Nacional, APFF, Santuario).', link: 'https://www.protectedplanet.net' },
+            { name: 'IUCN Category', unit: '—', source: 'WDPA', description: 'IUCN management category (Ia–VI). Indicates management objectives, from strict preservation to sustainable use.', link: 'https://www.protectedplanet.net' },
+            { name: 'Status Year', unit: 'year', source: 'WDPA', description: 'Year the current legal status was established.', link: 'https://www.protectedplanet.net' },
+            { name: 'Total Area (km²)', unit: 'km²', source: 'WDPA', description: 'Officially reported total area of the protected area, including terrestrial and marine portions.', link: 'https://www.protectedplanet.net' },
+            { name: 'Marine %', unit: '%', source: 'WDPA', description: 'Percentage of total area classified as marine.', link: 'https://www.protectedplanet.net' },
+            { name: 'Terrestrial %', unit: '%', source: 'WDPA', description: 'Percentage of total area classified as terrestrial.', link: 'https://www.protectedplanet.net' },
+            { name: 'State(s)', unit: '—', source: 'CONANP/SIMEC', description: 'Mexican federal state(s) where the ANP is located.', link: 'https://simec.conanp.gob.mx' },
+            { name: 'Decree Date', unit: '—', source: 'CONANP/SIMEC', description: 'Date of the original legal decree establishing the ANP.', link: 'https://simec.conanp.gob.mx' },
+            { name: 'International Designations', unit: '—', source: 'CONANP/SIMEC', description: 'International recognitions (e.g., Ramsar site, UNESCO Biosphere Reserve, World Heritage).', link: 'https://simec.conanp.gob.mx' },
+        ]
+    },
+    {
+        id: 'physical',
+        icon: '⛰️',
+        label: 'Physical Environment',
+        description: 'Terrain and elevation from SRTM and Copernicus DEM',
+        variables: [
+            { name: 'Mean Elevation (m)', unit: 'm a.s.l.', source: 'SRTM 30m (NASA/USGS, 2000)', description: 'Mean elevation above sea level across the protected area. Derived from Shuttle Radar Topography Mission.', link: 'https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm' },
+            { name: 'Max Elevation (m)', unit: 'm a.s.l.', source: 'SRTM 30m (NASA/USGS, 2000)', description: 'Maximum elevation within the protected area.', link: 'https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm' },
+            { name: 'Min Elevation (m)', unit: 'm a.s.l.', source: 'SRTM 30m (NASA/USGS, 2000)', description: 'Minimum elevation within the protected area.', link: 'https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm' },
+            { name: 'Inundation Risk %', unit: '%', source: 'Copernicus DEM + IPCC AR6', description: 'Percentage of protected area below 1 meter elevation, indicating vulnerability to sea level rise and storm surge inundation.', link: 'https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model' },
+        ]
+    },
+    {
+        id: 'landcover',
+        icon: '🌳',
+        label: 'Land Cover & Vegetation',
+        description: 'Land cover classification and vegetation health indices',
+        variables: [
+            { name: 'Dominant Ecosystem', unit: '—', source: 'ESA WorldCover 10m (2021)', description: 'Primary and secondary land cover types by area. Classified into Forest, Mangroves, Wetlands, Shrubland, Grassland, Cropland, Desert/Arid, Marine/Aquatic, Urban.', link: 'https://esa-worldcover.org' },
+            { name: 'Mangrove Extent (km²)', unit: 'km²', source: 'ESA WorldCover 10m (2021)', description: 'Area of mangrove forest (WorldCover class 95) within the protected area. Critical blue carbon ecosystem.', link: 'https://esa-worldcover.org' },
+            { name: 'Herbaceous Wetland (km²)', unit: 'km²', source: 'ESA WorldCover 10m (2021)', description: 'Area of herbaceous wetland (WorldCover class 90) within the protected area.', link: 'https://esa-worldcover.org' },
+            { name: 'NDVI Mean', unit: 'index (−1 to 1)', source: 'MODIS MOD13A2 (NASA)', description: 'Mean Normalized Difference Vegetation Index. Measures average vegetation greenness and photosynthetic activity. Values >0.6 typically indicate forests.', link: 'https://lpdaac.usgs.gov/products/mod13a2v061/' },
+            { name: 'NDVI Max', unit: 'index (−1 to 1)', source: 'MODIS MOD13A2 (NASA)', description: 'Maximum NDVI value observed (greenest/peak growing season).', link: 'https://lpdaac.usgs.gov/products/mod13a2v061/' },
+            { name: 'NDVI Min', unit: 'index (−1 to 1)', source: 'MODIS MOD13A2 (NASA)', description: 'Minimum NDVI value observed (driest/least green period).', link: 'https://lpdaac.usgs.gov/products/mod13a2v061/' },
+            { name: 'Ecoregions', unit: '—', source: 'RESOLVE Ecoregions 2017', description: 'RESOLVE ecoregion names intersecting the ANP. ANPs spanning multiple ecoregions have higher ecological diversity.', link: 'https://ecoregions.appspot.com/' },
+            { name: 'Biomes', unit: '—', source: 'RESOLVE Ecoregions 2017', description: 'Higher-level biome classification (e.g., Tropical Moist Broadleaf Forests, Deserts & Xeric Shrublands).', link: 'https://ecoregions.appspot.com/' },
+        ]
+    },
+    {
+        id: 'forest',
+        icon: '🪓',
+        label: 'Forest',
+        description: 'Forest cover, change, and carbon stocks',
+        variables: [
+            { name: 'Forest Cover %', unit: '%', source: 'Hansen GFC v1.11 (UMD/Google, 2000 baseline)', description: 'Percentage of ANP with >25% tree canopy cover in year 2000. Baseline before loss detection began.', link: 'https://glad.umd.edu/dataset/gfc' },
+            { name: 'Forest Loss (km²)', unit: 'km²', source: 'Hansen GFC v1.11 (2001–2023)', description: 'Total forest area lost from 2001 to 2023. Tracks stand-replacement disturbance (deforestation, fire, storm damage).', link: 'https://glad.umd.edu/dataset/gfc' },
+            { name: 'Forest Loss by Year', unit: 'km²/yr', source: 'Hansen GFC v1.11 (2001–2023)', description: 'Annual forest loss by year. Higher values indicate years with more deforestation events.', link: 'https://glad.umd.edu/dataset/gfc' },
+            { name: 'Carbon Stock (Mt)', unit: 'Mt', source: 'NASA GEDI L4A (2019–present)', description: 'Estimated total aboveground carbon from lidar-derived biomass density. GEDI provides 25m footprint samples, not continuous coverage.', link: 'https://gedi.umd.edu' },
+        ]
+    },
+    {
+        id: 'biodiversity',
+        icon: '🦜',
+        label: 'Biodiversity',
+        description: 'Species occurrence data and threatened species',
+        variables: [
+            { name: 'Species (GBIF)', unit: 'count', source: 'GBIF API (sample of 500 records)', description: 'Count of unique species names from GBIF occurrence records within the ANP. Note: limited to 500-record sample; true count may be higher.', link: 'https://www.gbif.org' },
+            { name: 'Total Occurrences (GBIF)', unit: 'count', source: 'GBIF API', description: 'Total number of species occurrence records in GBIF for this area. Higher values indicate better-surveyed areas.', link: 'https://www.gbif.org' },
+            { name: 'iNaturalist Species', unit: 'count', source: 'iNaturalist API (research-grade)', description: 'Unique species from community-verified citizen science observations. Complements GBIF data.', link: 'https://www.inaturalist.org' },
+            { name: 'IUCN Threatened Species', unit: 'count', source: 'GBIF (IUCN Red List categories)', description: 'Total count of Critically Endangered (CR) + Endangered (EN) + Vulnerable (VU) species with occurrence records in the area.', link: 'https://www.iucnredlist.org' },
+            { name: 'NOM-059 Threatened (SIMEC)', unit: 'count', source: 'CONANP SIMEC (NOM-059-SEMARNAT-2010)', description: 'Total species listed under Mexico\'s NOM-059 standard, from official SIMEC inventories. Categories: Endangered (P), Threatened (A), Special Protection (Pr), Probably Extinct (E).', link: 'https://simec.conanp.gob.mx' },
+            { name: 'NOM-059 (Enciclovida)', unit: 'count', source: 'CONABIO Enciclovida API', description: 'NOM-059 species cross-referenced from GBIF occurrences against CONABIO\'s Enciclovida database. Supplements SIMEC for ANPs without official inventories.', link: 'https://enciclovida.mx' },
+        ]
+    },
+    {
+        id: 'social',
+        icon: '👥',
+        label: 'Social & Demographic',
+        description: 'Population, livelihoods, and social vulnerability indicators',
+        variables: [
+            { name: 'Population 2020', unit: 'persons', source: 'WorldPop 100m Grid (2020)', description: 'Estimated total population within ANP boundary from 100m gridded population estimates. Represents residents, not visitors.', link: 'https://www.worldpop.org' },
+            { name: 'Population (Census)', unit: 'persons', source: 'INEGI Censo 2020 (ITER)', description: 'Total population in census localities within the ANP. Based on enumerated locality-level data.', link: 'https://www.inegi.org.mx/programas/ccpv/2020/' },
+            { name: '% Female', unit: '%', source: 'INEGI Censo 2020', description: 'Percentage of female population in census localities within the ANP.', link: 'https://www.inegi.org.mx/programas/ccpv/2020/' },
+            { name: '% Indigenous', unit: '%', source: 'INEGI Censo 2020 (hogares indígenas)', description: 'Percentage of population in indigenous households. Derived from indigenous_households_pop / total_population.', link: 'https://www.inegi.org.mx/programas/ccpv/2020/' },
+            { name: '% Afro-descendant', unit: '%', source: 'INEGI Censo 2020', description: 'Percentage of population self-identifying as Afro-Mexican/Afro-descendant.', link: 'https://www.inegi.org.mx/programas/ccpv/2020/' },
+            { name: 'Localities', unit: 'count', source: 'INEGI Censo 2020 (ITER)', description: 'Number of census localities (towns/villages) within the ANP boundary.', link: 'https://www.inegi.org.mx/programas/ccpv/2020/' },
+            { name: 'Avg. Schooling (yrs)', unit: 'years', source: 'INEGI Censo 2020', description: 'Average years of schooling for population 15+. Higher values indicate better educational attainment.', link: 'https://www.inegi.org.mx/programas/ccpv/2020/' },
+            { name: 'Social Lag Index', unit: 'index', source: 'CONEVAL IRS 2020', description: 'Composite index of social development deficits (education, health access, housing). Population-weighted mean across intersecting municipalities. Range ~−2.5 (best) to +4.0 (worst).', link: 'https://www.coneval.org.mx/Medicion/IRS/Paginas/Indice_Rezago_Social_2020.aspx' },
+        ]
+    },
+    {
+        id: 'climate',
+        icon: '🌡️',
+        label: 'Climate',
+        description: 'Climate baseline, projections, and water stress',
+        variables: [
+            { name: 'Precipitation (mm)', unit: 'mm/yr', source: 'WorldClim v1 (1970–2000 avg)', description: 'Mean annual precipitation. Based on interpolated climate station data.', link: 'https://www.worldclim.org' },
+            { name: 'Temperature (°C)', unit: '°C', source: 'WorldClim v1 (1970–2000 avg)', description: 'Mean daily maximum temperature across the ANP.', link: 'https://www.worldclim.org' },
+            { name: 'Water Stress', unit: 'category', source: 'WRI Aqueduct v4 (2019)', description: 'Baseline water stress category — ratio of water demand to available supply at sub-basin level.', link: 'https://www.wri.org/aqueduct' },
+            { name: 'Drought Risk', unit: 'index (0–1)', source: 'WRI Aqueduct v4 (2019)', description: 'Combined drought frequency, severity, and duration score.', link: 'https://www.wri.org/aqueduct' },
+            { name: '2041–70 Temp Δ (°C)', unit: '°C', source: 'NASA CMIP6 NEX-GDDP (SSP5-8.5)', description: 'Projected mid-century temperature change under high-emission scenario (SSP5-8.5).', link: 'https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6' },
+            { name: '2071–00 Temp Δ (°C)', unit: '°C', source: 'NASA CMIP6 NEX-GDDP (SSP5-8.5)', description: 'Projected end-of-century temperature change under high-emission scenario.', link: 'https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6' },
+            { name: '2041 Precip Δ (%)', unit: '%', source: 'CORDEX-SSR (RCP 8.5)', description: 'Projected mid-century precipitation change from CORDEX regional downscaling.', link: 'https://climateinformation.org' },
+            { name: '2071 Precip Δ (%)', unit: '%', source: 'CORDEX-SSR (RCP 8.5)', description: 'Projected end-of-century precipitation change from CORDEX regional downscaling.', link: 'https://climateinformation.org' },
+            { name: '2041 Tropical Nights', unit: 'nights/yr', source: 'CORDEX-SSR (RCP 8.5)', description: 'Projected change in number of tropical nights (min temp >20°C) for mid-century.', link: 'https://climateinformation.org' },
+            { name: '2041 Soil Moisture Δ (%)', unit: '%', source: 'CORDEX-SSR (RCP 8.5)', description: 'Projected mid-century change in soil moisture from CORDEX regional downscaling.', link: 'https://climateinformation.org' },
+        ]
+    },
+    {
+        id: 'threats',
+        icon: '🔥',
+        label: 'Threats & Disturbances',
+        description: 'Fire, human modification, and night lights',
+        variables: [
+            { name: 'Burned Area (km²)', unit: 'km²', source: 'MODIS MCD64A1 (NASA, 2019–2023)', description: 'Cumulative burned area from 2019 to 2023. MODIS detects stand-replacement burns at 500m resolution.', link: 'https://modis-fire.umd.edu' },
+            { name: 'Human Modification (gHM)', unit: 'index (0–1)', source: 'gHM v1 (CSP, 2016)', description: 'Mean human modification index. 0=pristine, 1=completely modified. Integrates roads, agriculture, urban, energy infrastructure. Well-protected ANPs typically <0.1.', link: 'https://sedac.ciesin.columbia.edu/data/set/lulc-human-modification-terrestrial-systems' },
+            { name: 'Night Light Mean', unit: 'nW/cm²/sr', source: 'VIIRS DNB (NOAA/CSM)', description: 'Mean nighttime radiance. Proxy for human activity and development. Low values (<0.5) indicate minimal light pollution; >10 indicates significant development.', link: 'https://eogdata.mines.edu/products/vnl/' },
+            { name: 'Night Light Max', unit: 'nW/cm²/sr', source: 'VIIRS DNB (NOAA/CSM)', description: 'Maximum nighttime radiance within the ANP. Indicates most developed/lit area.', link: 'https://eogdata.mines.edu/products/vnl/' },
+        ]
+    },
+    {
+        id: 'slr',
+        icon: '🌊',
+        label: 'Sea Level Rise',
+        description: 'Observed and projected sea level rise for coastal ANPs',
+        variables: [
+            { name: 'SLR Rate (mm/yr)', unit: 'mm/yr', source: 'IPCC AR6 Sea Level Projections (2020)', description: 'Observed sea level rise trend in mm per year at the nearest tide gauge or grid point.', link: 'https://www.ipcc.ch/report/ar6/wg1/' },
+            { name: 'SLR 2050 (cm)', unit: 'cm', source: 'IPCC AR6 (SSP5-8.5)', description: 'Projected sea level rise by 2050 under high-emission scenario, relative to 1995–2014 baseline.', link: 'https://www.ipcc.ch/report/ar6/wg1/' },
+            { name: 'Inundation Risk %', unit: '%', source: 'Copernicus DEM + IPCC AR6', description: 'Percentage of ANP below 1m elevation — proxy for inundation vulnerability to sea level rise and storm surge.', link: 'https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model' },
+        ]
     }
-}
+];
 
-function render() {
+// Initialize
+function init() {
     renderStats();
     renderSidebarNav();
-    renderFields();
-    renderSources();
+    renderVariables();
     setupSearch();
 }
 
 function renderStats() {
-    const sections = Object.keys(dictData.sections);
-    let fieldCount = 0;
-    sections.forEach(s => {
-        const sec = dictData.sections[s];
-        if (sec.fields) fieldCount += Object.keys(sec.fields).length;
+    let varCount = 0;
+    const sources = new Set();
+    VARIABLE_GROUPS.forEach(g => {
+        varCount += g.variables.length;
+        g.variables.forEach(v => sources.add(v.source.split('(')[0].trim()));
     });
-    const geeCount = sourcesData.sources.filter(s => s.extraction_method === 'gee').length;
-
-    document.getElementById('stat-fields').textContent = fieldCount;
-    document.getElementById('stat-sections').textContent = sections.length;
-    document.getElementById('stat-sources').textContent = sourcesData.sources.length;
-    document.getElementById('stat-gee').textContent = geeCount;
+    document.getElementById('stat-vars').textContent = varCount;
+    document.getElementById('stat-groups').textContent = VARIABLE_GROUPS.length;
+    document.getElementById('stat-sources').textContent = sources.size;
 }
 
 function renderSidebarNav() {
-    const fieldsNav = document.getElementById('sidebar-fields-nav');
-    const sourcesNav = document.getElementById('sidebar-sources-nav');
-
-    // Fields nav
-    Object.entries(dictData.sections).forEach(([key, sec]) => {
-        const cfg = SECTION_CONFIG[key] || { icon: '📄', label: key };
-        if (!sec.fields && key !== 'external_data.extracted_at') return;
+    const nav = document.getElementById('sidebar-nav');
+    VARIABLE_GROUPS.forEach(g => {
         const a = document.createElement('a');
         a.className = 'sidebar-link';
-        a.href = '#section-' + key;
-        a.innerHTML = `<span class="icon">${cfg.icon}</span> ${cfg.label}`;
-        a.addEventListener('click', (e) => {
-            switchTab('fields');
-            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-            a.classList.add('active');
-            closeSidebarMobile();
-        });
-        fieldsNav.appendChild(a);
-    });
-
-    // Sources nav
-    sourcesData.sources.forEach(src => {
-        const a = document.createElement('a');
-        a.className = 'sidebar-link';
-        a.href = '#source-' + src.id;
-        a.innerHTML = `<span class="icon">📡</span> ${src.short_name}`;
+        a.href = '#section-' + g.id;
+        a.innerHTML = `<span class="icon">${g.icon}</span> ${g.label}`;
         a.addEventListener('click', () => {
-            switchTab('sources');
             document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
             a.classList.add('active');
             closeSidebarMobile();
         });
-        sourcesNav.appendChild(a);
+        nav.appendChild(a);
     });
 }
 
-function renderFields() {
+function renderVariables() {
     const container = document.getElementById('fields-container');
     let html = '';
 
-    Object.entries(dictData.sections).forEach(([sectionKey, section]) => {
-        const cfg = SECTION_CONFIG[sectionKey] || { icon: '📄', label: sectionKey };
-
-        // Handle the extracted_at which isn't a section with fields
-        if (!section.fields) {
-            if (section.data_type === 'datetime') {
-                html += `
-                <div class="section-block" id="section-${sectionKey}" data-section="${sectionKey}">
-                    <div class="section-header">
-                        <div class="icon">${cfg.icon}</div>
-                        <div class="info">
-                            <h2>${cfg.label}</h2>
-                            <p>ISO 8601 timestamp when external data pipelines were run</p>
-                        </div>
-                    </div>
-                    <table class="field-table">
-                        <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                        <tbody>
-                            <tr data-search="extracted_at datetime timestamp external data">
-                                <td><span class="field-name">extracted_at</span></td>
-                                <td><span class="field-type">datetime</span></td>
-                                <td class="field-notes">${section.description || 'Extraction timestamp'} <br><span style="color:var(--text-muted);">Format: ${section.format || 'ISO 8601'}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>`;
-            }
-            return;
-        }
-
-        const sourceLabel = section.source || '';
-        const fieldEntries = Object.entries(section.fields);
-
+    VARIABLE_GROUPS.forEach(group => {
         html += `
-        <div class="section-block" id="section-${sectionKey}" data-section="${sectionKey}">
+        <div class="section-block" id="section-${group.id}" data-section="${group.id}">
             <div class="section-header">
-                <div class="icon">${cfg.icon}</div>
+                <div class="icon">${group.icon}</div>
                 <div class="info">
-                    <h2>${cfg.label}</h2>
-                    <p>${section.description || ''}${sourceLabel ? ' — Source: ' + sourceLabel : ''}</p>
+                    <h2>${group.label}</h2>
+                    <p>${group.description}</p>
                 </div>
             </div>
             <table class="field-table">
                 <thead>
                     <tr>
-                        <th>Field</th>
-                        <th>Type</th>
-                        <th>Unit</th>
-                        <th>Source</th>
-                        <th>Description & Notes</th>
+                        <th style="width:20%">Name</th>
+                        <th style="width:10%">Unit</th>
+                        <th style="width:20%">Source</th>
+                        <th style="width:35%">Description</th>
+                        <th style="width:15%">Link</th>
                     </tr>
                 </thead>
                 <tbody>`;
 
-        fieldEntries.forEach(([fieldKey, field]) => {
-            const searchData = [fieldKey, field.description, field.data_type, field.unit, field.source, field.interpretation, sectionKey].filter(Boolean).join(' ').toLowerCase();
-            const source = field.source || sourceLabel || '';
-            let notes = field.description || '';
-            
-            if (field.interpretation) {
-                notes += `<br><em style="color: var(--text-muted); font-size: 0.78rem;">💡 ${field.interpretation}</em>`;
-            }
-            if (field.format) {
-                notes += `<br><span style="color: var(--text-muted); font-size: 0.78rem;">Format: <code style="background:var(--bg-primary);padding:1px 4px;border-radius:3px;">${field.format}</code></span>`;
-            }
-            if (field.common_values && field.common_values.length > 0) {
-                notes += '<div class="common-values">';
-                field.common_values.forEach(v => {
-                    notes += `<span class="common-value">${v}</span>`;
-                });
-                notes += '</div>';
-            }
-            if (field.values) {
-                notes += '<div class="common-values" style="margin-top:6px;">';
-                Object.entries(field.values).forEach(([code, label]) => {
-                    notes += `<span class="common-value">${code}: ${label}</span>`;
-                });
-                notes += '</div>';
-            }
-            if (field.nested_fields && typeof field.nested_fields === 'object' && !Array.isArray(field.nested_fields)) {
-                // For simple key:string nested fields (like top_species)
-                const isSimple = Object.values(field.nested_fields).every(v => typeof v === 'string');
-                if (isSimple) {
-                    notes += '<div style="margin-top:6px; font-size:0.78rem; color:var(--text-muted);">Nested: ';
-                    notes += Object.entries(field.nested_fields).map(([k, v]) => `<code style="background:var(--bg-primary);padding:1px 4px;border-radius:3px;">${k}</code>: ${v}`).join(', ');
-                    notes += '</div>';
-                }
-            }
-
+        group.variables.forEach(v => {
+            const searchData = [v.name, v.unit, v.source, v.description, group.label].join(' ').toLowerCase();
+            const shortLink = v.link ? v.link.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') : '';
             html += `
                     <tr data-search="${escapeHtml(searchData)}">
-                        <td><span class="field-name">${escapeHtml(fieldKey)}</span></td>
-                        <td><span class="field-type">${escapeHtml(field.data_type || '—')}</span></td>
-                        <td><span class="field-unit">${escapeHtml(field.unit || '—')}</span></td>
-                        <td>${source ? `<span class="field-source-tag">${escapeHtml(source)}</span>` : '—'}</td>
-                        <td class="field-notes">${notes}</td>
+                        <td><span class="field-name">${escapeHtml(v.name)}</span></td>
+                        <td><span class="field-unit">${escapeHtml(v.unit)}</span></td>
+                        <td><span class="field-source-tag">${escapeHtml(v.source)}</span></td>
+                        <td class="field-notes">${escapeHtml(v.description)}</td>
+                        <td class="field-link">${v.link ? `<a href="${escapeHtml(v.link)}" target="_blank" rel="noopener">${escapeHtml(shortLink)}</a>` : '—'}</td>
                     </tr>`;
         });
 
@@ -1048,182 +695,37 @@ function renderFields() {
     container.innerHTML = html;
 }
 
-function renderSources() {
-    const container = document.getElementById('sources-container');
-    let html = '';
-
-    sourcesData.sources.forEach(src => {
-        const doc = src.documentation || {};
-        const spatial = doc.spatial_temporal || {};
-        const qa = doc.quality_assessment || {};
-        const anpRel = src.anp_spatial_relationship || {};
-        
-        const extractionClass = src.extraction_method === 'gee' ? 'extraction-gee' : 
-                                src.extraction_method === 'api' ? 'extraction-api' : 'extraction-local';
-        const extractionLabel = src.extraction_method === 'gee' ? '🌍 GEE' : 
-                                src.extraction_method === 'api' ? '🔌 API' : '📁 Local File';
-
-        const reliabilityClass = src.reliability === 'high' ? 'reliability-high' : 'reliability-medium';
-        const reliabilityIcon = src.reliability === 'high' ? '✓' : '~';
-
-        const limitations = [];
-        if (doc.limitations) limitations.push(...doc.limitations);
-        if (src.current_limitations) limitations.push(...src.current_limitations);
-
-        const caveats = anpRel.important_caveats || [];
-
-        html += `
-        <div class="source-card" id="source-${src.id}" data-search="${[src.name, src.short_name, src.provider, src.id, doc.summary || ''].join(' ').toLowerCase()}">
-            <div class="source-card-header">
-                <div>
-                    <div class="source-card-title">${escapeHtml(src.name)}</div>
-                    <div class="source-card-subtitle">
-                        ${src.provider ? escapeHtml(src.provider) : ''}
-                        ${src.provider_url ? ` — <a href="${escapeHtml(src.provider_url)}" target="_blank" rel="noopener">${escapeHtml(src.provider_url)}</a>` : ''}
-                    </div>
-                </div>
-                <div style="display:flex; gap:8px; flex-shrink:0;">
-                    <span class="extraction-badge ${extractionClass}">${extractionLabel}</span>
-                    <span class="reliability-badge ${reliabilityClass}">${reliabilityIcon} ${escapeHtml(src.reliability || 'unknown')}</span>
-                </div>
-            </div>
-
-            ${doc.summary ? `<p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:16px;">${escapeHtml(doc.summary)}</p>` : ''}
-
-            <div class="source-meta-grid">
-                <div class="source-meta-item">
-                    <div class="source-meta-label">Spatial Resolution</div>
-                    <div class="source-meta-value">${escapeHtml(spatial.spatial_resolution || 'N/A')}</div>
-                </div>
-                <div class="source-meta-item">
-                    <div class="source-meta-label">Coverage</div>
-                    <div class="source-meta-value">${escapeHtml(spatial.spatial_coverage || src.coverage?.notes || 'N/A')}</div>
-                </div>
-                <div class="source-meta-item">
-                    <div class="source-meta-label">Temporal Range</div>
-                    <div class="source-meta-value">${escapeHtml(spatial.temporal_range || src.data_vintage || 'N/A')}</div>
-                </div>
-                <div class="source-meta-item">
-                    <div class="source-meta-label">Update Frequency</div>
-                    <div class="source-meta-value">${escapeHtml(src.update_frequency || spatial.update_frequency || 'N/A')}</div>
-                </div>
-                ${anpRel.aggregation_method ? `
-                <div class="source-meta-item">
-                    <div class="source-meta-label">Aggregation Method</div>
-                    <div class="source-meta-value">${escapeHtml(anpRel.aggregation_method)}</div>
-                </div>` : ''}
-                ${anpRel.coverage_type ? `
-                <div class="source-meta-item">
-                    <div class="source-meta-label">ANP Coverage Type</div>
-                    <div class="source-meta-value">${escapeHtml(anpRel.coverage_type.replace(/_/g, ' '))}</div>
-                </div>` : ''}
-            </div>
-
-            ${src.fields_provided && src.fields_provided.length > 0 ? `
-            <div class="source-fields">
-                <div class="source-fields-label">Fields Provided</div>
-                <div class="field-tags">
-                    ${src.fields_provided.map(f => `<span class="field-tag">${escapeHtml(f)}</span>`).join('')}
-                </div>
-            </div>` : ''}
-
-            ${caveats.length > 0 ? `
-            <div class="source-caveats">
-                <div class="source-caveats-label">⚡ Spatial Caveats</div>
-                <ul>${caveats.map(c => `<li>${escapeHtml(c)}</li>`).join('')}</ul>
-            </div>` : ''}
-
-            ${limitations.length > 0 ? `
-            <div class="source-limitations">
-                <div class="source-limitations-label">Limitations</div>
-                <ul>${limitations.map(l => `<li>${escapeHtml(l)}</li>`).join('')}</ul>
-            </div>` : ''}
-        </div>`;
-    });
-
-    container.innerHTML = html;
-}
-
 function setupSearch() {
     const input = document.getElementById('search-input');
     const countEl = document.getElementById('search-count');
 
     input.addEventListener('input', () => {
         const q = input.value.toLowerCase().trim();
-        const activeTab = document.querySelector('.tab-content.active').id;
+        const rows = document.querySelectorAll('#fields-container .field-table tbody tr');
+        const sections = document.querySelectorAll('#fields-container .section-block');
 
-        if (activeTab === 'tab-fields') {
-            searchFields(q, countEl);
-        } else {
-            searchSources(q, countEl);
+        if (!q) {
+            rows.forEach(r => r.classList.remove('hidden'));
+            sections.forEach(s => s.classList.remove('hidden'));
+            countEl.textContent = '';
+            return;
         }
+
+        let visible = 0;
+        rows.forEach(r => {
+            const text = (r.getAttribute('data-search') || '') + ' ' + r.textContent.toLowerCase();
+            const match = text.includes(q);
+            r.classList.toggle('hidden', !match);
+            if (match) visible++;
+        });
+
+        sections.forEach(s => {
+            const visibleRows = s.querySelectorAll('tbody tr:not(.hidden)');
+            s.classList.toggle('hidden', visibleRows.length === 0);
+        });
+
+        countEl.textContent = `${visible} variable${visible !== 1 ? 's' : ''}`;
     });
-}
-
-function searchFields(q, countEl) {
-    const rows = document.querySelectorAll('#fields-container .field-table tbody tr');
-    const sections = document.querySelectorAll('#fields-container .section-block');
-    
-    if (!q) {
-        rows.forEach(r => r.classList.remove('hidden'));
-        sections.forEach(s => s.classList.remove('hidden'));
-        countEl.textContent = '';
-        return;
-    }
-
-    let visible = 0;
-    rows.forEach(r => {
-        const text = (r.getAttribute('data-search') || '') + ' ' + r.textContent.toLowerCase();
-        const match = text.includes(q);
-        r.classList.toggle('hidden', !match);
-        if (match) visible++;
-    });
-
-    // Hide sections with no visible rows
-    sections.forEach(s => {
-        const visibleRows = s.querySelectorAll('tbody tr:not(.hidden)');
-        s.classList.toggle('hidden', visibleRows.length === 0);
-    });
-
-    countEl.textContent = `${visible} field${visible !== 1 ? 's' : ''}`;
-}
-
-function searchSources(q, countEl) {
-    const cards = document.querySelectorAll('#sources-container .source-card');
-    
-    if (!q) {
-        cards.forEach(c => c.classList.remove('hidden'));
-        countEl.textContent = '';
-        return;
-    }
-
-    let visible = 0;
-    cards.forEach(c => {
-        const text = (c.getAttribute('data-search') || '') + ' ' + c.textContent.toLowerCase();
-        const match = text.includes(q);
-        c.classList.toggle('hidden', !match);
-        if (match) visible++;
-    });
-
-    countEl.textContent = `${visible} source${visible !== 1 ? 's' : ''}`;
-}
-
-function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    
-    const idx = tab === 'fields' ? 0 : 1;
-    document.querySelectorAll('.tab-btn')[idx].classList.add('active');
-    document.getElementById('tab-' + tab).classList.add('active');
-
-    // Re-run search for the new tab
-    const q = document.getElementById('search-input').value.toLowerCase().trim();
-    const countEl = document.getElementById('search-count');
-    if (tab === 'fields') {
-        searchFields(q, countEl);
-    } else {
-        searchSources(q, countEl);
-    }
 }
 
 function toggleSidebar() {
@@ -1250,7 +752,7 @@ let scrollTimeout;
 window.addEventListener('scroll', () => {
     clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(() => {
-        const sections = document.querySelectorAll('.section-block, .source-card');
+        const sections = document.querySelectorAll('.section-block');
         let currentId = null;
         sections.forEach(s => {
             const rect = s.getBoundingClientRect();
@@ -1264,7 +766,6 @@ window.addEventListener('scroll', () => {
     }, 50);
 });
 
-// Init
 init();
 </script>
 </body>

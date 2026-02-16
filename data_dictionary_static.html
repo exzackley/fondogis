@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Dictionary: Environmental and Social Variables for Mexico's Coastal ANPs</title>
+    <style>
+        /* ── Reset & Base ── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @page { size: portrait; margin: 0.75in; }
+
+        body {
+            font-family: 'Times New Roman', Times, Georgia, serif;
+            line-height: 1.5;
+            color: #000;
+            background: #fff;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+            font-size: 11pt;
+        }
+
+        /* ── Typography ── */
+        h1, h2, h3 {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000;
+        }
+        h1 { font-size: 22pt; text-align: center; margin-bottom: 0.5em; }
+        h2 { font-size: 14pt; margin: 2em 0 0.8em; border-bottom: 2px solid #000; padding-bottom: 4px; }
+        h3 { font-size: 12pt; margin: 1.5em 0 0.5em; }
+        p { margin-bottom: 1em; text-align: justify; font-size: 11pt; }
+
+        /* ── Cover ── */
+        .document-title { text-align: center; margin-bottom: 30px; }
+        .document-meta { text-align: center; font-style: italic; margin-bottom: 30px; font-size: 10.5pt; color: #333; }
+
+        /* ── Tables ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 24px;
+            font-size: 9.5pt;
+            page-break-inside: auto;
+        }
+
+        th {
+            background-color: #e8e8e8;
+            font-weight: bold;
+            text-align: left;
+            padding: 7px 8px;
+            border: 1px solid #000;
+            font-size: 9pt;
+            vertical-align: bottom;
+        }
+
+        td {
+            padding: 6px 8px;
+            border: 1px solid #666;
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) { background-color: #f7f7f7; }
+
+        thead { display: table-header-group; }
+        tr { page-break-inside: avoid; }
+
+        .section-header-row td {
+            background: #d0d0d0;
+            font-weight: bold;
+            font-size: 10pt;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 8px;
+            border: 1px solid #000;
+        }
+
+        .var-name { font-weight: bold; white-space: nowrap; }
+        .var-unit { white-space: nowrap; color: #333; }
+        .var-source { font-size: 9pt; }
+        .var-desc { font-size: 9pt; }
+        .var-link { font-size: 8pt; word-break: break-all; }
+        .var-link a { color: #0e4d8b; text-decoration: none; }
+        .var-link a:hover { text-decoration: underline; }
+
+        /* ── Nav link ── */
+        .nav-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #0e4d8b;
+            text-decoration: none;
+            font-size: 10pt;
+        }
+        .nav-link:hover { text-decoration: underline; }
+
+        /* ── TOC ── */
+        .toc {
+            margin: 20px 0 30px;
+            padding: 15px 25px;
+            border: 1px solid #ccc;
+            background: #fafafa;
+        }
+        .toc h3 { font-size: 11pt; margin: 0 0 8px; font-family: Arial, sans-serif; }
+        .toc ul { list-style: none; padding: 0; }
+        .toc li { margin: 3px 0; font-size: 10pt; }
+        .toc a { text-decoration: none; color: #0e4d8b; }
+        .toc a:hover { text-decoration: underline; }
+
+        /* ── Footer ── */
+        .footer {
+            margin-top: 40px;
+            padding-top: 16px;
+            border-top: 1px solid #999;
+            font-size: 9pt;
+            color: #555;
+            text-align: center;
+        }
+        .footer a { color: #0e4d8b; text-decoration: none; }
+
+        /* ── Print ── */
+        @media print {
+            body { padding: 0; max-width: 100%; font-size: 10pt; }
+            .nav-link { display: none; }
+            h2 { page-break-after: avoid; }
+            table { page-break-inside: auto; font-size: 9pt; }
+            tr { page-break-inside: avoid; }
+            thead { display: table-header-group; }
+            .toc { page-break-after: always; }
+            .var-link a { color: #000; }
+            .var-link a::after { content: " [" attr(href) "]"; font-size: 7pt; color: #555; }
+        }
+    </style>
+</head>
+<body>
+
+<a href="index.html" class="nav-link">← Back to Dashboard</a>
+<a href="data_dictionary.html" class="nav-link" style="margin-left: 20px;">📊 Interactive Version</a>
+
+<!-- ═══════════════════ TITLE ═══════════════════ -->
+<div class="document-title">
+    <h1>Data Dictionary</h1>
+    <h3 style="font-weight: normal; font-size: 13pt; margin-top: 0.3em;">Environmental and Social Variables for Mexico's Coastal ANPs</h3>
+    <div class="document-meta">
+        <strong>Project:</strong> Loss and Damage Fund Proposal — Coastal and Marine Protected Areas<br>
+        <strong>Date:</strong> February 2026<br>
+        <strong>Country:</strong> Mexico
+    </div>
+</div>
+
+<!-- ═══════════════════ INTRO ═══════════════════ -->
+<p>
+    This data dictionary documents all environmental, social, and climate variables compiled for the analysis of Mexico's coastal and marine Natural Protected Areas (Áreas Naturales Protegidas, ANPs). The variables below are drawn from 20+ authoritative data sources—including remote sensing products accessed via Google Earth Engine, official Mexican government statistics, global biodiversity databases, and international climate projections—and are used in the summary data tables, diagnostic report, and interactive dashboard.
+</p>
+<p>
+    For each variable, we provide the <strong>human-readable name</strong> as it appears in our data tables, the <strong>measurement unit</strong>, the <strong>data source</strong> with version/date where applicable, a brief <strong>description</strong> of what the variable measures, and a <strong>link</strong> to the original data provider's website. Variables are organized by thematic group.
+</p>
+
+<!-- ═══════════════════ TOC ═══════════════════ -->
+<nav class="toc">
+    <h3>Contents</h3>
+    <ul>
+        <li><a href="#sec-admin">1. Administrative / Metadata</a></li>
+        <li><a href="#sec-physical">2. Physical Environment</a></li>
+        <li><a href="#sec-landcover">3. Land Cover &amp; Vegetation</a></li>
+        <li><a href="#sec-forest">4. Forest</a></li>
+        <li><a href="#sec-biodiversity">5. Biodiversity</a></li>
+        <li><a href="#sec-social">6. Social &amp; Demographic</a></li>
+        <li><a href="#sec-climate">7. Climate</a></li>
+        <li><a href="#sec-threats">8. Threats &amp; Disturbances</a></li>
+        <li><a href="#sec-slr">9. Sea Level Rise</a></li>
+    </ul>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 1. ADMINISTRATIVE / METADATA                               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="sec-admin">1. Administrative / Metadata</h2>
+<p>Protected area identity, designation, and governance information sourced from the World Database on Protected Areas and CONANP's SIMEC registry.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th style="width:18%">Name</th>
+            <th style="width:8%">Unit</th>
+            <th style="width:22%">Source</th>
+            <th style="width:32%">Description</th>
+            <th style="width:20%">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="var-name">Protected Area Name</td>
+            <td class="var-unit">—</td>
+            <td class="var-source">WDPA (UNEP-WCMC &amp; IUCN)</td>
+            <td class="var-desc">Official name of the protected area as registered in the World Database on Protected Areas.</td>
+            <td class="var-link"><a href="https://www.protectedplanet.net">protectedplanet.net</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Designation</td>
+            <td class="var-unit">—</td>
+            <td class="var-source">WDPA</td>
+            <td class="var-desc">Type of designation (e.g., Reserva de la Biosfera, Parque Nacional, APFF, Santuario).</td>
+            <td class="var-link"><a href="https://www.protectedplanet.net">protectedplanet.net</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">IUCN Category</td>
+            <td class="var-unit">—</td>
+            <td class="var-source">WDPA</td>
+            <td class="var-desc">IUCN management category (Ia–VI), indicating management objectives from strict preservation to sustainable use.</td>
+            <td class="var-link"><a href="https://www.protectedplanet.net">protectedplanet.net</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Status Year</td>
+            <td class="var-unit">year</td>
+            <td class="var-source">WDPA</td>
+            <td class="var-desc">Year the current legal status was established.</td>
+            <td class="var-link"><a href="https://www.protectedplanet.net">protectedplanet.net</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Total Area (km²)</td>
+            <td class="var-unit">km²</td>
+            <td class="var-source">WDPA</td>
+            <td class="var-desc">Officially reported total area including terrestrial and marine portions.</td>
+            <td class="var-link"><a href="https://www.protectedplanet.net">protectedplanet.net</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Marine %</td>
+            <td class="var-unit">%</td>
+            <td class="var-source">WDPA</td>
+            <td class="var-desc">Percentage of total area classified as marine.</td>
+            <td class="var-link"><a href="https://www.protectedplanet.net">protectedplanet.net</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Terrestrial %</td>
+            <td class="var-unit">%</td>
+            <td class="var-source">WDPA</td>
+            <td class="var-desc">Percentage of total area classified as terrestrial.</td>
+            <td class="var-link"><a href="https://www.protectedplanet.net">protectedplanet.net</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">State(s)</td>
+            <td class="var-unit">—</td>
+            <td class="var-source">CONANP/SIMEC</td>
+            <td class="var-desc">Mexican federal state(s) where the ANP is located.</td>
+            <td class="var-link"><a href="https://simec.conanp.gob.mx">simec.conanp.gob.mx</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Decree Date</td>
+            <td class="var-unit">—</td>
+            <td class="var-source">CONANP/SIMEC</td>
+            <td class="var-desc">Date of the original legal decree establishing the ANP.</td>
+            <td class="var-link"><a href="https://simec.conanp.gob.mx">simec.conanp.gob.mx</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Intl. Designations</td>
+            <td class="var-unit">—</td>
+            <td class="var-source">CONANP/SIMEC</td>
+            <td class="var-desc">International recognitions (e.g., Ramsar site, UNESCO Biosphere Reserve, World Heritage).</td>
+            <td class="var-link"><a href="https://simec.conanp.gob.mx">simec.conanp.gob.mx</a></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 2. PHYSICAL ENVIRONMENT                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="sec-physical">2. Physical Environment</h2>
+<p>Terrain and elevation characteristics derived from radar-based digital elevation models.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th style="width:18%">Name</th>
+            <th style="width:8%">Unit</th>
+            <th style="width:22%">Source</th>
+            <th style="width:32%">Description</th>
+            <th style="width:20%">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="var-name">Mean Elevation (m)</td>
+            <td class="var-unit">m a.s.l.</td>
+            <td class="var-source">SRTM 30m (NASA/USGS, 2000)</td>
+            <td class="var-desc">Mean elevation above sea level across the protected area, from the Shuttle Radar Topography Mission.</td>
+            <td class="var-link"><a href="https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm">usgs.gov/…/srtm</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Max Elevation (m)</td>
+            <td class="var-unit">m a.s.l.</td>
+            <td class="var-source">SRTM 30m (NASA/USGS, 2000)</td>
+            <td class="var-desc">Maximum elevation within the protected area.</td>
+            <td class="var-link"><a href="https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm">usgs.gov/…/srtm</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Min Elevation (m)</td>
+            <td class="var-unit">m a.s.l.</td>
+            <td class="var-source">SRTM 30m (NASA/USGS, 2000)</td>
+            <td class="var-desc">Minimum elevation within the protected area.</td>
+            <td class="var-link"><a href="https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm">usgs.gov/…/srtm</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Inundation Risk %</td>
+            <td class="var-unit">%</td>
+            <td class="var-source">Copernicus DEM + IPCC AR6</td>
+            <td class="var-desc">Percentage of protected area below 1m elevation — proxy for vulnerability to sea level rise and storm surge inundation.</td>
+            <td class="var-link"><a href="https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model">spacedata.copernicus.eu/…/dem</a></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 3. LAND COVER & VEGETATION                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="sec-landcover">3. Land Cover &amp; Vegetation</h2>
+<p>Land cover classification from satellite imagery and vegetation health indices from MODIS.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th style="width:18%">Name</th>
+            <th style="width:8%">Unit</th>
+            <th style="width:22%">Source</th>
+            <th style="width:32%">Description</th>
+            <th style="width:20%">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="var-name">Dominant Ecosystem</td>
+            <td class="var-unit">—</td>
+            <td class="var-source">ESA WorldCover 10m (2021)</td>
+            <td class="var-desc">Primary and secondary land cover types by area (Forest, Mangroves, Wetlands, Shrubland, Grassland, Cropland, Desert/Arid, Marine/Aquatic, Urban).</td>
+            <td class="var-link"><a href="https://esa-worldcover.org">esa-worldcover.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Mangrove Extent (km²)</td>
+            <td class="var-unit">km²</td>
+            <td class="var-source">ESA WorldCover 10m (2021)</td>
+            <td class="var-desc">Area of mangrove forest (WorldCover class 95). Critical blue carbon ecosystem for coastal ANPs.</td>
+            <td class="var-link"><a href="https://esa-worldcover.org">esa-worldcover.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Herbaceous Wetland (km²)</td>
+            <td class="var-unit">km²</td>
+            <td class="var-source">ESA WorldCover 10m (2021)</td>
+            <td class="var-desc">Area of herbaceous wetland (WorldCover class 90).</td>
+            <td class="var-link"><a href="https://esa-worldcover.org">esa-worldcover.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">NDVI Mean</td>
+            <td class="var-unit">index (−1 to 1)</td>
+            <td class="var-source">MODIS MOD13A2 (NASA)</td>
+            <td class="var-desc">Mean Normalized Difference Vegetation Index. Measures average vegetation greenness and photosynthetic activity. Values &gt;0.6 typically indicate forests.</td>
+            <td class="var-link"><a href="https://lpdaac.usgs.gov/products/mod13a2v061/">lpdaac.usgs.gov/…/mod13a2</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">NDVI Max</td>
+            <td class="var-unit">index (−1 to 1)</td>
+            <td class="var-source">MODIS MOD13A2 (NASA)</td>
+            <td class="var-desc">Maximum NDVI observed (greenest/peak growing season).</td>
+            <td class="var-link"><a href="https://lpdaac.usgs.gov/products/mod13a2v061/">lpdaac.usgs.gov/…/mod13a2</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">NDVI Min</td>
+            <td class="var-unit">index (−1 to 1)</td>
+            <td class="var-source">MODIS MOD13A2 (NASA)</td>
+            <td class="var-desc">Minimum NDVI observed (driest/least green period).</td>
+            <td class="var-link"><a href="https://lpdaac.usgs.gov/products/mod13a2v061/">lpdaac.usgs.gov/…/mod13a2</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Ecoregions</td>
+            <td class="var-unit">—</td>
+            <td class="var-source">RESOLVE Ecoregions 2017</td>
+            <td class="var-desc">RESOLVE ecoregion names intersecting the ANP. Areas spanning multiple ecoregions have higher ecological diversity.</td>
+            <td class="var-link"><a href="https://ecoregions.appspot.com/">ecoregions.appspot.com</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Biomes</td>
+            <td class="var-unit">—</td>
+            <td class="var-source">RESOLVE Ecoregions 2017</td>
+            <td class="var-desc">Higher-level biome classification (e.g., Tropical Moist Broadleaf Forests, Deserts &amp; Xeric Shrublands).</td>
+            <td class="var-link"><a href="https://ecoregions.appspot.com/">ecoregions.appspot.com</a></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 4. FOREST                                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="sec-forest">4. Forest</h2>
+<p>Forest cover baseline, annual deforestation tracking, and above-ground carbon stock estimates.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th style="width:18%">Name</th>
+            <th style="width:8%">Unit</th>
+            <th style="width:22%">Source</th>
+            <th style="width:32%">Description</th>
+            <th style="width:20%">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="var-name">Forest Cover %</td>
+            <td class="var-unit">%</td>
+            <td class="var-source">Hansen GFC v1.11 (UMD/Google, 2000 baseline)</td>
+            <td class="var-desc">Percentage of ANP with &gt;25% tree canopy cover in year 2000. Baseline before loss detection began.</td>
+            <td class="var-link"><a href="https://glad.umd.edu/dataset/gfc">glad.umd.edu/dataset/gfc</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Forest Loss (km²)</td>
+            <td class="var-unit">km²</td>
+            <td class="var-source">Hansen GFC v1.11 (2001–2023)</td>
+            <td class="var-desc">Total forest area lost 2001–2023. Tracks stand-replacement disturbance (deforestation, fire, storm damage).</td>
+            <td class="var-link"><a href="https://glad.umd.edu/dataset/gfc">glad.umd.edu/dataset/gfc</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Forest Loss by Year</td>
+            <td class="var-unit">km²/yr</td>
+            <td class="var-source">Hansen GFC v1.11 (2001–2023)</td>
+            <td class="var-desc">Annual forest loss by year. Higher values indicate more deforestation events in a given year.</td>
+            <td class="var-link"><a href="https://glad.umd.edu/dataset/gfc">glad.umd.edu/dataset/gfc</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Carbon Stock (Mt)</td>
+            <td class="var-unit">Mt</td>
+            <td class="var-source">NASA GEDI L4A (2019–present)</td>
+            <td class="var-desc">Estimated total aboveground carbon from lidar-derived biomass density. GEDI provides 25m footprint samples (not continuous).</td>
+            <td class="var-link"><a href="https://gedi.umd.edu">gedi.umd.edu</a></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 5. BIODIVERSITY                                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="sec-biodiversity">5. Biodiversity</h2>
+<p>Species occurrence data from global databases and national protected species registries.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th style="width:18%">Name</th>
+            <th style="width:8%">Unit</th>
+            <th style="width:22%">Source</th>
+            <th style="width:32%">Description</th>
+            <th style="width:20%">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="var-name">Species (GBIF)</td>
+            <td class="var-unit">count</td>
+            <td class="var-source">GBIF API (500-record sample)</td>
+            <td class="var-desc">Count of unique species names from GBIF occurrence records. Limited to 500-record sample; true count may be higher.</td>
+            <td class="var-link"><a href="https://www.gbif.org">gbif.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Total Occurrences</td>
+            <td class="var-unit">count</td>
+            <td class="var-source">GBIF API</td>
+            <td class="var-desc">Total number of species occurrence records in GBIF for this area. Higher values indicate better-surveyed areas.</td>
+            <td class="var-link"><a href="https://www.gbif.org">gbif.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">iNaturalist Species</td>
+            <td class="var-unit">count</td>
+            <td class="var-source">iNaturalist API (research-grade)</td>
+            <td class="var-desc">Unique species from community-verified citizen science observations. Complements GBIF data.</td>
+            <td class="var-link"><a href="https://www.inaturalist.org">inaturalist.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">IUCN Threatened</td>
+            <td class="var-unit">count</td>
+            <td class="var-source">GBIF (IUCN Red List categories)</td>
+            <td class="var-desc">Total count of Critically Endangered (CR) + Endangered (EN) + Vulnerable (VU) species with occurrence records.</td>
+            <td class="var-link"><a href="https://www.iucnredlist.org">iucnredlist.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">NOM-059 Threatened (SIMEC)</td>
+            <td class="var-unit">count</td>
+            <td class="var-source">CONANP SIMEC (NOM-059-SEMARNAT-2010)</td>
+            <td class="var-desc">Species listed under Mexico's NOM-059. Categories: Endangered (P), Threatened (A), Special Protection (Pr), Probably Extinct (E).</td>
+            <td class="var-link"><a href="https://simec.conanp.gob.mx">simec.conanp.gob.mx</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">NOM-059 (Enciclovida)</td>
+            <td class="var-unit">count</td>
+            <td class="var-source">CONABIO Enciclovida API</td>
+            <td class="var-desc">NOM-059 species cross-referenced from GBIF occurrences against CONABIO's database. Supplements SIMEC for ANPs without official inventories.</td>
+            <td class="var-link"><a href="https://enciclovida.mx">enciclovida.mx</a></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 6. SOCIAL & DEMOGRAPHIC                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="sec-social">6. Social &amp; Demographic</h2>
+<p>Population estimates, census-derived social indicators, and composite social vulnerability measures for communities within and around the protected areas.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th style="width:18%">Name</th>
+            <th style="width:8%">Unit</th>
+            <th style="width:22%">Source</th>
+            <th style="width:32%">Description</th>
+            <th style="width:20%">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="var-name">Population 2020</td>
+            <td class="var-unit">persons</td>
+            <td class="var-source">WorldPop 100m Grid (2020)</td>
+            <td class="var-desc">Estimated total population within ANP boundary from 100m gridded estimates. Represents residents, not visitors.</td>
+            <td class="var-link"><a href="https://www.worldpop.org">worldpop.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Population (Census)</td>
+            <td class="var-unit">persons</td>
+            <td class="var-source">INEGI Censo 2020 (ITER)</td>
+            <td class="var-desc">Total population in census localities within the ANP. Based on enumerated locality-level data.</td>
+            <td class="var-link"><a href="https://www.inegi.org.mx/programas/ccpv/2020/">inegi.org.mx/…/ccpv/2020</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">% Female</td>
+            <td class="var-unit">%</td>
+            <td class="var-source">INEGI Censo 2020</td>
+            <td class="var-desc">Percentage of female population in census localities within the ANP.</td>
+            <td class="var-link"><a href="https://www.inegi.org.mx/programas/ccpv/2020/">inegi.org.mx/…/ccpv/2020</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">% Indigenous</td>
+            <td class="var-unit">%</td>
+            <td class="var-source">INEGI Censo 2020 (hogares indígenas)</td>
+            <td class="var-desc">Percentage of population in indigenous households (indigenous_households_pop / total_population).</td>
+            <td class="var-link"><a href="https://www.inegi.org.mx/programas/ccpv/2020/">inegi.org.mx/…/ccpv/2020</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">% Afro-descendant</td>
+            <td class="var-unit">%</td>
+            <td class="var-source">INEGI Censo 2020</td>
+            <td class="var-desc">Percentage of population self-identifying as Afro-Mexican / Afro-descendant.</td>
+            <td class="var-link"><a href="https://www.inegi.org.mx/programas/ccpv/2020/">inegi.org.mx/…/ccpv/2020</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Localities</td>
+            <td class="var-unit">count</td>
+            <td class="var-source">INEGI Censo 2020 (ITER)</td>
+            <td class="var-desc">Number of census localities (towns/villages) within the ANP boundary.</td>
+            <td class="var-link"><a href="https://www.inegi.org.mx/programas/ccpv/2020/">inegi.org.mx/…/ccpv/2020</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Avg. Schooling (yrs)</td>
+            <td class="var-unit">years</td>
+            <td class="var-source">INEGI Censo 2020</td>
+            <td class="var-desc">Average years of schooling for population 15+. Higher values = better educational attainment.</td>
+            <td class="var-link"><a href="https://www.inegi.org.mx/programas/ccpv/2020/">inegi.org.mx/…/ccpv/2020</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Social Lag Index</td>
+            <td class="var-unit">index</td>
+            <td class="var-source">CONEVAL IRS 2020</td>
+            <td class="var-desc">Composite social development deficit index (education, health, housing). Population-weighted mean across intersecting municipalities. Range ~−2.5 (best) to +4.0 (worst).</td>
+            <td class="var-link"><a href="https://www.coneval.org.mx/Medicion/IRS/Paginas/Indice_Rezago_Social_2020.aspx">coneval.org.mx/…/IRS</a></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 7. CLIMATE                                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="sec-climate">7. Climate</h2>
+<p>Climate baseline normals, water stress indicators, and projected changes under high-emission scenarios from global and regional models.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th style="width:18%">Name</th>
+            <th style="width:8%">Unit</th>
+            <th style="width:22%">Source</th>
+            <th style="width:32%">Description</th>
+            <th style="width:20%">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="var-name">Precipitation (mm)</td>
+            <td class="var-unit">mm/yr</td>
+            <td class="var-source">WorldClim v1 (1970–2000 avg)</td>
+            <td class="var-desc">Mean annual precipitation. Based on interpolated climate station data.</td>
+            <td class="var-link"><a href="https://www.worldclim.org">worldclim.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Temperature (°C)</td>
+            <td class="var-unit">°C</td>
+            <td class="var-source">WorldClim v1 (1970–2000 avg)</td>
+            <td class="var-desc">Mean daily maximum temperature across the ANP.</td>
+            <td class="var-link"><a href="https://www.worldclim.org">worldclim.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Water Stress</td>
+            <td class="var-unit">category</td>
+            <td class="var-source">WRI Aqueduct v4 (2019)</td>
+            <td class="var-desc">Baseline water stress category — ratio of water demand to available supply at sub-basin level.</td>
+            <td class="var-link"><a href="https://www.wri.org/aqueduct">wri.org/aqueduct</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Drought Risk</td>
+            <td class="var-unit">index (0–1)</td>
+            <td class="var-source">WRI Aqueduct v4 (2019)</td>
+            <td class="var-desc">Combined drought frequency, severity, and duration score.</td>
+            <td class="var-link"><a href="https://www.wri.org/aqueduct">wri.org/aqueduct</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">2041–70 Temp Δ</td>
+            <td class="var-unit">°C</td>
+            <td class="var-source">NASA CMIP6 NEX-GDDP (SSP5-8.5)</td>
+            <td class="var-desc">Projected mid-century temperature change under high-emission scenario (SSP5-8.5).</td>
+            <td class="var-link"><a href="https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6">nccs.nasa.gov/…/nex-gddp-cmip6</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">2071–00 Temp Δ</td>
+            <td class="var-unit">°C</td>
+            <td class="var-source">NASA CMIP6 NEX-GDDP (SSP5-8.5)</td>
+            <td class="var-desc">Projected end-of-century temperature change under high-emission scenario.</td>
+            <td class="var-link"><a href="https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6">nccs.nasa.gov/…/nex-gddp-cmip6</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">2041 Precip Δ</td>
+            <td class="var-unit">%</td>
+            <td class="var-source">CORDEX-SSR (RCP 8.5)</td>
+            <td class="var-desc">Projected mid-century precipitation change from CORDEX regional downscaling.</td>
+            <td class="var-link"><a href="https://climateinformation.org">climateinformation.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">2071 Precip Δ</td>
+            <td class="var-unit">%</td>
+            <td class="var-source">CORDEX-SSR (RCP 8.5)</td>
+            <td class="var-desc">Projected end-of-century precipitation change from CORDEX regional downscaling.</td>
+            <td class="var-link"><a href="https://climateinformation.org">climateinformation.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">2041 Tropical Nights</td>
+            <td class="var-unit">nights/yr</td>
+            <td class="var-source">CORDEX-SSR (RCP 8.5)</td>
+            <td class="var-desc">Projected change in number of tropical nights (min temp &gt;20°C) for mid-century.</td>
+            <td class="var-link"><a href="https://climateinformation.org">climateinformation.org</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">2041 Soil Moisture Δ</td>
+            <td class="var-unit">%</td>
+            <td class="var-source">CORDEX-SSR (RCP 8.5)</td>
+            <td class="var-desc">Projected mid-century change in soil moisture from CORDEX regional downscaling.</td>
+            <td class="var-link"><a href="https://climateinformation.org">climateinformation.org</a></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 8. THREATS & DISTURBANCES                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="sec-threats">8. Threats &amp; Disturbances</h2>
+<p>Indicators of fire activity, human modification, and anthropogenic pressure within the protected areas.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th style="width:18%">Name</th>
+            <th style="width:8%">Unit</th>
+            <th style="width:22%">Source</th>
+            <th style="width:32%">Description</th>
+            <th style="width:20%">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="var-name">Burned Area (km²)</td>
+            <td class="var-unit">km²</td>
+            <td class="var-source">MODIS MCD64A1 (NASA, 2019–2023)</td>
+            <td class="var-desc">Cumulative burned area 2019–2023. MODIS detects stand-replacement burns at 500m resolution.</td>
+            <td class="var-link"><a href="https://modis-fire.umd.edu">modis-fire.umd.edu</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Human Modification (gHM)</td>
+            <td class="var-unit">index (0–1)</td>
+            <td class="var-source">gHM v1 (CSP, 2016)</td>
+            <td class="var-desc">Mean human modification index. 0=pristine, 1=completely modified. Integrates roads, agriculture, urban, energy infrastructure. Well-protected ANPs typically &lt;0.1.</td>
+            <td class="var-link"><a href="https://sedac.ciesin.columbia.edu/data/set/lulc-human-modification-terrestrial-systems">sedac.ciesin.columbia.edu/…/ghm</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Night Light Mean</td>
+            <td class="var-unit">nW/cm²/sr</td>
+            <td class="var-source">VIIRS DNB (NOAA/CSM)</td>
+            <td class="var-desc">Mean nighttime radiance. Proxy for human activity. Low values (&lt;0.5) = minimal light pollution; &gt;10 = significant development.</td>
+            <td class="var-link"><a href="https://eogdata.mines.edu/products/vnl/">eogdata.mines.edu/…/vnl</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Night Light Max</td>
+            <td class="var-unit">nW/cm²/sr</td>
+            <td class="var-source">VIIRS DNB (NOAA/CSM)</td>
+            <td class="var-desc">Maximum nighttime radiance within the ANP. Indicates most developed/lit area.</td>
+            <td class="var-link"><a href="https://eogdata.mines.edu/products/vnl/">eogdata.mines.edu/…/vnl</a></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 9. SEA LEVEL RISE                                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="sec-slr">9. Sea Level Rise</h2>
+<p>Observed and projected sea level rise parameters for coastal and marine ANPs.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th style="width:18%">Name</th>
+            <th style="width:8%">Unit</th>
+            <th style="width:22%">Source</th>
+            <th style="width:32%">Description</th>
+            <th style="width:20%">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="var-name">SLR Rate</td>
+            <td class="var-unit">mm/yr</td>
+            <td class="var-source">IPCC AR6 Sea Level Projections (2020)</td>
+            <td class="var-desc">Observed sea level rise trend in mm per year at the nearest tide gauge or grid point.</td>
+            <td class="var-link"><a href="https://www.ipcc.ch/report/ar6/wg1/">ipcc.ch/report/ar6/wg1</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">SLR 2050 (cm)</td>
+            <td class="var-unit">cm</td>
+            <td class="var-source">IPCC AR6 (SSP5-8.5)</td>
+            <td class="var-desc">Projected sea level rise by 2050 under high-emission scenario, relative to 1995–2014 baseline.</td>
+            <td class="var-link"><a href="https://www.ipcc.ch/report/ar6/wg1/">ipcc.ch/report/ar6/wg1</a></td>
+        </tr>
+        <tr>
+            <td class="var-name">Inundation Risk %</td>
+            <td class="var-unit">%</td>
+            <td class="var-source">Copernicus DEM + IPCC AR6</td>
+            <td class="var-desc">Percentage of ANP below 1m elevation — proxy for inundation vulnerability to sea level rise and storm surge.</td>
+            <td class="var-link"><a href="https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model">spacedata.copernicus.eu/…/dem</a></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<div class="footer">
+    <p>
+        Data compiled from Google Earth Engine, GBIF, INEGI, CONANP, CONEVAL, IPCC, WRI, NASA, ESA, and other sources.
+        <br>
+        <a href="data_dictionary.html">📊 Interactive dashboard version</a> &nbsp;|&nbsp;
+        <a href="index.html">← Return to Dashboard</a>
+    </p>
+</div>
+
+</body>
+</html>
