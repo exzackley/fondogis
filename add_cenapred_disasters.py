@@ -39,6 +39,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'anp_data')
 EXCEL_PATH = os.path.join(BASE_DIR, 'reference_data', 'cenapred', 'basehistorica_2000_2023.xlsx')
 COASTAL_ANPS_PATH = os.path.join(BASE_DIR, 'coastal_anps_subset.json')
+ALL_ANPS_PATH = os.path.join(BASE_DIR, 'all_anps_subset.json')
 
 # Column indices in Excel (0-indexed)
 COL_FECHA_INICIO = 0
@@ -456,23 +457,26 @@ def aggregate_events(matched_events, match_method):
     }
 
 
-def process_all_anps(events, test_mode=False, use_database=True):
+def process_all_anps(events, test_mode=False, use_database=True, use_all=False, skip_existing=False):
     """
-    Match CENAPRED events to each coastal ANP and save results.
+    Match CENAPRED events to each ANP and save results.
     """
-    # Load coastal ANPs list
-    with open(COASTAL_ANPS_PATH) as f:
-        coastal = json.load(f)
+    # Load ANPs list
+    anps_path = ALL_ANPS_PATH if use_all else COASTAL_ANPS_PATH
+    with open(anps_path) as f:
+        anps_data = json.load(f)
 
-    anps = [a for a in coastal['matched_anps'] if a['has_data']]
+    anps = [a for a in anps_data['matched_anps'] if a['has_data']]
     if test_mode:
         anps = anps[:3]
         print(f"\n🧪 TEST MODE: Processing first {len(anps)} ANPs only\n")
     else:
-        print(f"\nProcessing {len(anps)} coastal ANPs...\n")
+        label = "all" if use_all else "coastal"
+        print(f"\nProcessing {len(anps)} {label} ANPs...\n")
 
     results = {}
     total_matched = 0
+    skipped_existing = 0
 
     for anp in anps:
         anp_id = anp['id']
@@ -482,6 +486,17 @@ def process_all_anps(events, test_mode=False, use_database=True):
         if not data_file or not os.path.exists(data_file):
             print(f"  ⚠️  {anp_name}: No data file found, skipping")
             continue
+
+        # Skip if already has cenapred_disasters data
+        if skip_existing:
+            try:
+                with open(data_file) as f:
+                    existing = json.load(f)
+                if existing.get('external_data', {}).get('cenapred_disasters'):
+                    skipped_existing += 1
+                    continue
+            except Exception:
+                pass
 
         # Load ANP municipality info
         anp_info = load_anp_municipalities(anp_id, data_file)
@@ -528,10 +543,13 @@ def process_all_anps(events, test_mode=False, use_database=True):
 
     print(f"\n{'='*60}")
     print(f"Summary: {len(results)} ANPs processed, {total_matched} total event matches")
+    if skip_existing and skipped_existing:
+        print(f"Skipped (already had data): {skipped_existing}")
     print(f"{'='*60}")
 
     # Save summary
-    summary_path = os.path.join(BASE_DIR, 'reference_data', 'cenapred', 'cenapred_coastal_summary.json')
+    summary_name = 'cenapred_all_summary.json' if use_all else 'cenapred_coastal_summary.json'
+    summary_path = os.path.join(BASE_DIR, 'reference_data', 'cenapred', summary_name)
     with open(summary_path, 'w') as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
     print(f"\nSummary saved to {summary_path}")
@@ -559,11 +577,18 @@ def _save_to_json(anp_id, data_file, agg):
 def main():
     test_mode = '--test' in sys.argv
     use_database = HAS_DATABASE and '--no-db' not in sys.argv
+    use_all = '--all' in sys.argv
+    skip_existing = '--skip-existing' in sys.argv
 
     if use_database:
         print("Database mode: ON")
     else:
         print("Database mode: OFF (JSON only)")
+
+    if use_all:
+        print("ANP scope: ALL (227 ANPs)")
+    else:
+        print("ANP scope: Coastal only (38 ANPs)")
 
     # Load CENAPRED data
     events = load_cenapred_data(EXCEL_PATH)
@@ -577,7 +602,8 @@ def main():
         print(f"  {t}: {c}")
 
     # Process all ANPs
-    results = process_all_anps(events, test_mode=test_mode, use_database=use_database)
+    results = process_all_anps(events, test_mode=test_mode, use_database=use_database,
+                               use_all=use_all, skip_existing=skip_existing)
 
     # Print top ANPs by damage
     print("\n📊 Top 10 ANPs by total damage (million MXN):")

@@ -419,6 +419,30 @@
         "2071-2100"
       ],
       "baseline_period": "1981-2010"
+    },
+    "ndvi_trend": {
+      "data_available": true,
+      "extracted_at": "2026-02-16T01:19:11.531223",
+      "source": "MODIS MOD13A2 v061",
+      "resolution_m": 1000,
+      "mean_ndvi_2000_2005": 0.3797,
+      "mean_ndvi_2018_2023": 0.419,
+      "trend_per_year": 0.001032,
+      "trend_per_decade": 0.0103,
+      "trend_direction": "improving",
+      "period": "2000-2023",
+      "n_years": 24
+    },
+    "soil": {
+      "source": "OpenLandMap",
+      "resolution": "250m",
+      "organic_carbon_g_kg": 16.04276457883369,
+      "ph_h2o": 6.867645788336932
+    },
+    "surface_water": {
+      "source": "JRC Global Surface Water",
+      "resolution": "30m",
+      "permanent_water_km2": 89.84
     }
   },
   "external_data": {
@@ -1448,6 +1472,186 @@
       "extent_1996_km2": 0.0,
       "extent_2010_km2": 0.0,
       "extent_2020_km2": 0.0
+    },
+    "cenapred_disasters": {
+      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "period": "2000-2023",
+      "filter": "Hidrometeorológico only",
+      "match_method": "municipality_overlap",
+      "municipality_matched_events": 13,
+      "state_matched_events": 24,
+      "total_events": 37,
+      "total_deaths": 133,
+      "total_affected": 449614,
+      "total_houses_damaged": 37134,
+      "total_damage_million_pesos": 6299.48,
+      "by_type": {
+        "Temperatura extrema": {
+          "events": 13,
+          "deaths": 37,
+          "affected": 214,
+          "damage_mdp": 31.04
+        },
+        "Lluvias": {
+          "events": 12,
+          "deaths": 95,
+          "affected": 270160,
+          "damage_mdp": 2005.51
+        },
+        "Ciclón tropical": {
+          "events": 8,
+          "deaths": 1,
+          "affected": 141954,
+          "damage_mdp": 4132.52
+        },
+        "Fuertes vientos": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 37187,
+          "damage_mdp": 67.78
+        },
+        "Inundación": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 0,
+          "damage_mdp": 62.57
+        },
+        "Tormenta tropical": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 98,
+          "damage_mdp": 0.05
+        },
+        "Bajas temperaturas": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 1,
+          "damage_mdp": 0.0
+        }
+      },
+      "by_year": {
+        "2000": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 0,
+          "damage_mdp": 42.48
+        },
+        "2001": {
+          "events": 2,
+          "deaths": 95,
+          "affected": 129454,
+          "damage_mdp": 396.9
+        },
+        "2002": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 100,
+          "damage_mdp": 1.36
+        },
+        "2003": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 182,
+          "damage_mdp": 0.0
+        },
+        "2004": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 4140,
+          "damage_mdp": 0.24
+        },
+        "2005": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 10112,
+          "damage_mdp": 1111.0
+        },
+        "2007": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 97820,
+          "damage_mdp": 2337.5
+        },
+        "2013": {
+          "events": 2,
+          "deaths": 1,
+          "affected": 0,
+          "damage_mdp": 0.0
+        },
+        "2014": {
+          "events": 3,
+          "deaths": 2,
+          "affected": 32718,
+          "damage_mdp": 248.15
+        },
+        "2015": {
+          "events": 3,
+          "deaths": 2,
+          "affected": 103811,
+          "damage_mdp": 0.0
+        },
+        "2016": {
+          "events": 2,
+          "deaths": 4,
+          "affected": 37192,
+          "damage_mdp": 67.78
+        },
+        "2017": {
+          "events": 1,
+          "deaths": 1,
+          "affected": 10,
+          "damage_mdp": 0.0
+        },
+        "2018": {
+          "events": 6,
+          "deaths": 2,
+          "affected": 13,
+          "damage_mdp": 1339.14
+        },
+        "2019": {
+          "events": 1,
+          "deaths": 7,
+          "affected": 36,
+          "damage_mdp": 0.0
+        },
+        "2020": {
+          "events": 5,
+          "deaths": 3,
+          "affected": 33900,
+          "damage_mdp": 754.92
+        },
+        "2021": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 4,
+          "damage_mdp": 0.0
+        },
+        "2022": {
+          "events": 1,
+          "deaths": 1,
+          "affected": 19,
+          "damage_mdp": 0.0
+        },
+        "2023": {
+          "events": 1,
+          "deaths": 15,
+          "affected": 103,
+          "damage_mdp": 0.0
+        }
+      },
+      "worst_event": {
+        "date": "2001-09-21",
+        "type": "Lluvias",
+        "description": ". En el mes de Septiembre  fue el mes que se pesento con mayor intensidad el fenomeno, provocando un total  de 95 personas muertas entre los 4 estados, Chiapas, Quintana Roo, Michoacan y Nuevo Leon con una poblacion afectada de 126, 954 personas, un total de de 14,102 viviendas dañadas, 18 escuelas ",
+        "deaths": 95,
+        "affected": 126954,
+        "houses_damaged": 14102,
+        "damage_mdp": 396.9,
+        "state": "Chiapas, Michoacan, Nuevo Leon, Quintana Roo",
+        "municipalities": "Varios Municipios"
+      },
+      "data_available": true,
+      "extracted_at": "2026-02-16T01:18:45.884323"
     }
   }
 }

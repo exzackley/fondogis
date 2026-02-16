@@ -433,6 +433,30 @@
         "2071-2100"
       ],
       "baseline_period": "1981-2010"
+    },
+    "ndvi_trend": {
+      "data_available": true,
+      "extracted_at": "2026-02-16T01:19:42.111886",
+      "source": "MODIS MOD13A2 v061",
+      "resolution_m": 1000,
+      "mean_ndvi_2000_2005": 0.1096,
+      "mean_ndvi_2018_2023": 0.1258,
+      "trend_per_year": 0.000746,
+      "trend_per_decade": 0.0075,
+      "trend_direction": "improving",
+      "period": "2000-2023",
+      "n_years": 24
+    },
+    "soil": {
+      "source": "OpenLandMap",
+      "resolution": "250m",
+      "organic_carbon_g_kg": 7.323701842546063,
+      "ph_h2o": 7.354794807370183
+    },
+    "surface_water": {
+      "source": "JRC Global Surface Water",
+      "resolution": "30m",
+      "permanent_water_km2": 3.28
     }
   },
   "external_data": {
@@ -1376,6 +1400,210 @@
         "Actinopterygii": 86
       },
       "total_observations": 4351
+    },
+    "cenapred_disasters": {
+      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "period": "2000-2023",
+      "filter": "Hidrometeorológico only",
+      "match_method": "municipality_overlap",
+      "municipality_matched_events": 30,
+      "state_matched_events": 24,
+      "total_events": 54,
+      "total_deaths": 60,
+      "total_affected": 2025089,
+      "total_houses_damaged": 28940,
+      "total_damage_million_pesos": 32936.85,
+      "by_type": {
+        "Ciclón tropical": {
+          "events": 20,
+          "deaths": 29,
+          "affected": 1460701,
+          "damage_mdp": 31561.97
+        },
+        "Lluvias": {
+          "events": 14,
+          "deaths": 8,
+          "affected": 540299,
+          "damage_mdp": 1146.2
+        },
+        "Temperatura extrema": {
+          "events": 13,
+          "deaths": 22,
+          "affected": 252,
+          "damage_mdp": 4.88
+        },
+        "Inundación": {
+          "events": 3,
+          "deaths": 0,
+          "affected": 17504,
+          "damage_mdp": 33.02
+        },
+        "Sin clasificación": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 0,
+          "damage_mdp": 146.55
+        },
+        "Sequía": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 2447,
+          "damage_mdp": 30.87
+        },
+        "Tormenta tropical": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 3884,
+          "damage_mdp": 13.35
+        },
+        "Bajas temperaturas": {
+          "events": 1,
+          "deaths": 1,
+          "affected": 2,
+          "damage_mdp": 0.0
+        }
+      },
+      "by_year": {
+        "2000": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 0,
+          "damage_mdp": 7.24
+        },
+        "2001": {
+          "events": 1,
+          "deaths": 2,
+          "affected": 6000,
+          "damage_mdp": 850.15
+        },
+        "2002": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 200,
+          "damage_mdp": 0.0
+        },
+        "2003": {
+          "events": 2,
+          "deaths": 8,
+          "affected": 13145,
+          "damage_mdp": 764.3
+        },
+        "2006": {
+          "events": 1,
+          "deaths": 5,
+          "affected": 13090,
+          "damage_mdp": 984.85
+        },
+        "2007": {
+          "events": 1,
+          "deaths": 1,
+          "affected": 57000,
+          "damage_mdp": 442.5
+        },
+        "2008": {
+          "events": 3,
+          "deaths": 1,
+          "affected": 3145,
+          "damage_mdp": 438.76
+        },
+        "2009": {
+          "events": 2,
+          "deaths": 2,
+          "affected": 17506,
+          "damage_mdp": 1333.0
+        },
+        "2011": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 2447,
+          "damage_mdp": 30.87
+        },
+        "2012": {
+          "events": 3,
+          "deaths": 0,
+          "affected": 39501,
+          "damage_mdp": 1857.94
+        },
+        "2013": {
+          "events": 2,
+          "deaths": 5,
+          "affected": 42563,
+          "damage_mdp": 44.81
+        },
+        "2014": {
+          "events": 7,
+          "deaths": 7,
+          "affected": 666764,
+          "damage_mdp": 24357.85
+        },
+        "2015": {
+          "events": 3,
+          "deaths": 0,
+          "affected": 17506,
+          "damage_mdp": 21.87
+        },
+        "2016": {
+          "events": 3,
+          "deaths": 0,
+          "affected": 1127396,
+          "damage_mdp": 10.09
+        },
+        "2017": {
+          "events": 2,
+          "deaths": 6,
+          "affected": 1413,
+          "damage_mdp": 313.1
+        },
+        "2018": {
+          "events": 6,
+          "deaths": 0,
+          "affected": 3893,
+          "damage_mdp": 32.83
+        },
+        "2019": {
+          "events": 4,
+          "deaths": 2,
+          "affected": 16,
+          "damage_mdp": 58.29
+        },
+        "2020": {
+          "events": 3,
+          "deaths": 2,
+          "affected": 5063,
+          "damage_mdp": 29.3
+        },
+        "2021": {
+          "events": 2,
+          "deaths": 3,
+          "affected": 8052,
+          "damage_mdp": 380.6
+        },
+        "2022": {
+          "events": 3,
+          "deaths": 1,
+          "affected": 225,
+          "damage_mdp": 693.94
+        },
+        "2023": {
+          "events": 3,
+          "deaths": 15,
+          "affected": 164,
+          "damage_mdp": 284.54
+        }
+      },
+      "worst_event": {
+        "date": "2023-01-01",
+        "type": "Temperatura extrema",
+        "description": "En 2023 se presentaron 111 casos por golpe de calor, 36 por deshidratación  y 1 por quemaduras.1  personas perdieron la vida: 8 golpe de calor y 6 por deshidratación",
+        "deaths": 14,
+        "affected": 162,
+        "houses_damaged": 0,
+        "damage_mdp": 0.0,
+        "state": "Baja California Sur",
+        "municipalities": "Varios Municipios"
+      },
+      "data_available": true,
+      "extracted_at": "2026-02-16T01:18:45.917461"
     }
   }
 }

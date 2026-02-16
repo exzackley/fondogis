@@ -446,129 +446,137 @@
       ]
     },
     "cenapred_disasters": {
-      "filter": "Hidrometeorológico only",
-      "period": "2000-2023",
       "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "period": "2000-2023",
+      "filter": "Hidrometeorológico only",
+      "match_method": "municipality_overlap",
+      "municipality_matched_events": 19,
+      "state_matched_events": 11,
+      "total_events": 30,
+      "total_deaths": 27,
+      "total_affected": 219455,
+      "total_houses_damaged": 6839,
+      "total_damage_million_pesos": 1719.05,
       "by_type": {
         "Lluvias": {
-          "deaths": 14,
           "events": 11,
+          "deaths": 14,
           "affected": 1567,
           "damage_mdp": 14.3
         },
-        "Sequía": {
-          "deaths": 0,
-          "events": 2,
-          "affected": 11149,
-          "damage_mdp": 7.7
-        },
-        "Mar de fondo": {
-          "deaths": 3,
-          "events": 1,
-          "affected": 26719,
-          "damage_mdp": 0.0
-        },
-        "Fuertes vientos": {
-          "deaths": 0,
-          "events": 2,
-          "affected": 670,
-          "damage_mdp": 14.83
-        },
         "Ciclón tropical": {
-          "deaths": 10,
           "events": 9,
+          "deaths": 10,
           "affected": 179331,
           "damage_mdp": 1661.5
         },
         "Temperatura extrema": {
-          "deaths": 0,
           "events": 5,
+          "deaths": 0,
           "affected": 19,
           "damage_mdp": 20.73
+        },
+        "Fuertes vientos": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 670,
+          "damage_mdp": 14.83
+        },
+        "Sequía": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 11149,
+          "damage_mdp": 7.7
+        },
+        "Mar de fondo": {
+          "events": 1,
+          "deaths": 3,
+          "affected": 26719,
+          "damage_mdp": 0.0
         }
       },
       "by_year": {
         "2000": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 0,
           "damage_mdp": 10.3
         },
         "2001": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 0,
           "damage_mdp": 5.7
         },
         "2002": {
-          "deaths": 0,
           "events": 2,
+          "deaths": 0,
           "affected": 1035,
           "damage_mdp": 0.3
         },
         "2005": {
-          "deaths": 2,
           "events": 4,
+          "deaths": 2,
           "affected": 11515,
           "damage_mdp": 5.65
         },
         "2012": {
-          "deaths": 2,
           "events": 1,
+          "deaths": 2,
           "affected": 45708,
           "damage_mdp": 46.1
         },
         "2014": {
-          "deaths": 8,
           "events": 3,
+          "deaths": 8,
           "affected": 16232,
           "damage_mdp": 118.6
         },
         "2015": {
-          "deaths": 3,
           "events": 3,
+          "deaths": 3,
           "affected": 131220,
           "damage_mdp": 4.93
         },
         "2017": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 60,
           "damage_mdp": 0.0
         },
         "2018": {
-          "deaths": 0,
           "events": 4,
+          "deaths": 0,
           "affected": 767,
           "damage_mdp": 24.07
         },
         "2019": {
-          "deaths": 0,
           "events": 2,
+          "deaths": 0,
           "affected": 619,
           "damage_mdp": 790.91
         },
         "2020": {
-          "deaths": 2,
           "events": 1,
+          "deaths": 2,
           "affected": 4,
           "damage_mdp": 0.01
         },
         "2021": {
-          "deaths": 0,
           "events": 2,
+          "deaths": 0,
           "affected": 222,
           "damage_mdp": 0.31
         },
         "2022": {
-          "deaths": 10,
           "events": 3,
+          "deaths": 10,
           "affected": 58,
           "damage_mdp": 10.32
         },
         "2023": {
-          "deaths": 0,
           "events": 2,
+          "deaths": 0,
           "affected": 12015,
           "damage_mdp": 701.86
         }
@@ -576,24 +584,16 @@
       "worst_event": {
         "date": "2014-10-17",
         "type": "Ciclón tropical",
-        "state": "Guerrero",
+        "description": "Fuertes lluvias causadas por el CT \"Trudy\". Se reportaron daños en carreteras Federales y Estatales por cortes y deslaves. Postes de energia electrica caidos y derrumbes.  Desbordamiento de 8 rios. Activacion de 15 RT. Se reporto la muerte de 4 personas debido a que su casa quedo sepultada (2 hombre",
         "deaths": 8,
         "affected": 16212,
-        "damage_mdp": 106.8,
-        "description": "Fuertes lluvias causadas por el CT \"Trudy\". Se reportaron daños en carreteras Federales y Estatales por cortes y deslaves. Postes de energia electrica caidos y derrumbes.  Desbordamiento de 8 rios. Activacion de 15 RT. Se reporto la muerte de 4 personas debido a que su casa quedo sepultada (2 hombre",
         "houses_damaged": 2600,
+        "damage_mdp": 106.8,
+        "state": "Guerrero",
         "municipalities": "35"
       },
-      "extracted_at": "2026-02-15T20:14:49.109887",
-      "match_method": "municipality_overlap",
-      "total_deaths": 27,
-      "total_events": 30,
       "data_available": true,
-      "total_affected": 219455,
-      "state_matched_events": 11,
-      "total_houses_damaged": 6839,
-      "total_damage_million_pesos": 1719.05,
-      "municipality_matched_events": 19
+      "extracted_at": "2026-02-16T01:18:46.562315"
     },
     "hurricane_exposure": {
       "period": "1990-2024",

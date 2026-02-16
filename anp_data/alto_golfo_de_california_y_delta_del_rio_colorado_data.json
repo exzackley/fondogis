@@ -440,6 +440,17 @@
           "class_id": 80
         }
       }
+    },
+    "soil": {
+      "source": "OpenLandMap",
+      "resolution": "250m",
+      "organic_carbon_g_kg": 0.09790468794676836,
+      "ph_h2o": 8.107379431309242
+    },
+    "surface_water": {
+      "source": "JRC Global Surface Water",
+      "resolution": "30m",
+      "permanent_water_km2": 3753.89
     }
   },
   "external_data": {
@@ -1522,219 +1533,227 @@
       ]
     },
     "cenapred_disasters": {
-      "filter": "Hidrometeorológico only",
-      "period": "2000-2023",
       "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "period": "2000-2023",
+      "filter": "Hidrometeorológico only",
+      "match_method": "municipality_overlap",
+      "municipality_matched_events": 19,
+      "state_matched_events": 88,
+      "total_events": 107,
+      "total_deaths": 666,
+      "total_affected": 189945,
+      "total_houses_damaged": 18008,
+      "total_damage_million_pesos": 3708.33,
       "by_type": {
-        "Helada": {
-          "deaths": 0,
-          "events": 3,
-          "affected": 17904,
-          "damage_mdp": 15.24
+        "Bajas temperaturas": {
+          "events": 38,
+          "deaths": 218,
+          "affected": 1355,
+          "damage_mdp": 6.84
+        },
+        "Temperatura extrema": {
+          "events": 30,
+          "deaths": 421,
+          "affected": 41015,
+          "damage_mdp": 48.37
         },
         "Lluvias": {
-          "deaths": 6,
           "events": 14,
+          "deaths": 6,
           "affected": 8214,
           "damage_mdp": 1110.59
         },
-        "Sequía": {
-          "deaths": 0,
-          "events": 4,
-          "affected": 0,
-          "damage_mdp": 185.79
+        "Ciclón tropical": {
+          "events": 5,
+          "deaths": 9,
+          "affected": 101385,
+          "damage_mdp": 2178.96
         },
         "Inundación": {
-          "deaths": 0,
           "events": 5,
+          "deaths": 0,
           "affected": 32,
           "damage_mdp": 57.58
         },
+        "Sequía": {
+          "events": 4,
+          "deaths": 0,
+          "affected": 0,
+          "damage_mdp": 185.79
+        },
         "Fuertes vientos": {
-          "deaths": 11,
           "events": 3,
+          "deaths": 11,
           "affected": 16,
           "damage_mdp": 2.07
         },
         "Tormenta severa": {
-          "deaths": 1,
           "events": 3,
+          "deaths": 1,
           "affected": 24,
           "damage_mdp": 0.02
         },
-        "Ciclón tropical": {
-          "deaths": 9,
-          "events": 5,
-          "affected": 101385,
-          "damage_mdp": 2178.96
-        },
-        "Tormenta tropical": {
+        "Helada": {
+          "events": 3,
           "deaths": 0,
-          "events": 1,
-          "affected": 20000,
-          "damage_mdp": 35.42
-        },
-        "Bajas temperaturas": {
-          "deaths": 218,
-          "events": 38,
-          "affected": 1355,
-          "damage_mdp": 6.84
+          "affected": 17904,
+          "damage_mdp": 15.24
         },
         "Sin clasificación": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 0,
           "damage_mdp": 67.43
         },
-        "Temperatura extrema": {
-          "deaths": 421,
-          "events": 30,
-          "affected": 41015,
-          "damage_mdp": 48.37
+        "Tormenta tropical": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 20000,
+          "damage_mdp": 35.42
         }
       },
       "by_year": {
         "2000": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 0,
           "damage_mdp": 56.07
         },
         "2001": {
-          "deaths": 43,
           "events": 2,
+          "deaths": 43,
           "affected": 17201,
           "damage_mdp": 905.15
         },
         "2002": {
-          "deaths": 23,
           "events": 7,
+          "deaths": 23,
           "affected": 3750,
           "damage_mdp": 33.6
         },
         "2003": {
-          "deaths": 0,
           "events": 2,
+          "deaths": 0,
           "affected": 0,
           "damage_mdp": 0.04
         },
         "2004": {
-          "deaths": 3,
           "events": 1,
+          "deaths": 3,
           "affected": 3,
           "damage_mdp": 0.0
         },
         "2005": {
-          "deaths": 5,
           "events": 2,
+          "deaths": 5,
           "affected": 5,
           "damage_mdp": 0.0
         },
         "2006": {
-          "deaths": 34,
           "events": 4,
+          "deaths": 34,
           "affected": 16,
           "damage_mdp": 0.47
         },
         "2007": {
-          "deaths": 25,
           "events": 4,
+          "deaths": 25,
           "affected": 85053,
           "damage_mdp": 362.4
         },
         "2008": {
-          "deaths": 17,
           "events": 4,
+          "deaths": 17,
           "affected": 17,
           "damage_mdp": 120.91
         },
         "2009": {
-          "deaths": 12,
           "events": 3,
+          "deaths": 12,
           "affected": 0,
           "damage_mdp": 0.0
         },
         "2010": {
-          "deaths": 4,
           "events": 2,
+          "deaths": 4,
           "affected": 891,
           "damage_mdp": 938.96
         },
         "2011": {
-          "deaths": 12,
           "events": 2,
+          "deaths": 12,
           "affected": 12,
           "damage_mdp": 0.03
         },
         "2012": {
-          "deaths": 25,
           "events": 4,
+          "deaths": 25,
           "affected": 25,
           "damage_mdp": 0.0
         },
         "2013": {
-          "deaths": 22,
           "events": 4,
+          "deaths": 22,
           "affected": 0,
           "damage_mdp": 6.78
         },
         "2014": {
-          "deaths": 20,
           "events": 6,
+          "deaths": 20,
           "affected": 53,
           "damage_mdp": 22.42
         },
         "2015": {
-          "deaths": 30,
           "events": 4,
+          "deaths": 30,
           "affected": 485,
           "damage_mdp": 0.0
         },
         "2016": {
-          "deaths": 34,
           "events": 5,
+          "deaths": 34,
           "affected": 15945,
           "damage_mdp": 5.27
         },
         "2017": {
-          "deaths": 24,
           "events": 4,
+          "deaths": 24,
           "affected": 457,
           "damage_mdp": 0.0
         },
         "2018": {
-          "deaths": 29,
           "events": 15,
+          "deaths": 29,
           "affected": 20347,
           "damage_mdp": 210.12
         },
         "2019": {
-          "deaths": 25,
           "events": 7,
+          "deaths": 25,
           "affected": 424,
           "damage_mdp": 51.37
         },
         "2020": {
-          "deaths": 36,
           "events": 7,
+          "deaths": 36,
           "affected": 6248,
           "damage_mdp": 105.36
         },
         "2021": {
-          "deaths": 30,
           "events": 5,
+          "deaths": 30,
           "affected": 604,
           "damage_mdp": 0.01
         },
         "2022": {
-          "deaths": 37,
           "events": 6,
+          "deaths": 37,
           "affected": 37198,
           "damage_mdp": 461.67
         },
         "2023": {
-          "deaths": 176,
           "events": 6,
+          "deaths": 176,
           "affected": 1211,
           "damage_mdp": 427.69
         }
@@ -1742,24 +1761,16 @@
       "worst_event": {
         "date": "2023-01-01",
         "type": "Temperatura extrema",
-        "state": "Sonora",
+        "description": "En 2023 se presentaron 324 casos por golpe de calor, 492 por deshidratación  y 3 por quemaduras.117 personas perdieron la vida: 113 golpe de calor y 4 por deshidratación",
         "deaths": 118,
         "affected": 936,
-        "damage_mdp": 0.0,
-        "description": "En 2023 se presentaron 324 casos por golpe de calor, 492 por deshidratación  y 3 por quemaduras.117 personas perdieron la vida: 113 golpe de calor y 4 por deshidratación",
         "houses_damaged": 0,
+        "damage_mdp": 0.0,
+        "state": "Sonora",
         "municipalities": "Varios Municipios"
       },
-      "extracted_at": "2026-02-15T20:14:47.173720",
-      "match_method": "municipality_overlap",
-      "total_deaths": 666,
-      "total_events": 107,
       "data_available": true,
-      "total_affected": 189945,
-      "state_matched_events": 88,
-      "total_houses_damaged": 18008,
-      "total_damage_million_pesos": 3708.33,
-      "municipality_matched_events": 19
+      "extracted_at": "2026-02-16T01:18:45.876761"
     },
     "ndvi_trend": {
       "period": "2000-2023",

@@ -13,9 +13,9 @@
     "extracted_at": "2026-01-02T13:43:30.848012",
     "categoria_de_manejo": "Parque Nacional",
     "estados": [
-      "Michoac\u00e1n"
+      "Michoacán"
     ],
-    "region": "Occidente y Pac\u00edfico Centro",
+    "region": "Occidente y Pacífico Centro",
     "designaciones_internacionales": "",
     "num_anp": "33",
     "id_anp_conanp": "ANP00503033",
@@ -406,6 +406,19 @@
       },
       "extracted_at": "2026-01-05T21:02:07.425071",
       "data_available": true
+    },
+    "ndvi_trend": {
+      "data_available": true,
+      "extracted_at": "2026-02-16T01:19:53.542544",
+      "source": "MODIS MOD13A2 v061",
+      "resolution_m": 1000,
+      "mean_ndvi_2000_2005": 0.6888,
+      "mean_ndvi_2018_2023": 0.6988,
+      "trend_per_year": 0.000993,
+      "trend_per_decade": 0.0099,
+      "trend_direction": "improving",
+      "period": "2000-2023",
+      "n_years": 24
     }
   },
   "external_data": {
@@ -1095,8 +1108,8 @@
       "total_households": 32,
       "female_headed_households": 7,
       "sample_localities": [
-        "El Malpa\u00eds",
-        "Rinc\u00f3n de las \u00c1guilas",
+        "El Malpaís",
+        "Rincón de las Águilas",
         "Loma Bonita"
       ]
     },
@@ -1114,7 +1127,7 @@
       "municipalities": [
         {
           "name": "Uruapan",
-          "state": "Michoac\u00e1n de Ocampo",
+          "state": "Michoacán de Ocampo",
           "population": 356786,
           "irs_index": -0.8615,
           "irs_category": "Muy bajo",
@@ -1123,7 +1136,7 @@
       ],
       "interpretation": {
         "irs_index": "Social Lag Index: negative values = low lag (better conditions), positive = high lag (worse conditions)",
-        "categories": "Muy bajo (best) \u2192 Bajo \u2192 Medio \u2192 Alto \u2192 Muy alto (worst)",
+        "categories": "Muy bajo (best) → Bajo → Medio → Alto → Muy alto (worst)",
         "weighted_mean": "Population-weighted average across all municipalities intersecting ANP"
       },
       "extracted_at": "2026-01-03T11:15:35.263539"
@@ -1191,7 +1204,7 @@
         },
         {
           "scientific_name": "Verbesina fastigiata",
-          "common_name": "\u00c1rnica de la costa",
+          "common_name": "Árnica de la costa",
           "iconic_taxon": "Plantae",
           "observations": 39,
           "taxon_id": 288701
@@ -1205,14 +1218,14 @@
         },
         {
           "scientific_name": "Ensete ventricosum",
-          "common_name": "Falso pl\u00e1tano",
+          "common_name": "Falso plátano",
           "iconic_taxon": "Plantae",
           "observations": 31,
           "taxon_id": 140998
         },
         {
           "scientific_name": "Tagetes tenuifolia",
-          "common_name": "Cempas\u00fachil de campo",
+          "common_name": "Cempasúchil de campo",
           "iconic_taxon": "Plantae",
           "observations": 30,
           "taxon_id": 289732
@@ -1254,7 +1267,7 @@
         },
         {
           "scientific_name": "Erycina hyalinobulbon",
-          "common_name": "Orqu\u00eddea amarilla",
+          "common_name": "Orquídea amarilla",
           "iconic_taxon": "Plantae",
           "observations": 23,
           "taxon_id": 317972
@@ -1317,14 +1330,14 @@
         },
         {
           "scientific_name": "Apis mellifera",
-          "common_name": "Abeja mel\u00edfera europea",
+          "common_name": "Abeja melífera europea",
           "iconic_taxon": "Insecta",
           "observations": 18,
           "taxon_id": 47219
         },
         {
           "scientific_name": "Papilio garamas",
-          "common_name": "Mariposa cometa quexqu\u00e9metl",
+          "common_name": "Mariposa cometa quexquémetl",
           "iconic_taxon": "Insecta",
           "observations": 18,
           "taxon_id": 509480
@@ -1345,7 +1358,7 @@
         },
         {
           "scientific_name": "Bletia roezlii",
-          "common_name": "Orqu\u00eddea coral",
+          "common_name": "Orquídea coral",
           "iconic_taxon": "Plantae",
           "observations": 17,
           "taxon_id": 276501
@@ -1371,6 +1384,198 @@
         "note": "Citizen science data - effort varies by accessibility"
       },
       "extracted_at": "2026-01-03T11:43:36.522886"
+    },
+    "cenapred_disasters": {
+      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "period": "2000-2023",
+      "filter": "Hidrometeorológico only",
+      "match_method": "municipality_overlap",
+      "municipality_matched_events": 14,
+      "state_matched_events": 28,
+      "total_events": 42,
+      "total_deaths": 118,
+      "total_affected": 267838,
+      "total_houses_damaged": 20853,
+      "total_damage_million_pesos": 2199.0,
+      "by_type": {
+        "Lluvias": {
+          "events": 13,
+          "deaths": 98,
+          "affected": 231883,
+          "damage_mdp": 625.78
+        },
+        "Bajas temperaturas": {
+          "events": 9,
+          "deaths": 14,
+          "affected": 15727,
+          "damage_mdp": 128.0
+        },
+        "Temperatura extrema": {
+          "events": 9,
+          "deaths": 5,
+          "affected": 67,
+          "damage_mdp": 15.34
+        },
+        "Ciclón tropical": {
+          "events": 6,
+          "deaths": 0,
+          "affected": 7874,
+          "damage_mdp": 1371.78
+        },
+        "Sequía": {
+          "events": 3,
+          "deaths": 0,
+          "affected": 12206,
+          "damage_mdp": 32.87
+        },
+        "Tormenta eléctrica": {
+          "events": 1,
+          "deaths": 1,
+          "affected": 8,
+          "damage_mdp": 0.0
+        },
+        "Helada": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 73,
+          "damage_mdp": 25.23
+        }
+      },
+      "by_year": {
+        "2000": {
+          "events": 3,
+          "deaths": 0,
+          "affected": 0,
+          "damage_mdp": 81.86
+        },
+        "2001": {
+          "events": 1,
+          "deaths": 95,
+          "affected": 126954,
+          "damage_mdp": 396.9
+        },
+        "2002": {
+          "events": 3,
+          "deaths": 4,
+          "affected": 170,
+          "damage_mdp": 1.6
+        },
+        "2003": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 100000,
+          "damage_mdp": 227.02
+        },
+        "2004": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 0,
+          "damage_mdp": 0.01
+        },
+        "2005": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 11204,
+          "damage_mdp": 13.42
+        },
+        "2006": {
+          "events": 3,
+          "deaths": 2,
+          "affected": 1172,
+          "damage_mdp": 10.27
+        },
+        "2007": {
+          "events": 2,
+          "deaths": 1,
+          "affected": 281,
+          "damage_mdp": 0.26
+        },
+        "2008": {
+          "events": 1,
+          "deaths": 1,
+          "affected": 1,
+          "damage_mdp": 0.0
+        },
+        "2009": {
+          "events": 2,
+          "deaths": 6,
+          "affected": 175,
+          "damage_mdp": 0.0
+        },
+        "2010": {
+          "events": 2,
+          "deaths": 1,
+          "affected": 81,
+          "damage_mdp": 25.23
+        },
+        "2013": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 23530,
+          "damage_mdp": 704.0
+        },
+        "2015": {
+          "events": 2,
+          "deaths": 3,
+          "affected": 3603,
+          "damage_mdp": 721.39
+        },
+        "2016": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 140,
+          "damage_mdp": 0.0
+        },
+        "2017": {
+          "events": 1,
+          "deaths": 1,
+          "affected": 14,
+          "damage_mdp": 0.0
+        },
+        "2018": {
+          "events": 4,
+          "deaths": 0,
+          "affected": 17,
+          "damage_mdp": 15.34
+        },
+        "2019": {
+          "events": 2,
+          "deaths": 1,
+          "affected": 12,
+          "damage_mdp": 1.34
+        },
+        "2021": {
+          "events": 5,
+          "deaths": 0,
+          "affected": 431,
+          "damage_mdp": 0.14
+        },
+        "2022": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 4,
+          "damage_mdp": 0.0
+        },
+        "2023": {
+          "events": 2,
+          "deaths": 3,
+          "affected": 49,
+          "damage_mdp": 0.23
+        }
+      },
+      "worst_event": {
+        "date": "2001-09-21",
+        "type": "Lluvias",
+        "description": ". En el mes de Septiembre  fue el mes que se pesento con mayor intensidad el fenomeno, provocando un total  de 95 personas muertas entre los 4 estados, Chiapas, Quintana Roo, Michoacan y Nuevo Leon con una poblacion afectada de 126, 954 personas, un total de de 14,102 viviendas dañadas, 18 escuelas ",
+        "deaths": 95,
+        "affected": 126954,
+        "houses_damaged": 14102,
+        "damage_mdp": 396.9,
+        "state": "Chiapas, Michoacan, Nuevo Leon, Quintana Roo",
+        "municipalities": "Varios Municipios"
+      },
+      "data_available": true,
+      "extracted_at": "2026-02-16T01:18:45.934939"
     }
   }
 }

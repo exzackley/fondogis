@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environmental & Social Diagnostic Report — FondoGIS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --accent: #10b981;
+            --accent-light: #34d399;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #475569;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px; height: 32px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+
+        .logo-text { font-weight: 600; font-size: 1.1rem; color: var(--text-primary); }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-decoration: none;
+            padding: 4px 8px;
+            white-space: nowrap;
+        }
+        .nav-link:hover { color: var(--accent); }
+
+        /* ANP Selector */
+        .selector-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .selector-bar label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .selector-bar select {
+            flex: 1;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        .selector-bar select:focus { outline: none; border-color: var(--accent); }
+
+        .btn-generate {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .btn-generate:hover { background: var(--accent-light); }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        .loading .spinner {
+            display: inline-block;
+            width: 32px; height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Report Sections */
+        .report { display: none; }
+        .report.active { display: block; }
+
+        .report-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .report-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        .section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 22px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .section-header:hover { background: rgba(255,255,255,0.02); }
+
+        .section-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            width: 36px; height: 36px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .section-toggle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+        .section.collapsed .section-toggle { transform: rotate(-90deg); }
+
+        .section-body {
+            padding: 0 22px 22px;
+        }
+        .section.collapsed .section-body { display: none; }
+
+        .narrative {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.75;
+            margin-bottom: 16px;
+        }
+
+        /* Data Grid */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .data-card {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .data-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .data-label {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .data-sublabel {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .tag {
+            background: var(--bg-primary);
+            color: var(--accent);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            border: 1px solid var(--accent);
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin: 12px 0;
+        }
+        .data-table th {
+            background: var(--bg-tertiary);
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .data-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* Map */
+        #report-map {
+            height: 350px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 12px 0;
+            border: 1px solid var(--border);
+        }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            margin: 12px 0;
+        }
+        .chart-container canvas {
+            width: 100% !important;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+        }
+
+        /* Progress bars */
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .progress-label-text {
+            min-width: 140px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+        .progress-bar-bg {
+            flex: 1;
+            height: 20px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            padding-left: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--bg-primary);
+            min-width: fit-content;
+        }
+
+        /* Badge indicators */
+        .badge-indicator {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .badge-low { background: #065f46; color: #6ee7b7; }
+        .badge-medium { background: #92400e; color: #fcd34d; }
+        .badge-high { background: #9a3412; color: #fdba74; }
+        .badge-extreme { background: #7f1d1d; color: #fca5a5; }
+        .badge-info { background: #1e3a5f; color: #7dd3fc; }
+
+        /* Footer */
+        .report-footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            padding: 24px 0 12px;
+            border-top: 1px solid var(--border);
+            margin-top: 30px;
+        }
+
+        /* No-data placeholder */
+        .no-data {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 18px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        /* Print styles */
+        @media print {
+            body { background: #fff; color: #222; }
+            .top-bar, .selector-bar, .btn-generate { display: none !important; }
+            .container { max-width: 100%; padding: 0; }
+            .section { break-inside: avoid; border: 1px solid #ccc; background: #fff; }
+            .section.collapsed .section-body { display: block !important; }
+            .section-toggle { display: none; }
+            .section-header { background: #f5f5f5 !important; }
+            .section-icon { background: #10b981; }
+            .data-card { background: #f5f5f5; }
+            .data-value { color: #059669; }
+            .report-title { -webkit-text-fill-color: #0f172a; background: none; }
+            .narrative, .data-label, .data-table td { color: #555; }
+            .data-table th { background: #eee; color: #333; }
+            .progress-bar-bg { background: #e5e5e5; }
+            .tag { background: #f0fdf4; color: #059669; border-color: #059669; }
+            #report-map { height: 300px; }
+            .chart-container canvas { background: #f5f5f5; }
+            .report-footer { color: #999; border-color: #ddd; }
+        }
+
+        @media (max-width: 768px) {
+            .selector-bar { flex-direction: column; }
+            .data-grid { grid-template-columns: 1fr 1fr; }
+            .progress-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .progress-label-text { min-width: 0; text-align: left; }
+            .report-title { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-left">
+                <div class="logo-icon">🌎</div>
+                <span class="logo-text">FondoGIS — Diagnostic Report</span>
+            </div>
+            <div class="top-right">
+                <a href="index.html" class="nav-link">← Dashboard</a>
+                <a href="data_dictionary.html" class="nav-link">Data Dictionary</a>
+            </div>
+        </div>
+
+        <!-- ANP Selector -->
+        <div class="selector-bar">
+            <label for="anp-select">Protected Area:</label>
+            <select id="anp-select">
+                <option value="">— Select an ANP —</option>
+            </select>
+            <button class="btn-generate" id="btn-generate">Generate Report</button>
+        </div>
+
+        <!-- Loading state -->
+        <div class="loading" id="loading" style="display:none;">
+            <div class="spinner"></div>
+            <div>Loading data and generating report…</div>
+        </div>
+
+        <!-- Report Content -->
+        <div class="report" id="report"></div>
+    </div>
+
+<script>
+// ── Global State ──
+let anpManifest = [];
+let currentData = null;
+let currentBoundary = null;
+let reportMap = null;
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('anp_manifest.json');
+        anpManifest = await res.json();
+        const sel = document.getElementById('anp-select');
+        anpManifest.forEach(a => {
+            const opt = document.createElement('option');
+            opt.value = a.slug;
+            opt.textContent = a.name;
+            sel.appendChild(opt);
+        });
+        // Check URL hash
+        const hash = location.hash.replace('#','');
+        if (hash) {
+            sel.value = hash;
+            if (sel.value) generateReport();
+        }
+    } catch(e) {
+        console.error('Failed to load manifest:', e);
+    }
+
+    document.getElementById('btn-generate').addEventListener('click', generateReport);
+    document.getElementById('anp-select').addEventListener('change', () => {
+        const slug = document.getElementById('anp-select').value;
+        if (slug) location.hash = slug;
+    });
+});
+
+async function generateReport() {
+    const slug = document.getElementById('anp-select').value;
+    if (!slug) return;
+
+    const loading = document.getElementById('loading');
+    const report = document.getElementById('report');
+    report.classList.remove('active');
+    loading.style.display = 'block';
+
+    try {
+        const dataRes = await fetch(`anp_data/${slug}_data.json`);
+        currentData = await dataRes.json();
+
+        try {
+            const geoRes = await fetch(`anp_data/${slug}_boundary.geojson`);
+            currentBoundary = await geoRes.json();
+        } catch(e) { currentBoundary = null; }
+
+        renderReport();
+        report.classList.add('active');
+    } catch(e) {
+        report.innerHTML = `<div class="no-data">Failed to load data for this ANP. Error: ${e.message}</div>`;
+        report.classList.add('active');
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+// ── Helpers ──
+function fmt(n, dec=0) {
+    if (n == null || isNaN(n)) return '—';
+    return Number(n).toLocaleString('en-US', {minimumFractionDigits: dec, maximumFractionDigits: dec});
+}
+
+function fmtPct(n, dec=1) {
+    if (n == null || isNaN(n)) return '—';
+    return Number(n).toFixed(dec) + '%';
+}
+
+function slugToTitle(slug) {
+    return slug.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function getSafe(obj, ...keys) {
+    let v = obj;
+    for (const k of keys) {
+        if (v == null) return undefined;
+        v = v[k];
+    }
+    return v;
+}
+
+function noDataBox(msg='Data not available for this ANP.') {
+    return `<div class="no-data">${msg}</div>`;
+}
+
+function makeSection(id, icon, title, bodyHtml) {
+    return `
+    <div class="section" id="section-${id}">
+        <div class="section-header" onclick="toggleSection('section-${id}')">
+            <div class="section-header-left">
+                <div class="section-icon">${icon}</div>
+                <div class="section-title">${title}</div>
+            </div>
+            <div class="section-toggle">▼</div>
+        </div>
+        <div class="section-body">${bodyHtml}</div>
+    </div>`;
+}
+
+function toggleSection(id) {
+    document.getElementById(id).classList.toggle('collapsed');
+}
+
+function colorForCategory(cat) {
+    if (!cat) return 'badge-info';
+    const c = cat.toLowerCase();
+    if (c.includes('muy bajo') || c.includes('low')) return 'badge-low';
+    if (c.includes('bajo') || c.includes('medium')) return 'badge-medium';
+    if (c.includes('medio') || c.includes('high')) return 'badge-high';
+    if (c.includes('alto') || c.includes('extreme') || c.includes('muy alto')) return 'badge-extreme';
+    return 'badge-info';
+}
+
+function ghmInterpretation(val) {
+    if (val == null) return 'Unknown';
+    if (val < 0.1) return 'Very low modification — near-pristine';
+    if (val < 0.3) return 'Low modification — mostly natural';
+    if (val < 0.5) return 'Moderate modification';
+    if (val < 0.7) return 'High modification';
+    return 'Very high modification';
+}
+
+// ── Render Report ──
+function renderReport() {
+    const d = currentData;
+    const m = d.metadata || {};
+    const ds = d.datasets || {};
+    const ext = d.external_data || {};
+
+    const name = m.name || 'Unknown ANP';
+    const area_km2 = m.reported_area_km2 || (m.superficie_total_ha ? m.superficie_total_ha / 100 : null);
+    const terr_ha = m.superficie_terrestre_ha;
+    const mar_ha = m.superficie_marina_ha;
+
+    let html = '';
+    html += `<h1 class="report-title">${name}</h1>`;
+    html += `<div class="report-subtitle">Environmental & Social Context and Diagnosis</div>`;
+
+    // 1. General Information
+    html += renderGeneral(m, ds);
+
+    // 2. Physical Environment
+    html += renderPhysical(ds, m, ext);
+
+    // 3. Land Cover & Vegetation
+    html += renderLandCover(ds);
+
+    // 4. Forest & Fire
+    html += renderForestFire(ds);
+
+    // 5. Biodiversity
+    html += renderBiodiversity(ds, ext);
+
+    // 6. Social Context
+    html += renderSocial(ext);
+
+    // 7. Human Modification & Night Lights
+    html += renderHumanMod(ds);
+
+    // 8. Natural Hazards
+    html += renderHazards(ext);
+
+    // 9. Climate Projections
+    html += renderClimateProjections(ds);
+
+    html += `<div class="report-footer">
+        Generated by FondoGIS Diagnostic Report Tool · Data from CONANP, INEGI, GEE, GBIF, iNaturalist, CENAPRED, CONEVAL, and other sources · ${new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'})}
+    </div>`;
+
+    document.getElementById('report').innerHTML = html;
+
+    // Init map after DOM update
+    setTimeout(initReportMap, 100);
+    // Draw charts after DOM update
+    setTimeout(drawAllCharts, 150);
+}
+
+// ── Section 1: General Information ──
+function renderGeneral(m, ds) {
+    const area_km2 = m.reported_area_km2 || (m.superficie_total_ha ? m.superficie_total_ha / 100 : null);
+    const terr_ha = m.superficie_terrestre_ha;
+    const mar_ha = m.superficie_marina_ha;
+    const states = (m.estados || []).join(', ') || '—';
+    const year = m.status_year || (m.primer_decreto ? m.primer_decreto.split('-')[0] : '—');
+    const category = m.categoria_de_manejo || m.designation || '—';
+    const intl = m.designaciones_internacionales || 'None';
+
+    let narrativeParts = [];
+    narrativeParts.push(`<strong>${m.name || 'This ANP'}</strong> is designated as a <em>${category}</em>`);
+    if (year && year !== '—') narrativeParts[0] += `, established in ${year}`;
+    narrativeParts[0] += '.';
+    if (states !== '—') narrativeParts.push(`It is located in the state${(m.estados||[]).length>1?'s':''} of ${states}, within the ${m.region || 'unspecified'} region.`);
+    if (area_km2) {
+        let areaParts = [`The total area spans ${fmt(area_km2,1)} km²`];
+        if (terr_ha > 0 && mar_ha > 0) {
+            areaParts.push(`(${fmt(terr_ha/100,1)} km² terrestrial, ${fmt(mar_ha/100,1)} km² marine)`);
+        }
+        narrativeParts.push(areaParts.join(' ') + '.');
+    }
+    if (intl && intl !== 'None') narrativeParts.push(`International designations: ${intl}.`);
+
+    let body = `<p class="narrative">${narrativeParts.join(' ')}</p>`;
+
+    body += `<div class="data-grid">
+        <div class="data-card"><div class="data-value">${area_km2 ? fmt(area_km2,1) : '—'}</div><div class="data-label">Total Area (km²)</div></div>
+        <div class="data-card"><div class="data-value">${year}</div><div class="data-label">Designation Year</div></div>
+        <div class="data-card"><div class="data-value">${(m.estados||[]).length || '—'}</div><div class="data-label">States</div></div>
+        <div class="data-card"><div class="data-value">${m.iucn_category || '—'}</div><div class="data-label">IUCN Category</div></div>
+    </div>`;
+
+    if (terr_ha > 0 || mar_ha > 0) {
+        body += `<div class="data-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="data-card"><div class="data-value">${terr_ha ? fmt(terr_ha,0) : '—'}</div><div class="data-label">Terrestrial Area (ha)</div></div>
+            <div class="data-card"><div class="data-value">${mar_ha ? fmt(mar_ha,0) : '—'}</div><div class="data-label">Marine Area (ha)</div></div>
+        </div>`;
+    }
+
+    body += `<div id="report-map"></div>`;
+
+    return makeSection('general', '📋', '1. General Information', body);
+}
+
+// ── Map ──
+function initReportMap() {
+    const mapEl = document.getElementById('report-map');
+    if (!mapEl) return;
+    if (reportMap) { reportMap.remove(); reportMap = null; }
+
+    const geo = currentData.geometry;
+    const center = geo ? [geo.centroid[1], geo.centroid[0]] : [23.6, -102.5];
+
+    reportMap = L.map('report-map', { zoomControl: true }).setView(center, 8);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles © Esri'
+    }).addTo(reportMap);
+
+    if (currentBoundary) {
+        const boundaryLayer = L.geoJSON(currentBoundary, {
+            style: { color: '#10b981', weight: 2.5, fillOpacity: 0.08, fillColor: '#10b981' }
+        }).addTo(reportMap);
+        reportMap.fitBounds(boundaryLayer.getBounds(), { padding: [30, 30] });
+    } else if (geo && geo.bounds) {
+        const b = geo.bounds;
+        reportMap.fitBounds([[b[0][1], b[0][0]], [b[2][1], b[2][0]]]);
+    }
+}
+
+// ── Section 2: Physical Environment ──
+function renderPhysical(ds, m, ext) {
+    const elev = ds.elevation;
+    const clim = ds.climate;
+    const ws = ds.water_stress;
+    const slr = getSafe(ext, 'sea_level_rise') || getSafe(ds, 'sea_level_rise');
+
+    if (!elev && !clim && !ws) return makeSection('physical', '⛰️', '2. Physical Environment', noDataBox());
+
+    let body = '';
+    let narrativeParts = [];
+
+    if (elev) {
+        narrativeParts.push(`Elevations range from ${fmt(elev.elevation_min)}m to ${fmt(elev.elevation_max)}m (mean ${fmt(elev.elevation_mean)}m).`);
+    }
+    if (clim) {
+        narrativeParts.push(`The area receives approximately ${fmt(clim.annual_precipitation_mm,0)} mm of annual precipitation, with temperatures ranging from a mean minimum of ${fmt(clim.mean_min_temp_c,1)}°C to a mean maximum of ${fmt(clim.mean_max_temp_c,1)}°C.`);
+    }
+    if (ws && ws.data_available) {
+        narrativeParts.push(`Baseline water stress is classified as "${ws.baseline_water_stress_category || '—'}" and drought risk is "${ws.drought_risk_category || '—'}".`);
+    }
+
+    if (narrativeParts.length) body += `<p class="narrative">${narrativeParts.join(' ')}</p>`;
+
+    // Data cards
+    let cards = [];
+    if (elev) {
+        cards.push({v: `${fmt(elev.elevation_min)}–${fmt(elev.elevation_max)}`, l: 'Elevation Range (m)'});
+        cards.push({v: fmt(elev.elevation_mean), l: 'Mean Elevation (m)'});
+    }
+    if (clim) {
+        cards.push({v: fmt(clim.annual_precipitation_mm,0), l: 'Annual Precip. (mm)'});
+        cards.push({v: `${fmt(clim.mean_min_temp_c,1)}–${fmt(clim.mean_max_temp_c,1)}`, l: 'Temperature Range (°C)'});
+    }
+    if (cards.length) {
+        body += `<div class="data-grid">${cards.map(c => `<div class="data-card"><div class="data-value">${c.v}</div><div class="data-label">${c.l}</div></div>`).join('')}</div>`;
+    }
+
+    // Water stress
+    if (ws && ws.data_available) {
+        body += `<div class="data-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="data-card">
+                <div class="data-label" style="margin-bottom:6px">Baseline Water Stress</div>
+                <span class="badge-indicator ${colorForCategory(ws.baseline_water_stress_category)}">${ws.baseline_water_stress_category || '—'}</span>
+            </div>
+            <div class="data-card">
+                <div class="data-label" style="margin-bottom:6px">Drought Risk</div>
+                <span class="badge-indicator ${colorForCategory(ws.drought_risk_category)}">${ws.drought_risk_category || '—'}</span>
+                <div class="data-sublabel">Score: ${ws.drought_risk != null ? ws.drought_risk.toFixed(4) : '—'}</div>
+            </div>
+        </div>`;
+    }
+
+    // Sea level rise
+    if (slr && slr.data_available) {
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">🌊 Sea Level Rise Exposure</h4>`;
+        body += `<p class="narrative">The observed sea level rise trend is approximately ${fmt(slr.observed_trend_mm_per_year,2)} mm/year. Under SSP5-8.5, sea levels are projected to rise ${fmt(slr.projected_slr_2050_cm,1)} cm by 2050. Approximately ${fmt(slr.inundation_pct_at_1m,1)}% of the protected area would be inundated with a 1m rise in sea level.</p>`;
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value">${fmt(slr.observed_trend_mm_per_year,2)}</div><div class="data-label">Observed SLR (mm/yr)</div></div>
+            <div class="data-card"><div class="data-value">${fmt(slr.projected_slr_2050_cm,1)}</div><div class="data-label">Projected SLR 2050 (cm)</div></div>
+            <div class="data-card"><div class="data-value">${fmtPct(slr.inundation_pct_at_1m)}</div><div class="data-label">Inundation at 1m SLR</div></div>
+        </div>`;
+    }
+
+    return makeSection('physical', '⛰️', '2. Physical Environment', body);
+}
+
+// ── Section 3: Land Cover & Vegetation ──
+function renderLandCover(ds) {
+    const lc = ds.land_cover;
+    const veg = ds.vegetation;
+    const ndvi = getSafe(currentData, 'external_data', 'ndvi_trend') || ds.ndvi_trend;
+    const gedi = ds.gedi_biomass;
+
+    if (!lc && !veg && !gedi) return makeSection('landcover', '🌿', '3. Land Cover & Vegetation', noDataBox());
+
+    let body = '';
+
+    // Land cover classes bar chart
+    if (lc && lc.classes) {
+        const classes = Object.entries(lc.classes).sort((a,b) => b[1].area_km2 - a[1].area_km2);
+        const totalArea = classes.reduce((s, [,v]) => s + v.area_km2, 0);
+        const colors = {
+            'Tree cover': '#22c55e',
+            'Shrubland': '#84cc16',
+            'Grassland': '#eab308',
+            'Cropland': '#f97316',
+            'Built-up': '#ef4444',
+            'Bare/sparse vegetation': '#a8a29e',
+            'Permanent water bodies': '#3b82f6',
+            'Herbaceous wetland': '#06b6d4',
+            'Mangroves': '#059669',
+            'Moss and lichen': '#a3e635',
+            'Snow and ice': '#e2e8f0'
+        };
+
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:0 0 10px;">Land Cover Classes</h4>`;
+        classes.forEach(([name, val]) => {
+            const pct = totalArea > 0 ? (val.area_km2 / totalArea * 100) : 0;
+            const color = colors[name] || '#64748b';
+            body += `<div class="progress-row">
+                <span class="progress-label-text">${name}</span>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width:${Math.max(pct,2)}%; background:${color};">${fmt(val.area_km2,1)} km² (${fmtPct(pct)})</div>
+                </div>
+            </div>`;
+        });
+    }
+
+    // Vegetation / NDVI
+    if (veg) {
+        body += `<div class="data-grid" style="margin-top:16px;">
+            <div class="data-card"><div class="data-value">${veg.NDVI_mean != null ? veg.NDVI_mean.toFixed(3) : '—'}</div><div class="data-label">Mean NDVI</div></div>
+            <div class="data-card"><div class="data-value">${veg.NDVI_min != null ? veg.NDVI_min.toFixed(3) : '—'}–${veg.NDVI_max != null ? veg.NDVI_max.toFixed(3) : '—'}</div><div class="data-label">NDVI Range</div></div>
+        </div>`;
+    }
+
+    // NDVI trend
+    if (ndvi && ndvi.data_available) {
+        const dir = ndvi.trend_direction || 'stable';
+        const emoji = dir === 'greening' ? '📈' : dir === 'browning' ? '📉' : '➡️';
+        body += `<p class="narrative" style="margin-top:12px;">${emoji} NDVI trend (${ndvi.period || '2000–2023'}): <strong>${dir}</strong> at ${ndvi.trend_per_decade != null ? ndvi.trend_per_decade.toFixed(4) : '—'} per decade. Mean NDVI shifted from ${ndvi.mean_ndvi_2000_2005 != null ? ndvi.mean_ndvi_2000_2005.toFixed(4) : '—'} (2000–2005) to ${ndvi.mean_ndvi_2018_2023 != null ? ndvi.mean_ndvi_2018_2023.toFixed(4) : '—'} (2018–2023).</p>`;
+    }
+
+    // GEDI biomass
+    if (gedi && gedi.data_available) {
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">🌲 Biomass (GEDI)</h4>`;
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value">${fmt(gedi.agbd_mean_mg_ha,1)}</div><div class="data-label">Mean Biomass (Mg/ha)</div></div>
+            <div class="data-card"><div class="data-value">${fmt(gedi.agbd_max_mg_ha,0)}</div><div class="data-label">Max Biomass (Mg/ha)</div></div>
+            <div class="data-card"><div class="data-value">${fmt(gedi.total_carbon_estimate_mt,0)}</div><div class="data-label">Total Carbon Est. (Mt)</div></div>
+        </div>`;
+    }
+
+    return makeSection('landcover', '🌿', '3. Land Cover & Vegetation', body);
+}
+
+// ── Section 4: Forest & Fire ──
+function renderForestFire(ds) {
+    const forest = ds.forest;
+    const fire = ds.fire;
+
+    if (!forest && !fire) return makeSection('forestfire', '🔥', '4. Forest & Fire', noDataBox());
+
+    let body = '';
+
+    if (forest) {
+        body += `<p class="narrative">In 2000, tree cover was estimated at ${fmtPct(forest.tree_cover_2000_percent)} of the protected area. Since then, a total of ${fmt(forest.total_loss_km2,2)} km² of forest cover has been lost.</p>`;
+        body += `<div class="data-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="data-card"><div class="data-value">${fmtPct(forest.tree_cover_2000_percent)}</div><div class="data-label">Tree Cover 2000</div></div>
+            <div class="data-card"><div class="data-value">${fmt(forest.total_loss_km2,2)}</div><div class="data-label">Total Loss (km²)</div></div>
+        </div>`;
+
+        if (forest.loss_by_year && Object.keys(forest.loss_by_year).length > 0) {
+            body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">Forest Loss Timeline</h4>`;
+            body += `<div class="chart-container"><canvas id="chart-forest-loss" height="180"></canvas></div>`;
+        }
+    }
+
+    if (fire) {
+        const byYear = fire.burned_area_km2_by_year || {};
+        const years = Object.keys(byYear).sort();
+        const totalBurned = Object.values(byYear).reduce((s,v) => s+v, 0);
+        let worstYear = null, worstVal = 0;
+        for (const [y,v] of Object.entries(byYear)) {
+            if (v > worstVal) { worstYear = y; worstVal = v; }
+        }
+
+        body += `<h4 style="font-size:0.9rem; color:var(--danger); margin:16px 0 8px;">🔥 Fire</h4>`;
+        body += `<p class="narrative">Total burned area (${years[0] || '?'}–${years[years.length-1] || '?'}): ${fmt(totalBurned,2)} km². ${worstYear ? `The worst fire year was ${worstYear} with ${fmt(worstVal,2)} km² burned.` : ''}</p>`;
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value">${fmt(totalBurned,2)}</div><div class="data-label">Total Burned (km²)</div></div>
+            ${worstYear ? `<div class="data-card"><div class="data-value">${worstYear}</div><div class="data-label">Worst Fire Year</div><div class="data-sublabel">${fmt(worstVal,2)} km²</div></div>` : ''}
+        </div>`;
+
+        if (years.length > 0) {
+            body += `<div class="chart-container"><canvas id="chart-fire" height="180"></canvas></div>`;
+        }
+    }
+
+    return makeSection('forestfire', '🔥', '4. Forest & Fire', body);
+}
+
+// ── Section 5: Biodiversity ──
+function renderBiodiversity(ds, ext) {
+    const bio = ds.biodiversity;
+    const gbif = ext.gbif_species;
+    const inat = ext.inaturalist;
+    const iucn = ext.iucn_threatened;
+    const simec = ext.simec_nom059;
+
+    if (!bio && !gbif && !inat) return makeSection('biodiversity', '🦜', '5. Biodiversity', noDataBox());
+
+    let body = '';
+
+    // Ecoregions & biomes
+    if (bio) {
+        if (bio.ecoregions && bio.ecoregions.length) {
+            body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:0 0 8px;">Ecoregions</h4>`;
+            body += `<div class="tags">${bio.ecoregions.map(e => `<span class="tag">${e}</span>`).join('')}</div>`;
+        }
+        if (bio.biomes && bio.biomes.length) {
+            body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:12px 0 8px;">Biomes</h4>`;
+            body += `<div class="tags">${bio.biomes.map(e => `<span class="tag">${e}</span>`).join('')}</div>`;
+        }
+    }
+
+    // Species richness
+    let speciesCards = [];
+    if (gbif) {
+        speciesCards.push({v: fmt(gbif.unique_species), l: 'GBIF Unique Species', s: fmt(gbif.total_occurrences) + ' occurrences'});
+    }
+    if (inat && inat.data_available !== false) {
+        speciesCards.push({v: fmt(inat.unique_species), l: 'iNaturalist Species', s: fmt(inat.total_observations) + ' observations'});
+    }
+    if (speciesCards.length) {
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">Species Richness</h4>`;
+        body += `<div class="data-grid">${speciesCards.map(c => `<div class="data-card"><div class="data-value">${c.v}</div><div class="data-label">${c.l}</div>${c.s ? `<div class="data-sublabel">${c.s}</div>` : ''}</div>`).join('')}</div>`;
+    }
+
+    // Threatened species
+    if (iucn) {
+        const cr = (iucn.critically_endangered || []).length;
+        const en = (iucn.endangered || []).length;
+        const vu = (iucn.vulnerable || []).length;
+        body += `<h4 style="font-size:0.9rem; color:var(--danger); margin:16px 0 8px;">Threatened Species (IUCN Red List)</h4>`;
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value" style="color:#ef4444">${cr}</div><div class="data-label">Critically Endangered</div></div>
+            <div class="data-card"><div class="data-value" style="color:#f97316">${en}</div><div class="data-label">Endangered</div></div>
+            <div class="data-card"><div class="data-value" style="color:#eab308">${vu}</div><div class="data-label">Vulnerable</div></div>
+            <div class="data-card"><div class="data-value">${iucn.total_threatened || (cr+en+vu)}</div><div class="data-label">Total Threatened</div></div>
+        </div>`;
+    }
+
+    // NOM-059
+    if (simec && simec.total_species > 0) {
+        const pE = (simec.endangered_P || []).length;
+        const aT = (simec.threatened_A || []).length;
+        const prS = (simec.special_protection_Pr || []).length;
+        const eX = (simec.probably_extinct_E || []).length;
+        body += `<h4 style="font-size:0.9rem; color:var(--warning); margin:16px 0 8px;">NOM-059 (SIMEC) Protected Species</h4>`;
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value" style="color:#ef4444">${pE}</div><div class="data-label">Endangered (P)</div></div>
+            <div class="data-card"><div class="data-value" style="color:#f97316">${aT}</div><div class="data-label">Threatened (A)</div></div>
+            <div class="data-card"><div class="data-value" style="color:#eab308">${prS}</div><div class="data-label">Special Protection (Pr)</div></div>
+            ${eX > 0 ? `<div class="data-card"><div class="data-value" style="color:#dc2626">${eX}</div><div class="data-label">Probably Extinct (E)</div></div>` : ''}
+            <div class="data-card"><div class="data-value">${simec.total_species}</div><div class="data-label">Total NOM-059</div></div>
+        </div>`;
+    }
+
+    // Top species table
+    const topSpecies = (gbif && gbif.top_species) ? gbif.top_species.slice(0, 10) :
+                       (inat && inat.top_species) ? inat.top_species.slice(0, 10) : null;
+    if (topSpecies && topSpecies.length) {
+        const source = (gbif && gbif.top_species) ? 'GBIF' : 'iNaturalist';
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">Top 10 Species (${source})</h4>`;
+        body += `<table class="data-table">
+            <thead><tr><th>#</th><th>Scientific Name</th><th>Class</th><th>Family</th><th>Occurrences</th></tr></thead>
+            <tbody>`;
+        topSpecies.forEach((sp, i) => {
+            body += `<tr>
+                <td>${i+1}</td>
+                <td><em>${sp.scientific_name || '—'}</em></td>
+                <td>${sp.class || sp.iconic_taxon || '—'}</td>
+                <td>${sp.family || '—'}</td>
+                <td>${fmt(sp.occurrences || sp.observations)}</td>
+            </tr>`;
+        });
+        body += `</tbody></table>`;
+    }
+
+    return makeSection('biodiversity', '🦜', '5. Biodiversity', body);
+}
+
+// ── Section 6: Social Context ──
+function renderSocial(ext) {
+    const census = ext.inegi_census;
+    const irs = ext.coneval_irs;
+
+    if (!census && !irs) return makeSection('social', '👥', '6. Social Context', noDataBox());
+
+    let body = '';
+
+    if (census) {
+        // Population narrative
+        body += `<p class="narrative">According to the 2020 INEGI census, approximately ${fmt(census.total_population)} people reside within or near the protected area across ${fmt(census.localities_in_area)} localities. The population is ${fmtPct(census.female_percent)} female. Average schooling is ${census.avg_schooling_years || '—'} years.</p>`;
+
+        // Population cards
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:8px 0 8px;">Population</h4>`;
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value">${fmt(census.total_population)}</div><div class="data-label">Total Population</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.male_population)}</div><div class="data-label">Male</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.female_population)}</div><div class="data-label">Female</div></div>
+            <div class="data-card"><div class="data-value">${fmtPct(census.female_percent)}</div><div class="data-label">Female %</div></div>
+        </div>`;
+
+        // Employment
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">Employment</h4>`;
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value">${fmt(census.economically_active)}</div><div class="data-label">Economically Active</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.employed)}</div><div class="data-label">Employed</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.unemployed)}</div><div class="data-label">Unemployed</div></div>
+        </div>`;
+
+        // Education
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">Education</h4>`;
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value">${census.avg_schooling_years || '—'}</div><div class="data-label">Avg. Schooling (years)</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.illiterate_15plus)}</div><div class="data-label">Illiterate 15+</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.post_basic_education_18plus)}</div><div class="data-label">Post-Basic Education 18+</div></div>
+        </div>`;
+
+        // Health
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">Health Services</h4>`;
+        body += `<div class="data-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="data-card"><div class="data-value">${fmt(census.with_health_services)}</div><div class="data-label">With Health Services</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.no_health_services)}</div><div class="data-label">Without Health Services</div></div>
+        </div>`;
+
+        // Housing deficiencies
+        body += `<h4 style="font-size:0.9rem; color:var(--warning); margin:16px 0 8px;">Housing Deficiencies</h4>`;
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value">${fmt(census.homes_no_water)}</div><div class="data-label">No Water</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.homes_no_electricity)}</div><div class="data-label">No Electricity</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.homes_no_drainage)}</div><div class="data-label">No Drainage</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.homes_dirt_floor)}</div><div class="data-label">Dirt Floor</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.homes_no_services)}</div><div class="data-label">No Services</div></div>
+        </div>`;
+
+        // Indigenous, Afro-Mexican, Disability
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">Indigenous & Cultural Groups</h4>`;
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value">${fmt(census.indigenous_speakers_3plus)}</div><div class="data-label">Indigenous Speakers 3+</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.indigenous_households_pop)}</div><div class="data-label">Indigenous Households</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.afromexican_population)}</div><div class="data-label">Afro-Mexican Pop.</div></div>
+            <div class="data-card"><div class="data-value">${fmt(census.with_disability)}</div><div class="data-label">With Disability</div></div>
+        </div>`;
+    }
+
+    // CONEVAL IRS
+    if (irs && irs.data_available) {
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">Social Lag Index (CONEVAL IRS 2020)</h4>`;
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value">${irs.irs_weighted_mean != null ? irs.irs_weighted_mean.toFixed(4) : '—'}</div><div class="data-label">Weighted Mean Index</div></div>
+            <div class="data-card">
+                <div class="data-label" style="margin-bottom:6px">Predominant Category</div>
+                <span class="badge-indicator ${colorForCategory(irs.irs_predominant_category)}">${irs.irs_predominant_category || '—'}</span>
+            </div>
+        </div>`;
+
+        // Category distribution
+        if (irs.irs_category_distribution) {
+            const cats = Object.entries(irs.irs_category_distribution);
+            body += `<div class="data-grid" style="margin-top:8px;">${cats.map(([cat, count]) => `<div class="data-card"><div class="data-value">${count}</div><div class="data-label">${cat}</div></div>`).join('')}</div>`;
+        }
+
+        // Municipality table
+        if (irs.municipalities && irs.municipalities.length) {
+            body += `<h4 style="font-size:0.85rem; color:var(--text-secondary); margin:16px 0 8px;">Municipality Breakdown</h4>`;
+            body += `<table class="data-table">
+                <thead><tr><th>Municipality</th><th>State</th><th>Population</th><th>IRS Index</th><th>Category</th></tr></thead>
+                <tbody>`;
+            irs.municipalities.forEach(mun => {
+                body += `<tr>
+                    <td>${mun.name}</td>
+                    <td>${mun.state}</td>
+                    <td>${fmt(mun.population)}</td>
+                    <td>${mun.irs_index != null ? mun.irs_index.toFixed(4) : '—'}</td>
+                    <td><span class="badge-indicator ${colorForCategory(mun.irs_category)}" style="font-size:0.72rem;padding:2px 8px;">${mun.irs_category}</span></td>
+                </tr>`;
+            });
+            body += `</tbody></table>`;
+        }
+    }
+
+    return makeSection('social', '👥', '6. Social Context', body);
+}
+
+// ── Section 7: Human Modification & Night Lights ──
+function renderHumanMod(ds) {
+    const hm = ds.human_modification;
+    const nl = ds.night_lights;
+
+    if (!hm && !nl) return makeSection('humanmod', '🏗️', '7. Human Modification & Night Lights', noDataBox());
+
+    let body = '';
+
+    if (hm) {
+        const interp = ghmInterpretation(hm.gHM_mean);
+        body += `<p class="narrative">The Global Human Modification index averages ${hm.gHM_mean != null ? hm.gHM_mean.toFixed(4) : '—'} (max ${hm.gHM_max != null ? hm.gHM_max.toFixed(4) : '—'}) on a 0–1 scale: <em>${interp}</em>.</p>`;
+        body += `<div class="data-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="data-card"><div class="data-value">${hm.gHM_mean != null ? hm.gHM_mean.toFixed(3) : '—'}</div><div class="data-label">Mean gHM</div></div>
+            <div class="data-card"><div class="data-value">${hm.gHM_max != null ? hm.gHM_max.toFixed(3) : '—'}</div><div class="data-label">Max gHM</div></div>
+        </div>`;
+    }
+
+    if (nl) {
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">🌃 Night Lights (VIIRS)</h4>`;
+        body += `<p class="narrative">Mean radiance: ${nl.avg_rad_mean != null ? nl.avg_rad_mean.toFixed(3) : '—'} nW/cm²/sr, maximum: ${nl.avg_rad_max != null ? nl.avg_rad_max.toFixed(2) : '—'} nW/cm²/sr. ${nl.avg_rad_mean < 1 ? 'Very low light pollution — largely dark skies.' : nl.avg_rad_mean < 5 ? 'Low light pollution.' : 'Significant artificial light — urbanized areas present.'}</p>`;
+        body += `<div class="data-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="data-card"><div class="data-value">${nl.avg_rad_mean != null ? nl.avg_rad_mean.toFixed(3) : '—'}</div><div class="data-label">Mean Radiance</div></div>
+            <div class="data-card"><div class="data-value">${nl.avg_rad_max != null ? nl.avg_rad_max.toFixed(2) : '—'}</div><div class="data-label">Max Radiance</div></div>
+        </div>`;
+    }
+
+    return makeSection('humanmod', '🏗️', '7. Human Modification & Night Lights', body);
+}
+
+// ── Section 8: Natural Hazards ──
+function renderHazards(ext) {
+    const cenapred = ext.cenapred_disasters;
+    const hurricane = ext.hurricane_exposure;
+    const slr = ext.sea_level_rise;
+
+    if (!cenapred && !hurricane) return makeSection('hazards', '⚠️', '8. Natural Hazards & Disaster Risk', noDataBox());
+
+    let body = '';
+
+    if (cenapred && cenapred.data_available) {
+        body += `<p class="narrative">Between ${cenapred.period || '2000–2023'}, a total of ${fmt(cenapred.total_events)} hydrometeorological disaster events were recorded, resulting in ${fmt(cenapred.total_deaths)} deaths, ${fmt(cenapred.total_affected)} people affected, and ${fmt(cenapred.total_damage_million_pesos,1)} million pesos in damages.</p>`;
+
+        body += `<div class="data-grid">
+            <div class="data-card"><div class="data-value">${fmt(cenapred.total_events)}</div><div class="data-label">Total Events</div></div>
+            <div class="data-card"><div class="data-value" style="color:var(--danger)">${fmt(cenapred.total_deaths)}</div><div class="data-label">Deaths</div></div>
+            <div class="data-card"><div class="data-value">${fmt(cenapred.total_affected)}</div><div class="data-label">People Affected</div></div>
+            <div class="data-card"><div class="data-value">${fmt(cenapred.total_damage_million_pesos,1)}</div><div class="data-label">Damage (M MXN)</div></div>
+        </div>`;
+
+        // Worst event
+        if (cenapred.worst_event) {
+            const we = cenapred.worst_event;
+            body += `<div style="background:var(--bg-tertiary); border-left:3px solid var(--danger); border-radius:8px; padding:14px; margin:12px 0;">
+                <div style="font-size:0.85rem; font-weight:600; color:var(--danger); margin-bottom:4px;">⚡ Worst Event</div>
+                <div style="font-size:0.82rem; color:var(--text-secondary);">
+                    <strong>${we.type}</strong> (${we.date || '—'}) — ${we.state || '—'}<br>
+                    Deaths: ${fmt(we.deaths)}, Affected: ${fmt(we.affected)}, Damage: ${fmt(we.damage_mdp,1)} M MXN
+                    ${we.description ? `<br><em style="font-size:0.78rem; color:var(--text-muted);">${we.description.substring(0,200)}${we.description.length>200?'…':''}</em>` : ''}
+                </div>
+            </div>`;
+        }
+
+        // Events by type
+        if (cenapred.by_type) {
+            const types = Object.entries(cenapred.by_type).sort((a,b) => b[1].events - a[1].events);
+            body += `<h4 style="font-size:0.85rem; color:var(--text-secondary); margin:16px 0 8px;">Events by Type</h4>`;
+            body += `<table class="data-table">
+                <thead><tr><th>Type</th><th>Events</th><th>Deaths</th><th>Affected</th><th>Damage (M MXN)</th></tr></thead>
+                <tbody>`;
+            types.forEach(([type, d]) => {
+                body += `<tr><td>${type}</td><td>${fmt(d.events)}</td><td>${fmt(d.deaths)}</td><td>${fmt(d.affected)}</td><td>${fmt(d.damage_mdp,1)}</td></tr>`;
+            });
+            body += `</tbody></table>`;
+        }
+    }
+
+    // Hurricane exposure
+    if (hurricane && hurricane.data_available) {
+        body += `<h4 style="font-size:0.9rem; color:var(--accent); margin:16px 0 8px;">🌀 Hurricane Exposure</h4>`;
+        body += `<p class="narrative">${fmt(hurricane.total_cyclones_100km)} tropical cyclone${hurricane.total_cyclones_100km!==1?'s':''} passed within 100km during ${hurricane.period || '1990–2024'}.${hurricane.strongest ? ` The strongest was ${hurricane.strongest.name} (${hurricane.strongest.year}), category ${hurricane.strongest.category}, at ${fmt(hurricane.strongest.distance_km,1)}km distance with max winds of ${hurricane.strongest.max_wind_kt} kt.` : ''}</p>`;
+
+        if (hurricane.by_category) {
+            const cats = Object.entries(hurricane.by_category);
+            body += `<div class="data-grid">${cats.map(([cat, n]) => `<div class="data-card"><div class="data-value">${n}</div><div class="data-label">${cat}</div></div>`).join('')}</div>`;
+        }
+    }
+
+    return makeSection('hazards', '⚠️', '8. Natural Hazards & Disaster Risk', body);
+}
+
+// ── Section 9: Climate Projections ──
+function renderClimateProjections(ds) {
+    const cp = ds.climate_projections;
+    if (!cp || !cp.data_available) return makeSection('climate', '🌡️', '9. Climate Change Projections', noDataBox());
+
+    const scenarios = cp.scenarios || {};
+    const periods = cp.future_periods || ['2011-2040','2041-2070','2071-2100'];
+
+    let body = `<p class="narrative">Climate projections are derived from ${cp.models_used || 3} CMIP6 models (${(cp.model_list||[]).join(', ')}) at ${cp.resolution || '0.25°'} resolution, comparing future periods against the ${cp.baseline_period || '1981-2010'} baseline.</p>`;
+
+    // Build comparison table for each scenario
+    for (const [scenKey, scenLabel] of [['ssp245','SSP2-4.5 (Moderate)'], ['ssp585','SSP5-8.5 (High Emissions)']]) {
+        const scen = scenarios[scenKey];
+        if (!scen) continue;
+
+        body += `<h4 style="font-size:0.9rem; color:${scenKey==='ssp585'?'var(--danger)':'var(--warning)'}; margin:20px 0 8px;">${scenLabel}</h4>`;
+        body += `<table class="data-table">
+            <thead><tr><th>Period</th><th>Temp Change (°C)</th><th>Precip Change</th><th>Tropical Nights</th><th>Drought Risk</th></tr></thead>
+            <tbody>`;
+
+        // Show only 2041-2070 and 2071-2100 to keep it focused
+        for (const period of periods.filter(p => p !== '2011-2040')) {
+            const pd = scen[period];
+            if (!pd) continue;
+            const temp = pd.temperature;
+            const precip = pd.precipitation;
+            const heat = pd.heat_stress;
+            const drought = pd.drought_indicators;
+
+            body += `<tr>
+                <td><strong>${period}</strong></td>
+                <td>${temp ? `+${temp.change_c.toFixed(2)}°C` : '—'}</td>
+                <td>${precip ? `${precip.change_percent >= 0 ? '+' : ''}${precip.change_percent.toFixed(1)}% (${precip.change_mm >= 0 ? '+' : ''}${precip.change_mm.toFixed(0)}mm)` : '—'}</td>
+                <td>${heat ? `+${heat.change_days_estimate} days → ${heat.tropical_nights_future_estimate}/yr` : '—'}</td>
+                <td>${drought ? drought.drought_risk_future : '—'}</td>
+            </tr>`;
+        }
+        body += `</tbody></table>`;
+    }
+
+    // Heat stress highlight
+    const ssp585 = scenarios.ssp585;
+    if (ssp585) {
+        const late = ssp585['2071-2100'];
+        if (late && late.heat_stress) {
+            const hs = late.heat_stress;
+            body += `<div style="background:var(--bg-tertiary); border-left:3px solid var(--danger); border-radius:8px; padding:14px; margin:16px 0;">
+                <div style="font-size:0.85rem; font-weight:600; color:var(--danger); margin-bottom:4px;">🔥 Heat Stress Warning (SSP5-8.5, 2071–2100)</div>
+                <div style="font-size:0.82rem; color:var(--text-secondary);">
+                    Tropical nights could increase by <strong>+${hs.change_days_estimate} days</strong> to ${hs.tropical_nights_future_estimate} nights per year (from baseline of ${hs.tropical_nights_baseline_estimate}). Mean minimum temperature rising to ${hs.mean_min_temp_future_c.toFixed(1)}°C.
+                </div>
+            </div>`;
+        }
+        if (late && late.temperature) {
+            body += `<p class="narrative">Under high emissions (SSP5-8.5), temperatures could rise by +${late.temperature.change_c.toFixed(2)}°C by the end of the century, reaching a mean of ${late.temperature.future_mean_c.toFixed(1)}°C.</p>`;
+        }
+    }
+
+    return makeSection('climate', '🌡️', '9. Climate Change Projections', body);
+}
+
+// ── Charts ──
+function drawAllCharts() {
+    const ds = currentData.datasets || {};
+    drawBarChart('chart-forest-loss', ds.forest?.loss_by_year, '#22c55e', 'Forest Loss (km²)');
+    drawBarChart('chart-fire', ds.fire?.burned_area_km2_by_year, '#ef4444', 'Burned Area (km²)');
+}
+
+function drawBarChart(canvasId, data, color, label) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || !data) return;
+
+    const entries = Object.entries(data).sort((a,b) => a[0]-b[0]);
+    if (!entries.length) return;
+
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const W = rect.width;
+    const H = 180;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.scale(dpr, dpr);
+
+    const padding = {top: 20, right: 16, bottom: 36, left: 50};
+    const chartW = W - padding.left - padding.right;
+    const chartH = H - padding.top - padding.bottom;
+
+    const values = entries.map(e => e[1]);
+    const maxVal = Math.max(...values, 0.01);
+    const barW = Math.max(2, (chartW / entries.length) - 2);
+    const gap = (chartW - barW * entries.length) / (entries.length + 1);
+
+    // Background grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(W - padding.right, y);
+        ctx.stroke();
+    }
+
+    // Y-axis labels
+    ctx.fillStyle = '#64748b';
+    ctx.font = '10px Inter, sans-serif';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartH / 4) * i;
+        const val = maxVal * (1 - i/4);
+        ctx.fillText(val.toFixed(val < 1 ? 2 : 1), padding.left - 6, y + 3);
+    }
+
+    // Bars
+    entries.forEach(([year, val], i) => {
+        const x = padding.left + gap + i * (barW + gap);
+        const barH = (val / maxVal) * chartH;
+        const y = padding.top + chartH - barH;
+
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.85;
+        ctx.beginPath();
+        const r = Math.min(3, barW/2);
+        ctx.moveTo(x, y + r);
+        ctx.arcTo(x, y, x + barW, y, r);
+        ctx.arcTo(x + barW, y, x + barW, y + barH, r);
+        ctx.lineTo(x + barW, padding.top + chartH);
+        ctx.lineTo(x, padding.top + chartH);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // X-axis labels (show every 2-3 years if many)
+        const step = entries.length > 15 ? 3 : entries.length > 8 ? 2 : 1;
+        if (i % step === 0 || i === entries.length - 1) {
+            ctx.fillStyle = '#64748b';
+            ctx.font = '9px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(year.toString().slice(-2), x + barW/2, H - padding.bottom + 14);
+        }
+    });
+
+    // Label
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(label, padding.left, 12);
+}
+</script>
+</body>
+</html>

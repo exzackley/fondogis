@@ -437,147 +437,155 @@
       ]
     },
     "cenapred_disasters": {
-      "filter": "Hidrometeorológico only",
-      "period": "2000-2023",
       "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "period": "2000-2023",
+      "filter": "Hidrometeorológico only",
+      "match_method": "municipality_overlap",
+      "municipality_matched_events": 3,
+      "state_matched_events": 39,
+      "total_events": 42,
+      "total_deaths": 73,
+      "total_affected": 431686,
+      "total_houses_damaged": 39201,
+      "total_damage_million_pesos": 9575.02,
       "by_type": {
         "Lluvias": {
-          "deaths": 4,
           "events": 19,
+          "deaths": 4,
           "affected": 259288,
           "damage_mdp": 1175.31
         },
-        "Sequía": {
-          "deaths": 0,
-          "events": 2,
-          "affected": 53817,
-          "damage_mdp": 76.9
-        },
-        "Inundación": {
-          "deaths": 0,
-          "events": 2,
-          "affected": 1656,
-          "damage_mdp": 159.26
-        },
-        "Mar de fondo": {
-          "deaths": 1,
-          "events": 1,
-          "affected": 10624,
-          "damage_mdp": 0.0
+        "Temperatura extrema": {
+          "events": 8,
+          "deaths": 13,
+          "affected": 121,
+          "damage_mdp": 10.52
         },
         "Ciclón tropical": {
-          "deaths": 49,
           "events": 5,
+          "deaths": 49,
           "affected": 106168,
           "damage_mdp": 8153.04
         },
         "Bajas temperaturas": {
-          "deaths": 6,
           "events": 5,
+          "deaths": 6,
           "affected": 12,
           "damage_mdp": 0.0
         },
-        "Temperatura extrema": {
-          "deaths": 13,
-          "events": 8,
-          "affected": 121,
-          "damage_mdp": 10.52
+        "Sequía": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 53817,
+          "damage_mdp": 76.9
+        },
+        "Inundación": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 1656,
+          "damage_mdp": 159.26
+        },
+        "Mar de fondo": {
+          "events": 1,
+          "deaths": 1,
+          "affected": 10624,
+          "damage_mdp": 0.0
         }
       },
       "by_year": {
         "2001": {
-          "deaths": 23,
           "events": 1,
+          "deaths": 23,
           "affected": 2100,
           "damage_mdp": 10.6
         },
         "2003": {
-          "deaths": 4,
           "events": 6,
+          "deaths": 4,
           "affected": 152674,
           "damage_mdp": 87.79
         },
         "2004": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 485,
           "damage_mdp": 0.39
         },
         "2005": {
-          "deaths": 5,
           "events": 2,
+          "deaths": 5,
           "affected": 11149,
           "damage_mdp": 1781.6
         },
         "2007": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 42668,
           "damage_mdp": 52.3
         },
         "2008": {
-          "deaths": 2,
           "events": 1,
+          "deaths": 2,
           "affected": 2,
           "damage_mdp": 0.0
         },
         "2013": {
-          "deaths": 10,
           "events": 1,
+          "deaths": 10,
           "affected": 78928,
           "damage_mdp": 0.0
         },
         "2014": {
-          "deaths": 0,
           "events": 3,
+          "deaths": 0,
           "affected": 74308,
           "damage_mdp": 33.71
         },
         "2015": {
-          "deaths": 1,
           "events": 1,
+          "deaths": 1,
           "affected": 10624,
           "damage_mdp": 0.0
         },
         "2017": {
-          "deaths": 2,
           "events": 1,
+          "deaths": 2,
           "affected": 2,
           "damage_mdp": 0.0
         },
         "2018": {
-          "deaths": 0,
           "events": 8,
+          "deaths": 0,
           "affected": 5,
           "damage_mdp": 232.46
         },
         "2019": {
-          "deaths": 2,
           "events": 2,
+          "deaths": 2,
           "affected": 49,
           "damage_mdp": 20.16
         },
         "2020": {
-          "deaths": 0,
           "events": 8,
+          "deaths": 0,
           "affected": 33480,
           "damage_mdp": 970.58
         },
         "2021": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 2,
           "damage_mdp": 0.0
         },
         "2022": {
-          "deaths": 12,
           "events": 3,
+          "deaths": 12,
           "affected": 25150,
           "damage_mdp": 6385.44
         },
         "2023": {
-          "deaths": 12,
           "events": 2,
+          "deaths": 12,
           "affected": 60,
           "damage_mdp": 0.0
         }
@@ -585,24 +593,16 @@
       "worst_event": {
         "date": "2001-10-07",
         "type": "Ciclón tropical",
-        "state": "Oaxaca",
+        "description": "Los efectos del Huracan Iris, fue la muerte de 23 personas, 2100 personas afectadas, 884 viviendas afectadas, así como dos escuelas y un area decultivo de 240 ha.afectadas",
         "deaths": 23,
         "affected": 2100,
-        "damage_mdp": 10.6,
-        "description": "Los efectos del Huracan Iris, fue la muerte de 23 personas, 2100 personas afectadas, 884 viviendas afectadas, así como dos escuelas y un area decultivo de 240 ha.afectadas",
         "houses_damaged": 884,
+        "damage_mdp": 10.6,
+        "state": "Oaxaca",
         "municipalities": "Varios Municipios"
       },
-      "extracted_at": "2026-02-15T20:14:48.717127",
-      "match_method": "municipality_overlap",
-      "total_deaths": 73,
-      "total_events": 42,
       "data_available": true,
-      "total_affected": 431686,
-      "state_matched_events": 39,
-      "total_houses_damaged": 39201,
-      "total_damage_million_pesos": 9575.02,
-      "municipality_matched_events": 3
+      "extracted_at": "2026-02-16T01:18:46.534808"
     },
     "hurricane_exposure": {
       "period": "1990-2024",

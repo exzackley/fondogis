@@ -15,6 +15,7 @@ Output dataset_type: ndvi_trend
 
 Usage:
     python3 add_ndvi_trend.py              # Process all coastal ANPs
+    python3 add_ndvi_trend.py --all        # Process ALL 227 ANPs (not just coastal)
     python3 add_ndvi_trend.py --test       # Test with first 3 coastal ANPs
     python3 add_ndvi_trend.py --no-db      # JSON-only mode (no database)
     python3 add_ndvi_trend.py "sian_ka_an" # Process single ANP
@@ -43,6 +44,7 @@ except ImportError:
 
 DATA_DIR = 'anp_data'
 COASTAL_ANPS_FILE = 'coastal_anps_subset.json'
+ALL_ANPS_FILE = 'all_anps_subset.json'
 
 # GEE Dataset
 MODIS_NDVI = 'MODIS/061/MOD13A2'
@@ -285,10 +287,14 @@ def process_anp(anp_id, use_database=True):
 
     name = anp_data.get('metadata', {}).get('name', anp_id)
 
-    # Check if already has ndvi_trend data
+    # Check if already has ndvi_trend data (in datasets or external_data)
     existing = anp_data.get('datasets', {}).get('ndvi_trend', {})
     if existing and existing.get('data_available') and 'error' not in existing:
-        print(f"  {name}: Already has NDVI trend data, skipping")
+        print(f"  Skipping {anp_id} — already has ndvi_trend")
+        return 'skipped'
+    existing_ext = anp_data.get('external_data', {}).get('ndvi_trend', {})
+    if existing_ext and existing_ext.get('data_available') and 'error' not in existing_ext:
+        print(f"  Skipping {anp_id} — already has ndvi_trend")
         return 'skipped'
 
     # Get geometry
@@ -355,6 +361,7 @@ def main():
     args = sys.argv[1:]
     use_database = HAS_DATABASE
     test_mode = False
+    all_mode = False
     single_anp = None
 
     if '--no-db' in args:
@@ -366,12 +373,23 @@ def main():
         test_mode = True
         args.remove('--test')
 
+    if '--all' in args:
+        all_mode = True
+        args.remove('--all')
+
     if args:
         single_anp = args[0]
 
-    # Load coastal ANP list
-    coastal_ids = load_coastal_anps()
-    print(f"Loaded {len(coastal_ids)} coastal ANPs from {COASTAL_ANPS_FILE}")
+    # Load ANP list
+    if all_mode:
+        anps_file = ALL_ANPS_FILE
+    else:
+        anps_file = COASTAL_ANPS_FILE
+
+    with open(anps_file, 'r', encoding='utf-8') as f:
+        anps_data = json.load(f)
+    coastal_ids = anps_data.get('anp_ids_with_data', anps_data.get('anp_ids', []))
+    print(f"Loaded {len(coastal_ids)} ANPs from {anps_file}")
 
     if single_anp:
         if single_anp in coastal_ids:
@@ -402,7 +420,7 @@ def main():
 
     for i, anp_id in enumerate(coastal_ids, 1):
         if i > 1:
-            time.sleep(1.0)
+            time.sleep(2.0)
 
         result = process_anp(anp_id, use_database=use_database)
         if result == 'success':

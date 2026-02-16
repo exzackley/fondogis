@@ -497,165 +497,173 @@
       ]
     },
     "cenapred_disasters": {
-      "filter": "Hidrometeorológico only",
-      "period": "2000-2023",
       "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "period": "2000-2023",
+      "filter": "Hidrometeorológico only",
+      "match_method": "municipality_overlap",
+      "municipality_matched_events": 16,
+      "state_matched_events": 17,
+      "total_events": 33,
+      "total_deaths": 15,
+      "total_affected": 415157,
+      "total_houses_damaged": 9614,
+      "total_damage_million_pesos": 3461.98,
       "by_type": {
+        "Temperatura extrema": {
+          "events": 13,
+          "deaths": 6,
+          "affected": 107,
+          "damage_mdp": 8.41
+        },
         "Lluvias": {
-          "deaths": 3,
           "events": 11,
+          "deaths": 3,
           "affected": 326394,
           "damage_mdp": 2346.41
         },
-        "Sequía": {
-          "deaths": 0,
-          "events": 2,
-          "affected": 20318,
-          "damage_mdp": 27.12
-        },
         "Fuertes vientos": {
-          "deaths": 5,
           "events": 3,
+          "deaths": 5,
           "affected": 12,
           "damage_mdp": 0.0
         },
         "Ciclón tropical": {
-          "deaths": 1,
           "events": 3,
+          "deaths": 1,
           "affected": 68326,
           "damage_mdp": 1080.03
         },
-        "Bajas temperaturas": {
+        "Sequía": {
+          "events": 2,
           "deaths": 0,
+          "affected": 20318,
+          "damage_mdp": 27.12
+        },
+        "Bajas temperaturas": {
           "events": 1,
+          "deaths": 0,
           "affected": 0,
           "damage_mdp": 0.0
-        },
-        "Temperatura extrema": {
-          "deaths": 6,
-          "events": 13,
-          "affected": 107,
-          "damage_mdp": 8.41
         }
       },
       "by_year": {
         "2002": {
-          "deaths": 1,
           "events": 2,
+          "deaths": 1,
           "affected": 309532,
           "damage_mdp": 2342.0
         },
         "2004": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 75,
           "damage_mdp": 0.06
         },
         "2005": {
-          "deaths": 0,
           "events": 3,
+          "deaths": 0,
           "affected": 13699,
           "damage_mdp": 7.4
         },
         "2007": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 9169,
           "damage_mdp": 19.72
         },
         "2008": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 35,
           "damage_mdp": 0.08
         },
         "2009": {
-          "deaths": 1,
           "events": 1,
+          "deaths": 1,
           "affected": 4,
           "damage_mdp": 0.0
         },
         "2010": {
-          "deaths": 0,
           "events": 2,
+          "deaths": 0,
           "affected": 14052,
           "damage_mdp": 0.91
         },
         "2011": {
-          "deaths": 3,
           "events": 2,
+          "deaths": 3,
           "affected": 7,
           "damage_mdp": 3.36
         },
         "2012": {
-          "deaths": 0,
           "events": 2,
+          "deaths": 0,
           "affected": 15144,
           "damage_mdp": 326.25
         },
         "2013": {
-          "deaths": 1,
           "events": 1,
+          "deaths": 1,
           "affected": 0,
           "damage_mdp": 0.0
         },
         "2014": {
-          "deaths": 0,
           "events": 2,
+          "deaths": 0,
           "affected": 24805,
           "damage_mdp": 157.0
         },
         "2015": {
-          "deaths": 2,
           "events": 2,
+          "deaths": 2,
           "affected": 62,
           "damage_mdp": 0.0
         },
         "2016": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 26,
           "damage_mdp": 0.0
         },
         "2017": {
-          "deaths": 2,
           "events": 2,
+          "deaths": 2,
           "affected": 3,
           "damage_mdp": 0.0
         },
         "2018": {
-          "deaths": 0,
           "events": 3,
+          "deaths": 0,
           "affected": 1,
           "damage_mdp": 8.41
         },
         "2019": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 3,
           "damage_mdp": 0.0
         },
         "2020": {
-          "deaths": 2,
           "events": 3,
+          "deaths": 2,
           "affected": 28486,
           "damage_mdp": 596.79
         },
         "2021": {
-          "deaths": 0,
           "events": 1,
+          "deaths": 0,
           "affected": 8,
           "damage_mdp": 0.0
         },
         "2022": {
-          "deaths": 1,
           "events": 1,
+          "deaths": 1,
           "affected": 9,
           "damage_mdp": 0.0
         },
         "2023": {
-          "deaths": 2,
           "events": 1,
+          "deaths": 2,
           "affected": 37,
           "damage_mdp": 0.0
         }
@@ -663,24 +671,16 @@
       "worst_event": {
         "date": "2011-05-02",
         "type": "Fuertes vientos",
-        "state": "Campeche",
+        "description": "Debilitamiento de la plataforma Trinity, Personal del Centro de Coordinacion y Apoyo a Emergencias de Petroleos Mexicanos informo de los daños humanos ocasionados por este evento: 6 personas rescatadas con vida.",
         "deaths": 3,
         "affected": 7,
-        "damage_mdp": 0.0,
-        "description": "Debilitamiento de la plataforma Trinity, Personal del Centro de Coordinacion y Apoyo a Emergencias de Petroleos Mexicanos informo de los daños humanos ocasionados por este evento: 6 personas rescatadas con vida.",
         "houses_damaged": 0,
+        "damage_mdp": 0.0,
+        "state": "Campeche",
         "municipalities": "Sonda Campeche"
       },
-      "extracted_at": "2026-02-15T20:14:48.079627",
-      "match_method": "municipality_overlap",
-      "total_deaths": 15,
-      "total_events": 33,
       "data_available": true,
-      "total_affected": 415157,
-      "state_matched_events": 17,
-      "total_houses_damaged": 9614,
-      "total_damage_million_pesos": 3461.98,
-      "municipality_matched_events": 16
+      "extracted_at": "2026-02-16T01:18:46.366971"
     },
     "hurricane_exposure": {
       "period": "1990-2024",

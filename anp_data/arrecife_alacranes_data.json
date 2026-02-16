@@ -413,6 +413,24 @@
       },
       "extracted_at": "2026-01-05T03:31:59.820584",
       "data_available": true
+    },
+    "ndvi_trend": {
+      "data_available": false,
+      "extracted_at": "2026-02-16T01:19:08.371647",
+      "source": "MODIS MOD13A2 v061",
+      "resolution_m": 1000,
+      "error": "No NDVI data available for this area"
+    },
+    "soil": {
+      "source": "OpenLandMap",
+      "resolution": "250m",
+      "organic_carbon_g_kg": null,
+      "ph_h2o": null
+    },
+    "surface_water": {
+      "source": "JRC Global Surface Water",
+      "resolution": "30m",
+      "permanent_water_km2": 2224.94
     }
   },
   "external_data": {
@@ -1278,6 +1296,174 @@
         "note": "Citizen science data - effort varies by accessibility"
       },
       "extracted_at": "2026-01-03T11:42:14.655030"
+    },
+    "cenapred_disasters": {
+      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "period": "2000-2023",
+      "filter": "Hidrometeorológico only",
+      "match_method": "state_level",
+      "municipality_matched_events": 0,
+      "state_matched_events": 35,
+      "total_events": 35,
+      "total_deaths": 14,
+      "total_affected": 1580804,
+      "total_houses_damaged": 106416,
+      "total_damage_million_pesos": 9107.8,
+      "by_type": {
+        "Lluvias": {
+          "events": 13,
+          "deaths": 3,
+          "affected": 1390636,
+          "damage_mdp": 6546.67
+        },
+        "Temperatura extrema": {
+          "events": 10,
+          "deaths": 11,
+          "affected": 180,
+          "damage_mdp": 8.36
+        },
+        "Ciclón tropical": {
+          "events": 5,
+          "deaths": 0,
+          "affected": 176254,
+          "damage_mdp": 2521.39
+        },
+        "Sequía": {
+          "events": 3,
+          "deaths": 0,
+          "affected": 12720,
+          "damage_mdp": 30.34
+        },
+        "Fuertes vientos": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 24,
+          "damage_mdp": 0.0
+        },
+        "Tormenta severa": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 820,
+          "damage_mdp": 0.69
+        },
+        "Tormenta tropical": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 170,
+          "damage_mdp": 0.35
+        }
+      },
+      "by_year": {
+        "2002": {
+          "events": 4,
+          "deaths": 3,
+          "affected": 1381615,
+          "damage_mdp": 6535.79
+        },
+        "2003": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 650,
+          "damage_mdp": 0.0
+        },
+        "2004": {
+          "events": 3,
+          "deaths": 0,
+          "affected": 430,
+          "damage_mdp": 0.38
+        },
+        "2005": {
+          "events": 3,
+          "deaths": 0,
+          "affected": 820,
+          "damage_mdp": 1535.98
+        },
+        "2007": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 0,
+          "damage_mdp": 141.83
+        },
+        "2008": {
+          "events": 2,
+          "deaths": 0,
+          "affected": 11238,
+          "damage_mdp": 30.44
+        },
+        "2009": {
+          "events": 3,
+          "deaths": 0,
+          "affected": 1483,
+          "damage_mdp": 0.0
+        },
+        "2012": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 12,
+          "damage_mdp": 0.0
+        },
+        "2014": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 3,
+          "damage_mdp": 0.0
+        },
+        "2015": {
+          "events": 1,
+          "deaths": 1,
+          "affected": 5,
+          "damage_mdp": 0.0
+        },
+        "2018": {
+          "events": 3,
+          "deaths": 0,
+          "affected": 1,
+          "damage_mdp": 8.36
+        },
+        "2019": {
+          "events": 1,
+          "deaths": 1,
+          "affected": 18,
+          "damage_mdp": 0.0
+        },
+        "2020": {
+          "events": 5,
+          "deaths": 1,
+          "affected": 182708,
+          "damage_mdp": 854.46
+        },
+        "2021": {
+          "events": 3,
+          "deaths": 2,
+          "affected": 1683,
+          "damage_mdp": 0.55
+        },
+        "2022": {
+          "events": 1,
+          "deaths": 0,
+          "affected": 17,
+          "damage_mdp": 0.0
+        },
+        "2023": {
+          "events": 2,
+          "deaths": 6,
+          "affected": 121,
+          "damage_mdp": 0.0
+        }
+      },
+      "worst_event": {
+        "date": "2023-01-01",
+        "type": "Temperatura extrema",
+        "description": "En 2023 se presentaron 82 casos por golpe de calor, 20 por deshidratación  y 1 por quemaduras.6  persona perdió la vida  por golpe de calor",
+        "deaths": 6,
+        "affected": 109,
+        "houses_damaged": 0,
+        "damage_mdp": 0.0,
+        "state": "Yucatán",
+        "municipalities": "Varios Municipios"
+      },
+      "data_available": true,
+      "extracted_at": "2026-02-16T01:18:45.880888"
     }
   }
 }
