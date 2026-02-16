@@ -480,9 +480,9 @@
                     <td class="num">${formatNumber(waterStress.drought_risk, 2, !hasWaterStress)}</td>
                     <td class="num">${formatNumber(meanElev, 0)}</td>
                     <td class="num">${burnedAreaDisplay}</td>
-                    <td class="num">${formatNumber(datasets.sea_level_rise?.observed_trend_mm_per_year, 1)}</td>
-                    <td class="num">${formatNumber(datasets.sea_level_rise?.projected_slr_2050_cm, 1)}</td>
-                    <td class="num">${formatNumber(datasets.sea_level_rise?.inundation_pct_at_1m, 1)}</td>
+                    <td class="num">${formatNumber((external.sea_level_rise || datasets.sea_level_rise)?.observed_trend_mm_per_year, 1)}</td>
+                    <td class="num">${formatNumber((external.sea_level_rise || datasets.sea_level_rise)?.projected_slr_2050_cm, 1)}</td>
+                    <td class="num">${formatNumber((external.sea_level_rise || datasets.sea_level_rise)?.inundation_pct_at_1m, 1)}</td>
                 `;
             }
         }
