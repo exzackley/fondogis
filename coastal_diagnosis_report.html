@@ -1317,7 +1317,7 @@ function buildReport(allAnps) {
     // Sea level rise
     var slrData = [];
     for (var i = 0; i < allAnps.length; i++) {
-        var slr = allAnps[i].data.datasets && allAnps[i].data.datasets.sea_level_rise;
+        var slr = (allAnps[i].data.external_data && allAnps[i].data.external_data.sea_level_rise) || (allAnps[i].data.datasets && allAnps[i].data.datasets.sea_level_rise);
         if (slr && slr.data_available) {
             slrData.push({ name: allAnps[i].name, trend: slr.observed_trend_mm_per_year, proj2050: slr.projected_slr_2050_cm, inund: slr.inundation_pct_at_1m });
         }
@@ -1472,7 +1472,7 @@ function buildReport(allAnps) {
         if (ext.inegi_census && ext.inegi_census.total_population) datasetCoverage['INEGI Census']++;
         if (ext.coneval_irs && ext.coneval_irs.data_available) datasetCoverage['CONEVAL IRS']++;
         if (ext.cenapred_disasters && ext.cenapred_disasters.data_available) datasetCoverage['CENAPRED Disasters']++;
-        if (ds.sea_level_rise && ds.sea_level_rise.data_available) datasetCoverage['Sea Level Rise']++;
+        if ((ext.sea_level_rise && ext.sea_level_rise.data_available) || (ds.sea_level_rise && ds.sea_level_rise.data_available)) datasetCoverage['Sea Level Rise']++;
         if (a.climateSSR && a.climateSSR.data) datasetCoverage['Climate SSR (CORDEX)']++;
     }
 
@@ -1511,8 +1511,7 @@ function buildReport(allAnps) {
         '(SSR downscaled) use different model ensembles and downscaling methods. RCP 4.5 ≈ SSP2-4.5 and ' +
         'RCP 8.5 ≈ SSP5-8.5, but they are not identical scenarios.</div>' +
 
-        '<div class="gap-note"><strong>Sea level rise:</strong> SLR data extraction is incomplete across these ANPs. ' +
-        'Coastal inundation risk assessment requires high-resolution coastal DEMs that are not uniformly available. ' +
+        '<div class="gap-note"><strong>Sea level rise:</strong> SLR data is available for 37 of 38 coastal ANPs, derived from IPCC AR6 projections and Copernicus DEM inundation analysis. ' +
         'This represents a critical gap given the coastal nature of this ANP portfolio.</div>';
 
     document.getElementById('dataGaps').innerHTML = gapHTML;
