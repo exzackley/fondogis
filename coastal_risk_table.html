@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coastal ANPs — CENAPRED & Sea Level Rise Risk Table</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: #1a5632;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            color: #664d03;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 1100px;
+        }
+        thead th {
+            background: #1a5632;
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+        thead th:hover { background: #237a45; }
+        thead th .sort-arrow { font-size: 0.7rem; margin-left: 4px; opacity: 0.6; }
+        thead th.sorted .sort-arrow { opacity: 1; }
+        tbody tr:nth-child(even) { background: #f8f9fa; }
+        tbody tr:hover { background: #e8f5e9; }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        td.name { font-weight: 500; min-width: 200px; }
+        td.number { text-align: right; font-variant-numeric: tabular-nums; }
+        td.types { font-size: 0.78rem; color: #555; max-width: 300px; }
+        .zero { color: #999; }
+        .high-risk { color: #d32f2f; font-weight: 600; }
+        .medium-risk { color: #f57c00; font-weight: 500; }
+        .no-data { color: #999; font-style: italic; }
+        .totals td { font-weight: 700; background: #e8f5e9; border-top: 2px solid #1a5632; }
+        .download-bar {
+            margin-top: 12px;
+            text-align: right;
+        }
+        .download-bar button {
+            background: #1a5632;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .download-bar button:hover { background: #237a45; }
+    </style>
+</head>
+<body>
+    <h1>🌊 Coastal ANPs — Disaster Risk & Sea Level Rise</h1>
+    <p class="subtitle">38 Coastal Protected Areas of Mexico — CENAPRED + IPCC AR6 + Copernicus DEM</p>
+
+    <div class="note">
+        <strong>Note:</strong> CENAPRED events use <em>municipality-only matching</em> — only events confirmed in the ANP's municipalities are counted.
+        ANPs without CONEVAL municipality data show 0 events. "Events 2020–2023" is the recent subset; Deaths/Affected/Cost are full period (2000–2023).
+        Type breakdown shows the full 2000–2023 period.
+    </div>
+
+    <div class="table-wrapper">
+        <table id="risk-table">
+            <thead>
+                <tr>
+                    <th data-col="name">Protected Area <span class="sort-arrow">▼</span></th>
+                    <th data-col="events_2020_2023">Events<br>2020–2023 <span class="sort-arrow">▼</span></th>
+                    <th data-col="type_breakdown">Events by Type (2000–2023) <span class="sort-arrow">▼</span></th>
+                    <th data-col="deaths_total">Deaths<br>(2000–2023) <span class="sort-arrow">▼</span></th>
+                    <th data-col="affected_total">Affected<br>(2000–2023) <span class="sort-arrow">▼</span></th>
+                    <th data-col="damage_total_mdp">Damage<br>(M MXN) <span class="sort-arrow">▼</span></th>
+                    <th data-col="slr_mm_yr">SLR Rate<br>(mm/yr) <span class="sort-arrow">▼</span></th>
+                    <th data-col="inundation_pct">Inundation<br>Risk (% &lt;1m) <span class="sort-arrow">▼</span></th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+            <tfoot id="table-foot"></tfoot>
+        </table>
+    </div>
+
+    <div class="download-bar">
+        <button onclick="downloadCSV()">📥 Download CSV</button>
+    </div>
+
+    <script>
+    let tableData = [];
+    let sortCol = 'name';
+    let sortAsc = true;
+
+    async function loadData() {
+        // Load from individual ANP files via the pre-generated JSON
+        const resp = await fetch('coastal_cenapred_slr_table.json');
+        tableData = await resp.json();
+        renderTable();
+    }
+
+    function fmt(n) {
+        if (n === null || n === undefined) return '<span class="no-data">—</span>';
+        if (typeof n === 'number') return n.toLocaleString('es-MX');
+        return n;
+    }
+
+    function fmtDec(n, decimals=1) {
+        if (n === null || n === undefined) return '<span class="no-data">—</span>';
+        return n.toFixed(decimals);
+    }
+
+    function riskClass(val, high, medium) {
+        if (val === null || val === undefined) return 'no-data';
+        if (val >= high) return 'high-risk';
+        if (val >= medium) return 'medium-risk';
+        return '';
+    }
+
+    function renderTable() {
+        // Sort
+        const data = [...tableData].sort((a, b) => {
+            let va = a[sortCol], vb = b[sortCol];
+            if (va === null || va === undefined) va = sortAsc ? Infinity : -Infinity;
+            if (vb === null || vb === undefined) vb = sortAsc ? Infinity : -Infinity;
+            if (typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+            return sortAsc ? va - vb : vb - va;
+        });
+
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = data.map(r => `
+            <tr>
+                <td class="name">${r.name}</td>
+                <td class="number ${r.events_2020_2023 === 0 ? 'zero' : ''}">${fmt(r.events_2020_2023)}</td>
+                <td class="types">${r.type_breakdown === 'No data' ? '<span class="no-data">No municipality data</span>' : r.type_breakdown}</td>
+                <td class="number ${riskClass(r.deaths_total, 20, 5)}">${fmt(r.deaths_total)}</td>
+                <td class="number">${fmt(r.affected_total)}</td>
+                <td class="number">${r.damage_total_mdp ? '$' + fmt(Math.round(r.damage_total_mdp)) : '<span class="zero">$0</span>'}</td>
+                <td class="number ${riskClass(r.slr_mm_yr, 5, 3)}">${fmtDec(r.slr_mm_yr)}</td>
+                <td class="number ${riskClass(r.inundation_pct, 50, 20)}">${fmtDec(r.inundation_pct)}%</td>
+            </tr>
+        `).join('');
+
+        // Totals row
+        const totals = data.reduce((acc, r) => {
+            acc.events += r.events_2020_2023 || 0;
+            acc.deaths += r.deaths_total || 0;
+            acc.affected += r.affected_total || 0;
+            acc.damage += r.damage_total_mdp || 0;
+            return acc;
+        }, { events: 0, deaths: 0, affected: 0, damage: 0 });
+
+        document.getElementById('table-foot').innerHTML = `
+            <tr class="totals">
+                <td>TOTAL (38 Coastal ANPs)</td>
+                <td class="number">${fmt(totals.events)}</td>
+                <td></td>
+                <td class="number">${fmt(totals.deaths)}</td>
+                <td class="number">${fmt(totals.affected)}</td>
+                <td class="number">$${fmt(Math.round(totals.damage))}</td>
+                <td></td>
+                <td></td>
+            </tr>
+        `;
+
+        // Update sort arrows
+        document.querySelectorAll('thead th').forEach(th => {
+            th.classList.toggle('sorted', th.dataset.col === sortCol);
+            const arrow = th.querySelector('.sort-arrow');
+            if (th.dataset.col === sortCol) {
+                arrow.textContent = sortAsc ? '▲' : '▼';
+            } else {
+                arrow.textContent = '▼';
+            }
+        });
+    }
+
+    // Sort on header click
+    document.querySelectorAll('thead th').forEach(th => {
+        th.addEventListener('click', () => {
+            const col = th.dataset.col;
+            if (sortCol === col) {
+                sortAsc = !sortAsc;
+            } else {
+                sortCol = col;
+                sortAsc = col === 'name' ? true : false; // numbers default descending
+            }
+            renderTable();
+        });
+    });
+
+    function downloadCSV() {
+        const headers = ['Protected Area', 'Events 2020-2023', 'Events by Type (2000-2023)', 'Deaths (2000-2023)', 'Affected (2000-2023)', 'Damage (M MXN)', 'SLR Rate (mm/yr)', 'Inundation Risk (% <1m)'];
+        const csvRows = [headers.join(',')];
+        for (const r of tableData) {
+            csvRows.push([
+                `"${r.name}"`,
+                r.events_2020_2023,
+                `"${r.type_breakdown}"`,
+                r.deaths_total,
+                r.affected_total,
+                r.damage_total_mdp || 0,
+                r.slr_mm_yr !== null ? r.slr_mm_yr : '',
+                r.inundation_pct !== null ? r.inundation_pct : ''
+            ].join(','));
+        }
+        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'coastal_anps_risk_table.csv';
+        a.click();
+    }
+
+    loadData();
+    </script>
+</body>
+</html>
