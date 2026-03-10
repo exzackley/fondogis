@@ -440,33 +440,135 @@
         "2071-2100"
       ],
       "baseline_period": "1981-2010"
-    },
-    "ndvi_trend": {
-      "data_available": true,
-      "extracted_at": "2026-02-16T01:21:40.374319",
-      "source": "MODIS MOD13A2 v061",
-      "resolution_m": 1000,
-      "mean_ndvi_2000_2005": 0.1023,
-      "mean_ndvi_2018_2023": 0.0947,
-      "trend_per_year": -0.000326,
-      "trend_per_decade": -0.0033,
-      "trend_direction": "stable",
-      "period": "2000-2023",
-      "n_years": 24
-    },
-    "soil": {
-      "source": "OpenLandMap",
-      "resolution": "250m",
-      "organic_carbon_g_kg": 7.191205259801559,
-      "ph_h2o": 7.840664047162223
-    },
-    "surface_water": {
-      "source": "JRC Global Surface Water",
-      "resolution": "30m",
-      "permanent_water_km2": 601.29
     }
   },
   "external_data": {
+    "cenapred_disasters": {
+      "filter": "Hidrometeorológico only",
+      "period": "2000-2023",
+      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "by_type": {
+        "Helada": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 59114,
+          "damage_mdp": 2.26
+        },
+        "Lluvias": {
+          "deaths": 0,
+          "events": 3,
+          "affected": 24864,
+          "damage_mdp": 34.37
+        },
+        "Ciclón tropical": {
+          "deaths": 26,
+          "events": 15,
+          "affected": 1374701,
+          "damage_mdp": 31259.87
+        },
+        "Bajas temperaturas": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 4831,
+          "damage_mdp": 1.65
+        }
+      },
+      "by_year": {
+        "2001": {
+          "deaths": 2,
+          "events": 1,
+          "affected": 6000,
+          "damage_mdp": 850.15
+        },
+        "2006": {
+          "deaths": 5,
+          "events": 1,
+          "affected": 13090,
+          "damage_mdp": 984.85
+        },
+        "2008": {
+          "deaths": 1,
+          "events": 1,
+          "affected": 1,
+          "damage_mdp": 0.0
+        },
+        "2009": {
+          "deaths": 1,
+          "events": 1,
+          "affected": 17505,
+          "damage_mdp": 1333.0
+        },
+        "2012": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 19268,
+          "damage_mdp": 1833.72
+        },
+        "2013": {
+          "deaths": 5,
+          "events": 2,
+          "affected": 42563,
+          "damage_mdp": 44.81
+        },
+        "2014": {
+          "deaths": 6,
+          "events": 3,
+          "affected": 656763,
+          "damage_mdp": 24339.99
+        },
+        "2015": {
+          "deaths": 0,
+          "events": 2,
+          "affected": 10199,
+          "damage_mdp": 11.27
+        },
+        "2016": {
+          "deaths": 0,
+          "events": 2,
+          "affected": 696140,
+          "damage_mdp": 2.26
+        },
+        "2017": {
+          "deaths": 6,
+          "events": 1,
+          "affected": 1400,
+          "damage_mdp": 313.1
+        },
+        "2022": {
+          "deaths": 0,
+          "events": 4,
+          "affected": 581,
+          "damage_mdp": 1157.64
+        },
+        "2023": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 0,
+          "damage_mdp": 427.37
+        }
+      },
+      "worst_event": {
+        "date": "2014-09-14",
+        "type": "Ciclón tropical",
+        "state": "Baja California Sur",
+        "deaths": 6,
+        "affected": 635341,
+        "damage_mdp": 24133.167,
+        "description": "El huracán Odile  ha sido uno de los más intenso al tocar tierra sobre la península de Baja California afectó principalmente a la actividad turística del municipio de los Cabos,  provocó la muerte de 6 personas, afectó 5,046 viviendas, 923 escuelas, 14 unidades de salud. ",
+        "houses_damaged": 5046,
+        "municipalities": "La Paz, Loreto, Los Cabos, Mulege y Comondu"
+      },
+      "extracted_at": "2026-03-10T15:18:40.715653",
+      "match_method": "municipality_overlap",
+      "total_deaths": 26,
+      "total_events": 20,
+      "data_available": true,
+      "total_affected": 1463510,
+      "state_matched_events": 0,
+      "total_houses_damaged": 23457,
+      "total_damage_million_pesos": 31298.15,
+      "municipality_matched_events": 20
+    },
     "gbif_species": {
       "source": "GBIF (Global Biodiversity Information Facility)",
       "query_date": "2026-01-02T23:35:09.259844",
@@ -1419,210 +1521,6 @@
         "Actinopterygii": 10
       },
       "total_observations": 11632
-    },
-    "cenapred_disasters": {
-      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
-      "period": "2000-2023",
-      "filter": "Hidrometeorológico only",
-      "match_method": "municipality_overlap",
-      "municipality_matched_events": 20,
-      "state_matched_events": 57,
-      "total_events": 77,
-      "total_deaths": 284,
-      "total_affected": 1507176,
-      "total_houses_damaged": 26181,
-      "total_damage_million_pesos": 32408.72,
-      "by_type": {
-        "Temperatura extrema": {
-          "events": 26,
-          "deaths": 197,
-          "affected": 1507,
-          "damage_mdp": 39.05
-        },
-        "Bajas temperaturas": {
-          "events": 18,
-          "deaths": 46,
-          "affected": 4901,
-          "damage_mdp": 1.66
-        },
-        "Ciclón tropical": {
-          "events": 17,
-          "deaths": 28,
-          "affected": 1376037,
-          "damage_mdp": 31316.93
-        },
-        "Lluvias": {
-          "events": 9,
-          "deaths": 8,
-          "affected": 41733,
-          "damage_mdp": 832.66
-        },
-        "Helada": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 59114,
-          "damage_mdp": 10.36
-        },
-        "Tormenta tropical": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 23884,
-          "damage_mdp": 48.77
-        },
-        "Fuertes vientos": {
-          "events": 1,
-          "deaths": 5,
-          "affected": 0,
-          "damage_mdp": 1.6
-        },
-        "Sin clasificación": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 0,
-          "damage_mdp": 146.55
-        },
-        "Inundación": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 0,
-          "damage_mdp": 11.15
-        }
-      },
-      "by_year": {
-        "2001": {
-          "events": 1,
-          "deaths": 2,
-          "affected": 6000,
-          "damage_mdp": 850.15
-        },
-        "2002": {
-          "events": 2,
-          "deaths": 19,
-          "affected": 0,
-          "damage_mdp": 1.6
-        },
-        "2003": {
-          "events": 2,
-          "deaths": 8,
-          "affected": 13145,
-          "damage_mdp": 764.3
-        },
-        "2005": {
-          "events": 1,
-          "deaths": 1,
-          "affected": 1,
-          "damage_mdp": 0.0
-        },
-        "2006": {
-          "events": 2,
-          "deaths": 9,
-          "affected": 13090,
-          "damage_mdp": 984.85
-        },
-        "2007": {
-          "events": 1,
-          "deaths": 6,
-          "affected": 6,
-          "damage_mdp": 0.0
-        },
-        "2008": {
-          "events": 3,
-          "deaths": 6,
-          "affected": 6,
-          "damage_mdp": 146.55
-        },
-        "2009": {
-          "events": 2,
-          "deaths": 4,
-          "affected": 17505,
-          "damage_mdp": 1333.0
-        },
-        "2012": {
-          "events": 3,
-          "deaths": 8,
-          "affected": 19276,
-          "damage_mdp": 1833.72
-        },
-        "2013": {
-          "events": 4,
-          "deaths": 9,
-          "affected": 42563,
-          "damage_mdp": 44.81
-        },
-        "2014": {
-          "events": 6,
-          "deaths": 16,
-          "affected": 656765,
-          "damage_mdp": 24339.99
-        },
-        "2015": {
-          "events": 4,
-          "deaths": 12,
-          "affected": 10267,
-          "damage_mdp": 11.27
-        },
-        "2016": {
-          "events": 5,
-          "deaths": 10,
-          "affected": 696231,
-          "damage_mdp": 2.26
-        },
-        "2017": {
-          "events": 4,
-          "deaths": 14,
-          "affected": 1479,
-          "damage_mdp": 313.1
-        },
-        "2018": {
-          "events": 12,
-          "deaths": 13,
-          "affected": 23998,
-          "damage_mdp": 110.52
-        },
-        "2019": {
-          "events": 6,
-          "deaths": 15,
-          "affected": 94,
-          "damage_mdp": 58.29
-        },
-        "2020": {
-          "events": 5,
-          "deaths": 14,
-          "affected": 5126,
-          "damage_mdp": 29.3
-        },
-        "2021": {
-          "events": 2,
-          "deaths": 22,
-          "affected": 446,
-          "damage_mdp": 0.0
-        },
-        "2022": {
-          "events": 7,
-          "deaths": 26,
-          "affected": 768,
-          "damage_mdp": 1157.64
-        },
-        "2023": {
-          "events": 5,
-          "deaths": 70,
-          "affected": 410,
-          "damage_mdp": 427.37
-        }
-      },
-      "worst_event": {
-        "date": "2023-01-01",
-        "type": "Temperatura extrema",
-        "description": "En 2023 se presentaron 103 casos por golpe de calor, 83 por deshidratación  y 1 por quemaduras, 54 personas perdieron la vida por  golpe de calor",
-        "deaths": 55,
-        "affected": 241,
-        "houses_damaged": 0,
-        "damage_mdp": 0.0,
-        "state": "Baja California",
-        "municipalities": "Varios Municipios"
-      },
-      "data_available": true,
-      "extracted_at": "2026-02-16T01:18:46.067807"
     }
   }
 }

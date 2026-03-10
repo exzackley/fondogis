@@ -463,33 +463,165 @@
         "2071-2100"
       ],
       "baseline_period": "1981-2010"
-    },
-    "ndvi_trend": {
-      "data_available": true,
-      "extracted_at": "2026-02-16T01:27:52.227044",
-      "source": "MODIS MOD13A2 v061",
-      "resolution_m": 1000,
-      "mean_ndvi_2000_2005": 0.6626,
-      "mean_ndvi_2018_2023": 0.6642,
-      "trend_per_year": 4e-05,
-      "trend_per_decade": 0.0004,
-      "trend_direction": "stable",
-      "period": "2000-2023",
-      "n_years": 24
-    },
-    "soil": {
-      "source": "OpenLandMap",
-      "resolution": "250m",
-      "organic_carbon_g_kg": 7.268090424991398,
-      "ph_h2o": 6.428158737326906
-    },
-    "surface_water": {
-      "source": "JRC Global Surface Water",
-      "resolution": "30m",
-      "permanent_water_km2": 133.24
     }
   },
   "external_data": {
+    "cenapred_disasters": {
+      "filter": "Hidrometeorológico only",
+      "period": "2000-2023",
+      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "by_type": {
+        "Lluvias": {
+          "deaths": 24,
+          "events": 29,
+          "affected": 2569784,
+          "damage_mdp": 54718.06
+        },
+        "Sequía": {
+          "deaths": 0,
+          "events": 2,
+          "affected": 20724,
+          "damage_mdp": 33.66
+        },
+        "Inundación": {
+          "deaths": 1,
+          "events": 5,
+          "affected": 51080,
+          "damage_mdp": 5573.28
+        },
+        "Ciclón tropical": {
+          "deaths": 1,
+          "events": 6,
+          "affected": 81447,
+          "damage_mdp": 1539.63
+        },
+        "Tormenta tropical": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 123,
+          "damage_mdp": 0.0
+        }
+      },
+      "by_year": {
+        "2002": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 0,
+          "damage_mdp": 0.0
+        },
+        "2006": {
+          "deaths": 8,
+          "events": 4,
+          "affected": 11432,
+          "damage_mdp": 10.32
+        },
+        "2007": {
+          "deaths": 0,
+          "events": 5,
+          "affected": 1524637,
+          "damage_mdp": 32550.81
+        },
+        "2008": {
+          "deaths": 0,
+          "events": 5,
+          "affected": 41822,
+          "damage_mdp": 4595.96
+        },
+        "2009": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 115,
+          "damage_mdp": 0.0
+        },
+        "2010": {
+          "deaths": 0,
+          "events": 4,
+          "affected": 173512,
+          "damage_mdp": 7217.93
+        },
+        "2011": {
+          "deaths": 1,
+          "events": 2,
+          "affected": 5189,
+          "damage_mdp": 437.28
+        },
+        "2012": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 15044,
+          "damage_mdp": 326.25
+        },
+        "2013": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 7400,
+          "damage_mdp": 503.4
+        },
+        "2014": {
+          "deaths": 0,
+          "events": 5,
+          "affected": 41598,
+          "damage_mdp": 481.19
+        },
+        "2016": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 0,
+          "damage_mdp": 1047.44
+        },
+        "2018": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 122,
+          "damage_mdp": 1.43
+        },
+        "2020": {
+          "deaths": 17,
+          "events": 5,
+          "affected": 900532,
+          "damage_mdp": 14689.94
+        },
+        "2021": {
+          "deaths": 0,
+          "events": 2,
+          "affected": 1619,
+          "damage_mdp": 1.29
+        },
+        "2022": {
+          "deaths": 0,
+          "events": 2,
+          "affected": 39,
+          "damage_mdp": 0.08
+        },
+        "2023": {
+          "deaths": 0,
+          "events": 3,
+          "affected": 97,
+          "damage_mdp": 1.32
+        }
+      },
+      "worst_event": {
+        "date": "2020-10-29",
+        "type": "Lluvias",
+        "state": "Tabasco",
+        "deaths": 10,
+        "affected": 801600,
+        "damage_mdp": 13580.56011719139,
+        "description": "Afectaciones en Tabasco por la presencia de los frentes fríos 9 y 11.",
+        "houses_damaged": 200400,
+        "municipalities": "Centla, Centro, Cárdenas, Tacotalpa, Teapa, Cunduacán, Nacajuca, Macuspana, Jalapa, Jalpa de Méndez, Huimanguillo, Balancán, Paraíso, Jonuta"
+      },
+      "extracted_at": "2026-03-10T15:18:48.349563",
+      "match_method": "municipality_overlap",
+      "total_deaths": 26,
+      "total_events": 43,
+      "data_available": true,
+      "total_affected": 2723158,
+      "state_matched_events": 0,
+      "total_houses_damaged": 379925,
+      "total_damage_million_pesos": 61864.62,
+      "municipality_matched_events": 43
+    },
     "mangrove_change": {
       "source": "Global Mangrove Watch v3.0",
       "change_km2": -1.6113,
@@ -1571,204 +1703,6 @@
         "Actinopterygii": 19
       },
       "total_observations": 4448
-    },
-    "cenapred_disasters": {
-      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
-      "period": "2000-2023",
-      "filter": "Hidrometeorológico only",
-      "match_method": "municipality_overlap",
-      "municipality_matched_events": 43,
-      "state_matched_events": 31,
-      "total_events": 74,
-      "total_deaths": 44,
-      "total_affected": 3061911,
-      "total_houses_damaged": 386106,
-      "total_damage_million_pesos": 64266.93,
-      "by_type": {
-        "Lluvias": {
-          "events": 33,
-          "deaths": 25,
-          "affected": 2885246,
-          "damage_mdp": 57063.15
-        },
-        "Temperatura extrema": {
-          "events": 24,
-          "deaths": 17,
-          "affected": 993,
-          "damage_mdp": 19.52
-        },
-        "Ciclón tropical": {
-          "events": 6,
-          "deaths": 1,
-          "affected": 81447,
-          "damage_mdp": 1539.63
-        },
-        "Inundación": {
-          "events": 5,
-          "deaths": 1,
-          "affected": 51080,
-          "damage_mdp": 5573.28
-        },
-        "Sequía": {
-          "events": 4,
-          "deaths": 0,
-          "affected": 43022,
-          "damage_mdp": 71.36
-        },
-        "Bajas temperaturas": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 0,
-          "damage_mdp": 0.0
-        },
-        "Tormenta tropical": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 123,
-          "damage_mdp": 0.0
-        }
-      },
-      "by_year": {
-        "2002": {
-          "events": 3,
-          "deaths": 1,
-          "affected": 309532,
-          "damage_mdp": 2342.0
-        },
-        "2003": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 4580,
-          "damage_mdp": 0.0
-        },
-        "2005": {
-          "events": 3,
-          "deaths": 0,
-          "affected": 23648,
-          "damage_mdp": 37.7
-        },
-        "2006": {
-          "events": 4,
-          "deaths": 8,
-          "affected": 11432,
-          "damage_mdp": 10.32
-        },
-        "2007": {
-          "events": 5,
-          "deaths": 0,
-          "affected": 1524637,
-          "damage_mdp": 32550.81
-        },
-        "2008": {
-          "events": 5,
-          "deaths": 0,
-          "affected": 41822,
-          "damage_mdp": 4595.96
-        },
-        "2009": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 115,
-          "damage_mdp": 0.0
-        },
-        "2010": {
-          "events": 4,
-          "deaths": 0,
-          "affected": 173512,
-          "damage_mdp": 7217.93
-        },
-        "2011": {
-          "events": 2,
-          "deaths": 1,
-          "affected": 5189,
-          "damage_mdp": 437.28
-        },
-        "2012": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 15044,
-          "damage_mdp": 326.25
-        },
-        "2013": {
-          "events": 2,
-          "deaths": 1,
-          "affected": 7400,
-          "damage_mdp": 503.4
-        },
-        "2014": {
-          "events": 6,
-          "deaths": 0,
-          "affected": 41605,
-          "damage_mdp": 481.19
-        },
-        "2015": {
-          "events": 2,
-          "deaths": 2,
-          "affected": 15,
-          "damage_mdp": 0.0
-        },
-        "2016": {
-          "events": 3,
-          "deaths": 0,
-          "affected": 31,
-          "damage_mdp": 1047.44
-        },
-        "2017": {
-          "events": 2,
-          "deaths": 1,
-          "affected": 14,
-          "damage_mdp": 0.0
-        },
-        "2018": {
-          "events": 8,
-          "deaths": 1,
-          "affected": 157,
-          "damage_mdp": 24.03
-        },
-        "2019": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 65,
-          "damage_mdp": 0.0
-        },
-        "2020": {
-          "events": 7,
-          "deaths": 18,
-          "affected": 900537,
-          "damage_mdp": 14689.94
-        },
-        "2021": {
-          "events": 4,
-          "deaths": 1,
-          "affected": 1773,
-          "damage_mdp": 1.29
-        },
-        "2022": {
-          "events": 4,
-          "deaths": 2,
-          "affected": 245,
-          "damage_mdp": 0.08
-        },
-        "2023": {
-          "events": 5,
-          "deaths": 8,
-          "affected": 558,
-          "damage_mdp": 1.32
-        }
-      },
-      "worst_event": {
-        "date": "2020-10-29",
-        "type": "Lluvias",
-        "description": "Afectaciones en Tabasco por la presencia de los frentes fríos 9 y 11.",
-        "deaths": 10,
-        "affected": 801600,
-        "houses_damaged": 200400,
-        "damage_mdp": 13580.56011719139,
-        "state": "Tabasco",
-        "municipalities": "Centla, Centro, Cárdenas, Tacotalpa, Teapa, Cunduacán, Nacajuca, Macuspana, Jalapa, Jalpa de Méndez, Huimanguillo, Balancán, Paraíso, Jonuta"
-      },
-      "data_available": true,
-      "extracted_at": "2026-02-16T01:18:46.475004"
     }
   }
 }

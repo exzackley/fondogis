@@ -421,17 +421,6 @@
         "2071-2100"
       ],
       "baseline_period": "1981-2010"
-    },
-    "soil": {
-      "source": "OpenLandMap",
-      "resolution": "250m",
-      "organic_carbon_g_kg": 5.871869782971623,
-      "ph_h2o": 6.137520868113528
-    },
-    "surface_water": {
-      "source": "JRC Global Surface Water",
-      "resolution": "30m",
-      "permanent_water_km2": 0.49
     }
   },
   "external_data": {
@@ -466,136 +455,88 @@
       ]
     },
     "cenapred_disasters": {
-      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
-      "period": "2000-2023",
       "filter": "Hidrometeorológico only",
-      "match_method": "municipality_overlap",
-      "municipality_matched_events": 7,
-      "state_matched_events": 11,
-      "total_events": 18,
-      "total_deaths": 21,
-      "total_affected": 80418,
-      "total_houses_damaged": 6995,
-      "total_damage_million_pesos": 1791.73,
+      "period": "2000-2023",
+      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
       "by_type": {
-        "Ciclón tropical": {
-          "events": 6,
-          "deaths": 9,
-          "affected": 41673,
-          "damage_mdp": 1750.34
-        },
-        "Temperatura extrema": {
-          "events": 5,
-          "deaths": 0,
-          "affected": 19,
-          "damage_mdp": 20.73
-        },
         "Lluvias": {
-          "events": 4,
           "deaths": 9,
-          "affected": 858,
+          "events": 3,
+          "affected": 323,
           "damage_mdp": 12.97
         },
-        "Sequía": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 11149,
-          "damage_mdp": 7.7
-        },
         "Mar de fondo": {
-          "events": 1,
           "deaths": 3,
+          "events": 1,
           "affected": 26719,
           "damage_mdp": 0.0
+        },
+        "Ciclón tropical": {
+          "deaths": 1,
+          "events": 3,
+          "affected": 25441,
+          "damage_mdp": 1633.21
         }
       },
       "by_year": {
-        "2000": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 0,
-          "damage_mdp": 10.3
-        },
-        "2001": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 0,
-          "damage_mdp": 5.7
-        },
-        "2002": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 535,
-          "damage_mdp": 0.0
-        },
         "2005": {
-          "events": 3,
           "deaths": 2,
-          "affected": 11465,
-          "damage_mdp": 5.55
+          "events": 2,
+          "affected": 316,
+          "damage_mdp": 3.55
         },
         "2012": {
-          "events": 1,
           "deaths": 0,
+          "events": 1,
           "affected": 22829,
           "damage_mdp": 170.6
         },
-        "2014": {
-          "events": 2,
-          "deaths": 8,
-          "affected": 16232,
-          "damage_mdp": 106.83
-        },
         "2015": {
-          "events": 2,
           "deaths": 3,
-          "affected": 26720,
+          "events": 1,
+          "affected": 26719,
           "damage_mdp": 0.0
         },
         "2017": {
-          "events": 1,
           "deaths": 1,
+          "events": 1,
           "affected": 1996,
           "damage_mdp": 671.7
         },
-        "2018": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 0,
-          "damage_mdp": 20.73
-        },
         "2019": {
-          "events": 2,
           "deaths": 0,
-          "affected": 619,
+          "events": 1,
+          "affected": 616,
           "damage_mdp": 790.91
         },
         "2022": {
-          "events": 1,
           "deaths": 7,
+          "events": 1,
           "affected": 7,
           "damage_mdp": 9.42
-        },
-        "2023": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 15,
-          "damage_mdp": 0.0
         }
       },
       "worst_event": {
-        "date": "2014-10-17",
-        "type": "Ciclón tropical",
-        "description": "Fuertes lluvias causadas por el CT \"Trudy\". Se reportaron daños en carreteras Federales y Estatales por cortes y deslaves. Postes de energia electrica caidos y derrumbes.  Desbordamiento de 8 rios. Activacion de 15 RT. Se reporto la muerte de 4 personas debido a que su casa quedo sepultada (2 hombre",
-        "deaths": 8,
-        "affected": 16212,
-        "houses_damaged": 2600,
-        "damage_mdp": 106.8,
+        "date": "2022-09-19",
+        "type": "Lluvias",
         "state": "Guerrero",
-        "municipalities": "35"
+        "deaths": 7,
+        "affected": 7,
+        "damage_mdp": 9.4174542,
+        "description": "Afectaciones:\nMunicipios afectados: 17\nPersonas fallecidas: 6 (3 por arrastre en Malinaltepec, 2 por derrumbe sobre vivienda en Iliatenco y 1 por arrastre en San Marcos) \nPersonas rescatadas: 7\nPersonas refugiadas: 20\nRefugio temporal activo: 1 \nViviendas afectadas: 149 (88 inundación, 3 colapso y 5",
+        "houses_damaged": 149,
+        "municipalities": "Malinaltepec, Iliatenco, San Marcos, Chilpancingo de los Bravo, Eduardo Neri, Tetipac, La Unión de Isidoro Montes de Oca, Ometepec, Igualapa, Florencio Villareal, Atlixtac, Acapulco de Juárez, Técpan de Galeana, Cuajinicuilapa, Juan R. Escudero, Copalillo y Acatepec"
       },
+      "extracted_at": "2026-03-10T15:18:50.094484",
+      "match_method": "municipality_overlap",
+      "total_deaths": 13,
+      "total_events": 7,
       "data_available": true,
-      "extracted_at": "2026-02-16T01:18:46.586024"
+      "total_affected": 52483,
+      "state_matched_events": 0,
+      "total_houses_damaged": 4390,
+      "total_damage_million_pesos": 1646.18,
+      "municipality_matched_events": 7
     },
     "hurricane_exposure": {
       "period": "1990-2024",

@@ -1,38 +1,34 @@
 {
   "metadata": {
     "name": "Z.P.F.T.C.C. de los ríos Valle de Bravo, Malacatepec, Tilostoc y Temascaltepec",
-    "original_name": null,
-    "designation": "Área de Protección de los Recursos Naturales",
-    "designation_type": "National",
-    "iucn_category": "VI",
-    "status": "Designated",
-    "status_year": 2005,
-    "governance": "Federal or national ministry or agency",
-    "management_authority": "National Commission of Natural Protected Areas",
-    "reported_area_km2": 1402.34426159,
     "marine": null,
+    "region": "Centro y Eje Neovolcánico",
+    "status": "Designated",
     "country": "MEX",
-    "wdpa_id": null,
-    "extracted_at": "2026-01-03T21:28:40.824189",
-    "categoria_de_manejo": "Área de Protección de Recursos Naturales",
     "estados": [
       "Estado de México"
     ],
-    "region": "Centro y Eje Neovolcánico",
-    "designaciones_internacionales": "",
     "num_anp": "43",
+    "wdpa_id": null,
+    "governance": "Federal or national ministry or agency",
+    "designation": "Área de Protección de los Recursos Naturales",
+    "status_year": 2005,
+    "extracted_at": "2026-01-03T21:28:40.824189",
     "id_anp_conanp": "ANP00606043",
-    "master_list_updated_at": "2026-01-04T21:57:44.183777",
+    "iucn_category": "VI",
+    "original_name": null,
+    "primer_decreto": "1941-11-15",
+    "designation_type": "National",
+    "reported_area_km2": 1402.34426159,
+    "categoria_de_manejo": "Área de Protección de Recursos Naturales",
     "superficie_total_ha": 140234.43,
-    "superficie_terrestre_ha": 140234.43,
+    "management_authority": "National Commission of Natural Protected Areas",
     "superficie_marina_ha": 0.0,
-    "primer_decreto": "1941-11-15"
+    "master_list_updated_at": "2026-01-04T21:57:44.183777",
+    "superficie_terrestre_ha": 140234.43,
+    "designaciones_internacionales": ""
   },
   "geometry": {
-    "centroid": [
-      -100.08279727403736,
-      19.22046151188637
-    ],
     "bounds": [
       [
         -100.32106954223478,
@@ -55,71 +51,92 @@
         18.99893199456
       ]
     ],
-    "area_m2": 1407265956.4725952
+    "area_m2": 1407265956.4725952,
+    "centroid": [
+      -100.08279727403736,
+      19.22046151188637
+    ]
   },
   "datasets": {
+    "soil": {
+      "ph_h2o": 5.888672097864804,
+      "source": "OpenLandMap",
+      "resolution": "250m",
+      "organic_carbon_g_kg": 5.8201812822611085
+    },
+    "surface_water": {
+      "source": "JRC Global Surface Water",
+      "resolution": "30m",
+      "permanent_water_km2": 17.33
+    },
+    "biodiversity": {
+      "biomes": [
+        "Tropical & Subtropical Coniferous Forests"
+      ],
+      "source": "RESOLVE Ecoregions 2017",
+      "ecoregions": [
+        "Trans-Mexican Volcanic Belt pine-oak forests"
+      ]
+    },
     "population": {
       "source": "WorldPop Global Project",
-      "resolution": "100m",
       "year_2015": {
         "population": 190546.62186597165
       },
       "year_2020": {
         "population": 215667.71818557236
-      }
+      },
+      "resolution": "100m"
     },
     "elevation": {
       "source": "SRTM Digital Elevation Model",
-      "resolution": "30m",
-      "mean_meters": 2349.391951143164,
-      "min_meters": 1052,
+      "std_dev": 389.03211608686956,
       "max_meters": 3353,
-      "std_dev": 389.03211608686956
+      "min_meters": 1052,
+      "resolution": "30m",
+      "mean_meters": 2349.391951143164
     },
     "land_cover": {
       "source": "ESA WorldCover 2021",
-      "resolution": "10m",
       "classes": {
-        "Tree cover": {
-          "class_id": 10,
-          "area_km2": 891.62
-        },
-        "Shrubland": {
-          "class_id": 20,
-          "area_km2": 64.53
-        },
-        "Grassland": {
-          "class_id": 30,
-          "area_km2": 205.32
+        "Built-up": {
+          "area_km2": 27.98,
+          "class_id": 50
         },
         "Cropland": {
-          "class_id": 40,
-          "area_km2": 194.67
+          "area_km2": 194.67,
+          "class_id": 40
         },
-        "Built-up": {
-          "class_id": 50,
-          "area_km2": 27.98
+        "Grassland": {
+          "area_km2": 205.32,
+          "class_id": 30
         },
-        "Bare/sparse vegetation": {
-          "class_id": 60,
-          "area_km2": 1.31
+        "Shrubland": {
+          "area_km2": 64.53,
+          "class_id": 20
         },
-        "Permanent water bodies": {
-          "class_id": 80,
-          "area_km2": 17.52
+        "Tree cover": {
+          "area_km2": 891.62,
+          "class_id": 10
         },
         "Herbaceous wetland": {
-          "class_id": 90,
-          "area_km2": 0.05
+          "area_km2": 0.05,
+          "class_id": 90
+        },
+        "Bare/sparse vegetation": {
+          "area_km2": 1.31,
+          "class_id": 60
+        },
+        "Permanent water bodies": {
+          "area_km2": 17.52,
+          "class_id": 80
         }
-      }
+      },
+      "resolution": "10m"
     },
     "forest": {
       "source": "Hansen Global Forest Change v1.11",
       "resolution": "30m",
-      "tree_cover_2000_percent": 38.535930210663594,
-      "total_loss_km2": 22.94,
-      "total_gain_km2": 1.66,
       "loss_by_year": {
         "2001": 0.88,
         "2002": 0.09,
@@ -144,30 +161,33 @@
         "2021": 2.42,
         "2022": 1.48,
         "2023": 0.78
-      }
+      },
+      "total_gain_km2": 1.66,
+      "total_loss_km2": 22.94,
+      "tree_cover_2000_percent": 38.535930210663594
     },
     "climate": {
+      "year": 2020,
       "source": "TerraClimate",
       "resolution": "4km",
-      "year": 2020,
-      "annual_precipitation_mm": 1000.9061908964821,
       "mean_max_temp_c": 22.779582580310716,
-      "mean_min_temp_c": 8.122899592317067
+      "mean_min_temp_c": 8.122899592317067,
+      "annual_precipitation_mm": 1000.9061908964821
     },
     "vegetation": {
-      "source": "MODIS NDVI (MOD13A2)",
-      "resolution": "1km",
       "year": 2020,
-      "mean_ndvi": 0.632470880293286,
+      "source": "MODIS NDVI (MOD13A2)",
+      "max_ndvi": 0.8319260869565218,
       "min_ndvi": -0.05552000000000001,
-      "max_ndvi": 0.8319260869565218
+      "mean_ndvi": 0.632470880293286,
+      "resolution": "1km"
     },
     "night_lights": {
+      "year": 2020,
       "source": "VIIRS Day/Night Band",
       "resolution": "500m",
-      "year": 2020,
-      "mean_radiance": 1.066920466384243,
-      "max_radiance": 30.375
+      "max_radiance": 30.375,
+      "mean_radiance": 1.066920466384243
     },
     "fire": {
       "source": "MODIS Burned Area (MCD64A1)",
@@ -180,534 +200,289 @@
         "2023": 2.35
       }
     },
-    "soil": {
-      "source": "OpenLandMap",
-      "resolution": "250m",
-      "organic_carbon_g_kg": 5.8201812822611085,
-      "ph_h2o": 5.888672097864804
-    },
-    "surface_water": {
-      "source": "JRC Global Surface Water",
-      "resolution": "30m",
-      "permanent_water_km2": 17.33
-    },
-    "biodiversity": {
-      "source": "RESOLVE Ecoregions 2017",
-      "ecoregions": [
-        "Trans-Mexican Volcanic Belt pine-oak forests"
-      ],
-      "biomes": [
-        "Tropical & Subtropical Coniferous Forests"
-      ]
-    },
     "human_modification": {
       "source": "Global Human Modification Index",
-      "resolution": "1km",
-      "mean_index": 0.4860481088124848,
       "max_index": 0.8390227556228638,
+      "mean_index": 0.4860481088124848,
+      "resolution": "1km",
       "interpretation": "0 = no modification, 1 = completely modified"
     },
     "water_stress": {
       "source": "WRI Aqueduct Water Risk Atlas V4",
       "resolution": "Sub-basin (HydroBASINS level 6)",
-      "data_available": true,
-      "sub_basins_count": 7,
-      "baseline_water_stress": 0.5597,
-      "baseline_water_stress_category": "High (40-80%)",
       "drought_risk": 0.5098,
+      "data_available": true,
       "interpretation": {
         "BWS": "Ratio of water withdrawals to supply. Protected areas may show no data due to minimal human water use.",
         "DRR": "Probability-weighted drought severity (0-1 scale)."
-      }
+      },
+      "sub_basins_count": 7,
+      "baseline_water_stress": 0.5597,
+      "baseline_water_stress_category": "High (40-80%)"
     },
     "climate_projections": {
       "source": "NASA NEX-GDDP-CMIP6",
-      "resolution": "0.25 degrees (~27km)",
-      "baseline_period": "1981-2010",
-      "future_periods": [
-        "2011-2040",
-        "2041-2070",
-        "2071-2100"
-      ],
-      "models_used": 3,
-      "model_list": [
-        "ACCESS-CM2",
-        "GFDL-ESM4",
-        "MRI-ESM2-0"
-      ],
       "scenarios": {
         "ssp245": {
           "2011-2040": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 0,
+              "mean_min_temp_future_c": 9.72,
+              "mean_min_temp_baseline_c": 8.57,
+              "tropical_nights_future_estimate": 0,
+              "tropical_nights_baseline_estimate": 0
+            },
             "temperature": {
-              "baseline_mean_c": 15.93,
-              "future_mean_c": 17.0,
               "change_c": 1.07,
+              "future_mean_c": 17.0,
+              "baseline_mean_c": 15.93,
               "spatial_variation": {
-                "baseline_min_c": 12.09,
-                "baseline_max_c": 23.35,
+                "future_max_c": 24.43,
                 "future_min_c": 13.16,
-                "future_max_c": 24.43
+                "baseline_max_c": 23.35,
+                "baseline_min_c": 12.09
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1278.4,
-              "future_annual_mm": 1195.6,
               "change_mm": -82.8,
-              "change_percent": -6.5
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 8.57,
-              "mean_min_temp_future_c": 9.72,
-              "tropical_nights_baseline_estimate": 0,
-              "tropical_nights_future_estimate": 0,
-              "change_days_estimate": 0,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -6.5,
+              "future_annual_mm": 1195.6,
+              "baseline_annual_mm": 1278.4
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.5,
-              "mean_daily_precip_future_mm": 3.28,
-              "consecutive_dry_days_baseline_estimate": 44,
-              "consecutive_dry_days_future_estimate": 47,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 3,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 3.28,
+              "mean_daily_precip_baseline_mm": 3.5,
+              "consecutive_dry_days_future_estimate": 47,
+              "consecutive_dry_days_baseline_estimate": 44
             }
           },
           "2041-2070": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 1,
+              "mean_min_temp_future_c": 10.33,
+              "mean_min_temp_baseline_c": 8.57,
+              "tropical_nights_future_estimate": 1,
+              "tropical_nights_baseline_estimate": 0
+            },
             "temperature": {
-              "baseline_mean_c": 15.93,
-              "future_mean_c": 17.78,
               "change_c": 1.85,
+              "future_mean_c": 17.78,
+              "baseline_mean_c": 15.93,
               "spatial_variation": {
-                "baseline_min_c": 12.09,
-                "baseline_max_c": 23.35,
+                "future_max_c": 25.21,
                 "future_min_c": 13.94,
-                "future_max_c": 25.21
+                "baseline_max_c": 23.35,
+                "baseline_min_c": 12.09
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1278.4,
-              "future_annual_mm": 1136.1,
               "change_mm": -142.3,
-              "change_percent": -11.1
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 8.57,
-              "mean_min_temp_future_c": 10.33,
-              "tropical_nights_baseline_estimate": 0,
-              "tropical_nights_future_estimate": 1,
-              "change_days_estimate": 1,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -11.1,
+              "future_annual_mm": 1136.1,
+              "baseline_annual_mm": 1278.4
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.5,
-              "mean_daily_precip_future_mm": 3.11,
-              "consecutive_dry_days_baseline_estimate": 44,
-              "consecutive_dry_days_future_estimate": 48,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 4,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 3.11,
+              "mean_daily_precip_baseline_mm": 3.5,
+              "consecutive_dry_days_future_estimate": 48,
+              "consecutive_dry_days_baseline_estimate": 44
             }
           },
           "2071-2100": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 4,
+              "mean_min_temp_future_c": 10.78,
+              "mean_min_temp_baseline_c": 8.57,
+              "tropical_nights_future_estimate": 4,
+              "tropical_nights_baseline_estimate": 0
+            },
             "temperature": {
-              "baseline_mean_c": 15.93,
-              "future_mean_c": 18.39,
               "change_c": 2.46,
+              "future_mean_c": 18.39,
+              "baseline_mean_c": 15.93,
               "spatial_variation": {
-                "baseline_min_c": 12.09,
-                "baseline_max_c": 23.35,
+                "future_max_c": 25.8,
                 "future_min_c": 14.55,
-                "future_max_c": 25.8
+                "baseline_max_c": 23.35,
+                "baseline_min_c": 12.09
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1278.4,
-              "future_annual_mm": 1092.5,
               "change_mm": -185.9,
-              "change_percent": -14.5
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 8.57,
-              "mean_min_temp_future_c": 10.78,
-              "tropical_nights_baseline_estimate": 0,
-              "tropical_nights_future_estimate": 4,
-              "change_days_estimate": 4,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -14.5,
+              "future_annual_mm": 1092.5,
+              "baseline_annual_mm": 1278.4
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.5,
-              "mean_daily_precip_future_mm": 2.99,
-              "consecutive_dry_days_baseline_estimate": 44,
-              "consecutive_dry_days_future_estimate": 50,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 6,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 2.99,
+              "mean_daily_precip_baseline_mm": 3.5,
+              "consecutive_dry_days_future_estimate": 50,
+              "consecutive_dry_days_baseline_estimate": 44
             }
           }
         },
         "ssp585": {
           "2011-2040": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 0,
+              "mean_min_temp_future_c": 9.68,
+              "mean_min_temp_baseline_c": 8.57,
+              "tropical_nights_future_estimate": 0,
+              "tropical_nights_baseline_estimate": 0
+            },
             "temperature": {
-              "baseline_mean_c": 15.93,
-              "future_mean_c": 17.04,
               "change_c": 1.12,
+              "future_mean_c": 17.04,
+              "baseline_mean_c": 15.93,
               "spatial_variation": {
-                "baseline_min_c": 12.09,
-                "baseline_max_c": 23.35,
+                "future_max_c": 24.47,
                 "future_min_c": 13.2,
-                "future_max_c": 24.47
+                "baseline_max_c": 23.35,
+                "baseline_min_c": 12.09
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1278.4,
-              "future_annual_mm": 1165.1,
               "change_mm": -113.3,
-              "change_percent": -8.9
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 8.57,
-              "mean_min_temp_future_c": 9.68,
-              "tropical_nights_baseline_estimate": 0,
-              "tropical_nights_future_estimate": 0,
-              "change_days_estimate": 0,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -8.9,
+              "future_annual_mm": 1165.1,
+              "baseline_annual_mm": 1278.4
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.5,
-              "mean_daily_precip_future_mm": 3.19,
-              "consecutive_dry_days_baseline_estimate": 44,
-              "consecutive_dry_days_future_estimate": 48,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 4,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 3.19,
+              "mean_daily_precip_baseline_mm": 3.5,
+              "consecutive_dry_days_future_estimate": 48,
+              "consecutive_dry_days_baseline_estimate": 44
             }
           },
           "2041-2070": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 5,
+              "mean_min_temp_future_c": 10.87,
+              "mean_min_temp_baseline_c": 8.57,
+              "tropical_nights_future_estimate": 5,
+              "tropical_nights_baseline_estimate": 0
+            },
             "temperature": {
-              "baseline_mean_c": 15.93,
-              "future_mean_c": 18.34,
               "change_c": 2.41,
+              "future_mean_c": 18.34,
+              "baseline_mean_c": 15.93,
               "spatial_variation": {
-                "baseline_min_c": 12.09,
-                "baseline_max_c": 23.35,
+                "future_max_c": 25.77,
                 "future_min_c": 14.5,
-                "future_max_c": 25.77
+                "baseline_max_c": 23.35,
+                "baseline_min_c": 12.09
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1278.4,
-              "future_annual_mm": 1138.3,
               "change_mm": -140.1,
-              "change_percent": -11.0
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 8.57,
-              "mean_min_temp_future_c": 10.87,
-              "tropical_nights_baseline_estimate": 0,
-              "tropical_nights_future_estimate": 5,
-              "change_days_estimate": 5,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -11.0,
+              "future_annual_mm": 1138.3,
+              "baseline_annual_mm": 1278.4
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.5,
-              "mean_daily_precip_future_mm": 3.12,
-              "consecutive_dry_days_baseline_estimate": 44,
-              "consecutive_dry_days_future_estimate": 48,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 4,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 3.12,
+              "mean_daily_precip_baseline_mm": 3.5,
+              "consecutive_dry_days_future_estimate": 48,
+              "consecutive_dry_days_baseline_estimate": 44
             }
           },
           "2071-2100": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 15,
+              "mean_min_temp_future_c": 12.52,
+              "mean_min_temp_baseline_c": 8.57,
+              "tropical_nights_future_estimate": 15,
+              "tropical_nights_baseline_estimate": 0
+            },
             "temperature": {
-              "baseline_mean_c": 15.93,
-              "future_mean_c": 20.19,
               "change_c": 4.27,
+              "future_mean_c": 20.19,
+              "baseline_mean_c": 15.93,
               "spatial_variation": {
-                "baseline_min_c": 12.09,
-                "baseline_max_c": 23.35,
+                "future_max_c": 27.62,
                 "future_min_c": 16.34,
-                "future_max_c": 27.62
+                "baseline_max_c": 23.35,
+                "baseline_min_c": 12.09
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1278.4,
-              "future_annual_mm": 1072.3,
               "change_mm": -206.1,
-              "change_percent": -16.1
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 8.57,
-              "mean_min_temp_future_c": 12.52,
-              "tropical_nights_baseline_estimate": 0,
-              "tropical_nights_future_estimate": 15,
-              "change_days_estimate": 15,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -16.1,
+              "future_annual_mm": 1072.3,
+              "baseline_annual_mm": 1278.4
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.5,
-              "mean_daily_precip_future_mm": 2.94,
-              "consecutive_dry_days_baseline_estimate": 44,
-              "consecutive_dry_days_future_estimate": 50,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 6,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 2.94,
+              "mean_daily_precip_baseline_mm": 3.5,
+              "consecutive_dry_days_future_estimate": 50,
+              "consecutive_dry_days_baseline_estimate": 44
             }
           }
         }
       },
+      "model_list": [
+        "ACCESS-CM2",
+        "GFDL-ESM4",
+        "MRI-ESM2-0"
+      ],
+      "resolution": "0.25 degrees (~27km)",
+      "models_used": 3,
       "extracted_at": "2026-01-08T06:07:11.352949",
-      "data_available": true
-    },
-    "ndvi_trend": {
       "data_available": true,
-      "extracted_at": "2026-02-16T01:32:05.271875",
-      "source": "MODIS MOD13A2 v061",
-      "resolution_m": 1000,
-      "mean_ndvi_2000_2005": 0.6063,
-      "mean_ndvi_2018_2023": 0.6326,
-      "trend_per_year": 0.001788,
-      "trend_per_decade": 0.0179,
-      "trend_direction": "improving",
-      "period": "2000-2023",
-      "n_years": 24
+      "future_periods": [
+        "2011-2040",
+        "2041-2070",
+        "2071-2100"
+      ],
+      "baseline_period": "1981-2010"
     }
   },
   "external_data": {
     "cenapred_disasters": {
-      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
-      "period": "2000-2023",
       "filter": "Hidrometeorológico only",
+      "period": "2000-2023",
+      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "by_type": {},
+      "by_year": {},
+      "worst_event": null,
+      "extracted_at": "2026-03-10T15:18:54.079482",
       "match_method": "state_level",
-      "municipality_matched_events": 0,
-      "state_matched_events": 122,
-      "total_events": 122,
-      "total_deaths": 86,
-      "total_affected": 321358,
-      "total_houses_damaged": 30145,
-      "total_damage_million_pesos": 2360.79,
-      "by_type": {
-        "Lluvias": {
-          "events": 84,
-          "deaths": 32,
-          "affected": 91971,
-          "damage_mdp": 1439.26
-        },
-        "Tormenta severa": {
-          "events": 14,
-          "deaths": 9,
-          "affected": 2205,
-          "damage_mdp": 2.87
-        },
-        "Bajas temperaturas": {
-          "events": 10,
-          "deaths": 43,
-          "affected": 72566,
-          "damage_mdp": 167.78
-        },
-        "Inundación": {
-          "events": 6,
-          "deaths": 0,
-          "affected": 46100,
-          "damage_mdp": 689.06
-        },
-        "Fuertes vientos": {
-          "events": 3,
-          "deaths": 0,
-          "affected": 738,
-          "damage_mdp": 0.59
-        },
-        "Tormenta eléctrica": {
-          "events": 2,
-          "deaths": 2,
-          "affected": 2,
-          "damage_mdp": 0.0
-        },
-        "Sequía": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 11149,
-          "damage_mdp": 28.2
-        },
-        "Helada": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 96621,
-          "damage_mdp": 33.02
-        },
-        "Temperatura extrema": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 6,
-          "damage_mdp": 0.0
-        }
-      },
-      "by_year": {
-        "2000": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 2005,
-          "damage_mdp": 179.93
-        },
-        "2001": {
-          "events": 1,
-          "deaths": 36,
-          "affected": 836,
-          "damage_mdp": 0.0
-        },
-        "2002": {
-          "events": 8,
-          "deaths": 5,
-          "affected": 3900,
-          "damage_mdp": 6.8
-        },
-        "2003": {
-          "events": 8,
-          "deaths": 1,
-          "affected": 2433,
-          "damage_mdp": 2.2
-        },
-        "2004": {
-          "events": 12,
-          "deaths": 2,
-          "affected": 3034,
-          "damage_mdp": 5.48
-        },
-        "2005": {
-          "events": 7,
-          "deaths": 3,
-          "affected": 12479,
-          "damage_mdp": 30.52
-        },
-        "2006": {
-          "events": 6,
-          "deaths": 2,
-          "affected": 5325,
-          "damage_mdp": 5.16
-        },
-        "2007": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 1000,
-          "damage_mdp": 0.4
-        },
-        "2008": {
-          "events": 4,
-          "deaths": 4,
-          "affected": 754,
-          "damage_mdp": 1.36
-        },
-        "2009": {
-          "events": 9,
-          "deaths": 7,
-          "affected": 12589,
-          "damage_mdp": 397.34
-        },
-        "2010": {
-          "events": 5,
-          "deaths": 0,
-          "affected": 41185,
-          "damage_mdp": 742.28
-        },
-        "2011": {
-          "events": 10,
-          "deaths": 8,
-          "affected": 47224,
-          "damage_mdp": 594.07
-        },
-        "2012": {
-          "events": 3,
-          "deaths": 0,
-          "affected": 1280,
-          "damage_mdp": 0.0
-        },
-        "2013": {
-          "events": 2,
-          "deaths": 2,
-          "affected": 2079,
-          "damage_mdp": 112.41
-        },
-        "2014": {
-          "events": 3,
-          "deaths": 0,
-          "affected": 2403,
-          "damage_mdp": 28.71
-        },
-        "2015": {
-          "events": 4,
-          "deaths": 4,
-          "affected": 69721,
-          "damage_mdp": 22.37
-        },
-        "2016": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 96621,
-          "damage_mdp": 33.02
-        },
-        "2017": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 3200,
-          "damage_mdp": 0.26
-        },
-        "2018": {
-          "events": 8,
-          "deaths": 6,
-          "affected": 4285,
-          "damage_mdp": 193.44
-        },
-        "2019": {
-          "events": 5,
-          "deaths": 2,
-          "affected": 220,
-          "damage_mdp": 0.24
-        },
-        "2020": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 168,
-          "damage_mdp": 0.05
-        },
-        "2021": {
-          "events": 9,
-          "deaths": 4,
-          "affected": 8039,
-          "damage_mdp": 4.32
-        },
-        "2022": {
-          "events": 6,
-          "deaths": 0,
-          "affected": 302,
-          "damage_mdp": 0.11
-        },
-        "2023": {
-          "events": 5,
-          "deaths": 0,
-          "affected": 276,
-          "damage_mdp": 0.31
-        }
-      },
-      "worst_event": {
-        "date": "2001-01-01",
-        "type": "Bajas temperaturas",
-        "description": "Se dieron 36 muertos, 2637 casos de enfermedades respiratorias y 886 personas sufrieron algun incidente causado por las bajas temperaturas.",
-        "deaths": 36,
-        "affected": 836,
-        "houses_damaged": 0,
-        "damage_mdp": 0.0,
-        "state": "Chihuahua, Durango, Estado de Mexico, Puebla, Sonora, Tlaxcala",
-        "municipalities": "Varios Municipios"
-      },
+      "total_deaths": 0,
+      "total_events": 0,
       "data_available": true,
-      "extracted_at": "2026-02-16T01:18:46.817305"
+      "total_affected": 0,
+      "total_houses_damaged": 0,
+      "total_damage_million_pesos": 0.0
     }
   }
 }

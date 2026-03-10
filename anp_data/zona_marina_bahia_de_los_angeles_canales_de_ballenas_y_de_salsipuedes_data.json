@@ -439,30 +439,6 @@
         "2071-2100"
       ],
       "baseline_period": "1981-2010"
-    },
-    "ndvi_trend": {
-      "data_available": true,
-      "extracted_at": "2026-02-16T01:32:16.092557",
-      "source": "MODIS MOD13A2 v061",
-      "resolution_m": 1000,
-      "mean_ndvi_2000_2005": 0.0241,
-      "mean_ndvi_2018_2023": 0.0787,
-      "trend_per_year": 0.003368,
-      "trend_per_decade": 0.0337,
-      "trend_direction": "improving",
-      "period": "2000-2023",
-      "n_years": 24
-    },
-    "soil": {
-      "source": "OpenLandMap",
-      "resolution": "250m",
-      "organic_carbon_g_kg": 2.399279067201233,
-      "ph_h2o": 7.829105086990104
-    },
-    "surface_water": {
-      "source": "JRC Global Surface Water",
-      "resolution": "30m",
-      "permanent_water_km2": 3817.25
     }
   },
   "external_data": {
@@ -477,6 +453,54 @@
       "extent_2010_km2": 0.1068,
       "extent_2020_km2": 0.1068,
       "change_direction": "stable"
+    },
+    "cenapred_disasters": {
+      "filter": "Hidrometeorológico only",
+      "period": "2000-2023",
+      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "by_type": {
+        "Ciclón tropical": {
+          "deaths": 0,
+          "events": 2,
+          "affected": 0,
+          "damage_mdp": 889.01
+        }
+      },
+      "by_year": {
+        "2022": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 0,
+          "damage_mdp": 461.65
+        },
+        "2023": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 0,
+          "damage_mdp": 427.37
+        }
+      },
+      "worst_event": {
+        "date": "2022-09-09",
+        "type": "Ciclón tropical",
+        "state": "Baja California",
+        "deaths": 0,
+        "affected": 0,
+        "damage_mdp": 461.64877157999996,
+        "description": "\"Huracán  Kay \" del \n8 al 11 de septiembre de 2022. Se emitió declaratoria de desastre ",
+        "houses_damaged": 0,
+        "municipalities": "Mexicali, Tecate, San Felipe, Ensenada, San Quintín y Playas de Rosarito"
+      },
+      "extracted_at": "2026-03-10T15:18:54.315009",
+      "match_method": "municipality_overlap",
+      "total_deaths": 0,
+      "total_events": 2,
+      "data_available": true,
+      "total_affected": 0,
+      "state_matched_events": 0,
+      "total_houses_damaged": 87,
+      "total_damage_million_pesos": 889.01,
+      "municipality_matched_events": 2
     },
     "gbif_species": {
       "source": "GBIF (Global Biodiversity Information Facility)",
@@ -1415,180 +1439,6 @@
         "Actinopterygii": 58
       },
       "total_observations": 11829
-    },
-    "cenapred_disasters": {
-      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
-      "period": "2000-2023",
-      "filter": "Hidrometeorológico only",
-      "match_method": "municipality_overlap",
-      "municipality_matched_events": 2,
-      "state_matched_events": 33,
-      "total_events": 35,
-      "total_deaths": 226,
-      "total_affected": 21324,
-      "total_houses_damaged": 87,
-      "total_damage_million_pesos": 968.3,
-      "by_type": {
-        "Bajas temperaturas": {
-          "events": 16,
-          "deaths": 45,
-          "affected": 68,
-          "damage_mdp": 0.01
-        },
-        "Temperatura extrema": {
-          "events": 14,
-          "deaths": 176,
-          "affected": 1256,
-          "damage_mdp": 34.16
-        },
-        "Ciclón tropical": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 0,
-          "damage_mdp": 889.01
-        },
-        "Fuertes vientos": {
-          "events": 1,
-          "deaths": 5,
-          "affected": 0,
-          "damage_mdp": 1.6
-        },
-        "Tormenta tropical": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 20000,
-          "damage_mdp": 35.42
-        },
-        "Helada": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 0,
-          "damage_mdp": 8.1
-        }
-      },
-      "by_year": {
-        "2002": {
-          "events": 2,
-          "deaths": 19,
-          "affected": 0,
-          "damage_mdp": 1.6
-        },
-        "2005": {
-          "events": 1,
-          "deaths": 1,
-          "affected": 1,
-          "damage_mdp": 0.0
-        },
-        "2006": {
-          "events": 1,
-          "deaths": 4,
-          "affected": 0,
-          "damage_mdp": 0.0
-        },
-        "2007": {
-          "events": 1,
-          "deaths": 6,
-          "affected": 6,
-          "damage_mdp": 0.0
-        },
-        "2008": {
-          "events": 1,
-          "deaths": 5,
-          "affected": 5,
-          "damage_mdp": 0.0
-        },
-        "2009": {
-          "events": 1,
-          "deaths": 3,
-          "affected": 0,
-          "damage_mdp": 0.0
-        },
-        "2012": {
-          "events": 2,
-          "deaths": 8,
-          "affected": 8,
-          "damage_mdp": 0.0
-        },
-        "2013": {
-          "events": 2,
-          "deaths": 4,
-          "affected": 0,
-          "damage_mdp": 0.0
-        },
-        "2014": {
-          "events": 2,
-          "deaths": 9,
-          "affected": 1,
-          "damage_mdp": 0.0
-        },
-        "2015": {
-          "events": 1,
-          "deaths": 12,
-          "affected": 66,
-          "damage_mdp": 0.0
-        },
-        "2016": {
-          "events": 2,
-          "deaths": 10,
-          "affected": 79,
-          "damage_mdp": 0.0
-        },
-        "2017": {
-          "events": 2,
-          "deaths": 8,
-          "affected": 66,
-          "damage_mdp": 0.0
-        },
-        "2018": {
-          "events": 6,
-          "deaths": 13,
-          "affected": 20105,
-          "damage_mdp": 77.69
-        },
-        "2019": {
-          "events": 2,
-          "deaths": 13,
-          "affected": 78,
-          "damage_mdp": 0.0
-        },
-        "2020": {
-          "events": 2,
-          "deaths": 12,
-          "affected": 63,
-          "damage_mdp": 0.0
-        },
-        "2021": {
-          "events": 1,
-          "deaths": 19,
-          "affected": 431,
-          "damage_mdp": 0.0
-        },
-        "2022": {
-          "events": 3,
-          "deaths": 25,
-          "affected": 169,
-          "damage_mdp": 461.65
-        },
-        "2023": {
-          "events": 3,
-          "deaths": 55,
-          "affected": 246,
-          "damage_mdp": 427.37
-        }
-      },
-      "worst_event": {
-        "date": "2023-01-01",
-        "type": "Temperatura extrema",
-        "description": "En 2023 se presentaron 103 casos por golpe de calor, 83 por deshidratación  y 1 por quemaduras, 54 personas perdieron la vida por  golpe de calor",
-        "deaths": 55,
-        "affected": 241,
-        "houses_damaged": 0,
-        "damage_mdp": 0.0,
-        "state": "Baja California",
-        "municipalities": "Varios Municipios"
-      },
-      "data_available": true,
-      "extracted_at": "2026-02-16T01:18:46.828294"
     }
   }
 }

@@ -432,30 +432,6 @@
         "2071-2100"
       ],
       "baseline_period": "1981-2010"
-    },
-    "ndvi_trend": {
-      "data_available": true,
-      "extracted_at": "2026-02-16T01:33:00.755871",
-      "source": "MODIS MOD13A2 v061",
-      "resolution_m": 1000,
-      "mean_ndvi_2000_2005": 0.1188,
-      "mean_ndvi_2018_2023": 0.1907,
-      "trend_per_year": 0.003811,
-      "trend_per_decade": 0.0381,
-      "trend_direction": "improving",
-      "period": "2000-2023",
-      "n_years": 24
-    },
-    "soil": {
-      "source": "OpenLandMap",
-      "resolution": "250m",
-      "organic_carbon_g_kg": 6.52882715331861,
-      "ph_h2o": 7.566325700337091
-    },
-    "surface_water": {
-      "source": "JRC Global Surface Water",
-      "resolution": "30m",
-      "permanent_water_km2": 480.24
     }
   },
   "external_data": {
@@ -470,6 +446,22 @@
       "extent_2010_km2": 0.0168,
       "extent_2020_km2": 0.0148,
       "change_direction": "loss"
+    },
+    "cenapred_disasters": {
+      "filter": "Hidrometeorológico only",
+      "period": "2000-2023",
+      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "by_type": {},
+      "by_year": {},
+      "worst_event": null,
+      "extracted_at": "2026-03-10T15:18:54.871798",
+      "match_method": "state_level",
+      "total_deaths": 0,
+      "total_events": 0,
+      "data_available": true,
+      "total_affected": 0,
+      "total_houses_damaged": 0,
+      "total_damage_million_pesos": 0.0
     },
     "gbif_species": {
       "source": "GBIF (Global Biodiversity Information Facility)",
@@ -1363,22 +1355,6 @@
         "Actinopterygii": 121
       },
       "total_observations": 5193
-    },
-    "cenapred_disasters": {
-      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
-      "period": "2000-2023",
-      "filter": "Hidrometeorológico only",
-      "match_method": "state_level",
-      "total_events": 0,
-      "total_deaths": 0,
-      "total_affected": 0,
-      "total_houses_damaged": 0,
-      "total_damage_million_pesos": 0.0,
-      "by_type": {},
-      "by_year": {},
-      "worst_event": null,
-      "data_available": true,
-      "extracted_at": "2026-02-16T01:18:46.834914"
     }
   }
 }

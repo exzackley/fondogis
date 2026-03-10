@@ -1,35 +1,31 @@
 {
   "metadata": {
     "name": "Otoch Ma'ax Yetel Kooh",
-    "designation": "Área de Protección de Flora y Fauna",
-    "designation_type": "National",
-    "iucn_category": "VI",
+    "region": "Península de Yucatán y Caribe Mexicano",
     "status": "Designated",
-    "status_year": 2002,
-    "governance": "Federal or national ministry or agency",
-    "management_authority": "National Commission of Natural Protected Areas",
-    "reported_area_km2": 53.674235,
     "country": "MEX",
-    "extracted_at": "2026-01-02T13:31:39.083765",
-    "categoria_de_manejo": "Área de Protección de Flora y Fauna",
     "estados": [
       "Quintana Roo"
     ],
-    "region": "Península de Yucatán y Caribe Mexicano",
-    "designaciones_internacionales": "Ramsar",
     "num_anp": "151",
+    "governance": "Federal or national ministry or agency",
+    "designation": "Área de Protección de Flora y Fauna",
+    "status_year": 2002,
+    "extracted_at": "2026-01-02T13:31:39.083765",
     "id_anp_conanp": "ANP00907151",
-    "master_list_updated_at": "2026-01-04T21:57:44.111086",
+    "iucn_category": "VI",
+    "primer_decreto": "2002-06-05",
+    "designation_type": "National",
+    "reported_area_km2": 53.674235,
+    "categoria_de_manejo": "Área de Protección de Flora y Fauna",
     "superficie_total_ha": 5367.42,
-    "superficie_terrestre_ha": 5367.42,
+    "management_authority": "National Commission of Natural Protected Areas",
     "superficie_marina_ha": 0.0,
-    "primer_decreto": "2002-06-05"
+    "master_list_updated_at": "2026-01-04T21:57:44.111086",
+    "superficie_terrestre_ha": 5367.42,
+    "designaciones_internacionales": "Ramsar"
   },
   "geometry": {
-    "centroid": [
-      -87.65687148684661,
-      20.67922558003732
-    ],
     "bounds": [
       [
         -87.6833082534461,
@@ -51,6 +47,10 @@
         -87.6833082534461,
         20.607102301461964
       ]
+    ],
+    "centroid": [
+      -87.65687148684661,
+      20.67922558003732
     ]
   },
   "datasets": {
@@ -61,36 +61,34 @@
     },
     "elevation": {
       "elevation_max": 39,
-      "elevation_mean": 27.161579497766613,
-      "elevation_min": -20
+      "elevation_min": -20,
+      "elevation_mean": 27.161579497766613
     },
     "land_cover": {
       "classes": {
-        "Tree cover": {
-          "class_id": 10,
-          "area_km2": 52.32
+        "Built-up": {
+          "area_km2": 0.0,
+          "class_id": 50
         },
         "Grassland": {
-          "class_id": 30,
-          "area_km2": 0.06
+          "area_km2": 0.06,
+          "class_id": 30
         },
-        "Built-up": {
-          "class_id": 50,
-          "area_km2": 0.0
-        },
-        "Permanent water bodies": {
-          "class_id": 80,
-          "area_km2": 1.03
+        "Tree cover": {
+          "area_km2": 52.32,
+          "class_id": 10
         },
         "Herbaceous wetland": {
-          "class_id": 90,
-          "area_km2": 0.3
+          "area_km2": 0.3,
+          "class_id": 90
+        },
+        "Permanent water bodies": {
+          "area_km2": 1.03,
+          "class_id": 80
         }
       }
     },
     "forest": {
-      "tree_cover_2000_percent": 94.93784273865455,
-      "total_loss_km2": 5.32,
       "loss_by_year": {
         "2001": 0.36,
         "2002": 0.13,
@@ -115,17 +113,19 @@
         "2021": 0.0,
         "2022": 0.01,
         "2023": 0.0
-      }
+      },
+      "total_loss_km2": 5.32,
+      "tree_cover_2000_percent": 94.93784273865455
     },
     "climate": {
-      "annual_precipitation_mm": 1476.8006535947713,
       "mean_max_temp_c": 32.455482933914304,
-      "mean_min_temp_c": 20.86892701525055
+      "mean_min_temp_c": 20.86892701525055,
+      "annual_precipitation_mm": 1476.8006535947713
     },
     "vegetation": {
       "NDVI_max": 0.8268086956521741,
-      "NDVI_mean": 0.781815188421563,
-      "NDVI_min": 0.6483695652173913
+      "NDVI_min": 0.6483695652173913,
+      "NDVI_mean": 0.781815188421563
     },
     "night_lights": {
       "avg_rad_max": 0.49166667461395264,
@@ -141,11 +141,11 @@
       }
     },
     "biodiversity": {
-      "ecoregions": [
-        "Yucatán moist forests"
-      ],
       "biomes": [
         "Tropical & Subtropical Moist Broadleaf Forests"
+      ],
+      "ecoregions": [
+        "Yucatán moist forests"
       ]
     },
     "human_modification": {
@@ -153,894 +153,975 @@
       "gHM_mean": 0.1142135028785303
     },
     "water_stress": {
+      "note": null,
       "source": "WRI Aqueduct Water Risk Atlas V4",
       "resolution": "Sub-basin (HydroBASINS level 6)",
-      "data_available": true,
-      "sub_basins_count": 4,
-      "baseline_water_stress": 0.1167,
-      "baseline_water_stress_category": "Low-Medium (10-20%)",
       "drought_risk": 0.5362,
-      "drought_risk_category": "Medium",
+      "extracted_at": "2026-01-03T10:32:54.137874",
+      "data_available": true,
       "interpretation": {
         "BWS": "Ratio of total water withdrawals to available supply. Protected areas often show 'No Data' due to minimal human water use.",
         "DRR": "Probability-weighted drought severity (0-1 scale)."
       },
-      "note": null,
-      "extracted_at": "2026-01-03T10:32:54.137874"
+      "sub_basins_count": 4,
+      "baseline_water_stress": 0.1167,
+      "drought_risk_category": "Medium",
+      "baseline_water_stress_category": "Low-Medium (10-20%)"
     },
     "gedi_biomass": {
       "source": "NASA GEDI L4A (Aboveground Biomass Density)",
       "resolution": "25m footprints",
-      "data_available": true,
-      "gedi_images_used": 59,
-      "agbd_mean_mg_ha": 65.1,
+      "anp_area_ha": 9877.0,
+      "extracted_at": "2026-01-03T11:12:35.386847",
       "agbd_max_mg_ha": 3218.58,
       "agbd_std_mg_ha": 126.46,
-      "sampled_pixels": 18029,
-      "anp_area_ha": 9877.0,
-      "total_carbon_estimate_mt": 643.0,
+      "data_available": true,
       "interpretation": {
         "agbd": "Aboveground Biomass Density in Megagrams (tonnes) per hectare",
         "total_carbon": "Rough estimate of total aboveground carbon stock in megatonnes"
       },
-      "extracted_at": "2026-01-03T11:12:35.386847"
+      "sampled_pixels": 18029,
+      "agbd_mean_mg_ha": 65.1,
+      "gedi_images_used": 59,
+      "total_carbon_estimate_mt": 643.0
     },
     "climate_projections": {
       "source": "NASA NEX-GDDP-CMIP6",
-      "resolution": "0.25 degrees (~27km)",
-      "baseline_period": "1981-2010",
-      "future_periods": [
-        "2011-2040",
-        "2041-2070",
-        "2071-2100"
-      ],
-      "models_used": 3,
-      "model_list": [
-        "ACCESS-CM2",
-        "GFDL-ESM4",
-        "MRI-ESM2-0"
-      ],
       "scenarios": {
         "ssp245": {
           "2011-2040": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 20,
+              "mean_min_temp_future_c": 21.68,
+              "mean_min_temp_baseline_c": 20.9,
+              "tropical_nights_future_estimate": 163,
+              "tropical_nights_baseline_estimate": 143
+            },
             "temperature": {
-              "baseline_mean_c": 26.19,
-              "future_mean_c": 27.12,
               "change_c": 0.92,
+              "future_mean_c": 27.12,
+              "baseline_mean_c": 26.19,
               "spatial_variation": {
-                "baseline_min_c": 26.19,
-                "baseline_max_c": 26.19,
+                "future_max_c": 27.12,
                 "future_min_c": 27.12,
-                "future_max_c": 27.12
+                "baseline_max_c": 26.19,
+                "baseline_min_c": 26.19
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1369.2,
-              "future_annual_mm": 1280.3,
               "change_mm": -88.9,
-              "change_percent": -6.5
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 20.9,
-              "mean_min_temp_future_c": 21.68,
-              "tropical_nights_baseline_estimate": 143,
-              "tropical_nights_future_estimate": 163,
-              "change_days_estimate": 20,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -6.5,
+              "future_annual_mm": 1280.3,
+              "baseline_annual_mm": 1369.2
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.75,
-              "mean_daily_precip_future_mm": 3.51,
-              "consecutive_dry_days_baseline_estimate": 42,
-              "consecutive_dry_days_future_estimate": 44,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 2,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 3.51,
+              "mean_daily_precip_baseline_mm": 3.75,
+              "consecutive_dry_days_future_estimate": 44,
+              "consecutive_dry_days_baseline_estimate": 42
             }
           },
           "2041-2070": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 34,
+              "mean_min_temp_future_c": 22.22,
+              "mean_min_temp_baseline_c": 20.9,
+              "tropical_nights_future_estimate": 177,
+              "tropical_nights_baseline_estimate": 143
+            },
             "temperature": {
-              "baseline_mean_c": 26.19,
-              "future_mean_c": 27.75,
               "change_c": 1.55,
+              "future_mean_c": 27.75,
+              "baseline_mean_c": 26.19,
               "spatial_variation": {
-                "baseline_min_c": 26.19,
-                "baseline_max_c": 26.19,
+                "future_max_c": 27.75,
                 "future_min_c": 27.75,
-                "future_max_c": 27.75
+                "baseline_max_c": 26.19,
+                "baseline_min_c": 26.19
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1369.2,
-              "future_annual_mm": 1231.6,
               "change_mm": -137.7,
-              "change_percent": -10.1
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 20.9,
-              "mean_min_temp_future_c": 22.22,
-              "tropical_nights_baseline_estimate": 143,
-              "tropical_nights_future_estimate": 177,
-              "change_days_estimate": 34,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -10.1,
+              "future_annual_mm": 1231.6,
+              "baseline_annual_mm": 1369.2
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.75,
-              "mean_daily_precip_future_mm": 3.37,
-              "consecutive_dry_days_baseline_estimate": 42,
-              "consecutive_dry_days_future_estimate": 46,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 4,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 3.37,
+              "mean_daily_precip_baseline_mm": 3.75,
+              "consecutive_dry_days_future_estimate": 46,
+              "consecutive_dry_days_baseline_estimate": 42
             }
           },
           "2071-2100": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 45,
+              "mean_min_temp_future_c": 22.64,
+              "mean_min_temp_baseline_c": 20.9,
+              "tropical_nights_future_estimate": 188,
+              "tropical_nights_baseline_estimate": 143
+            },
             "temperature": {
-              "baseline_mean_c": 26.19,
-              "future_mean_c": 28.17,
               "change_c": 1.98,
+              "future_mean_c": 28.17,
+              "baseline_mean_c": 26.19,
               "spatial_variation": {
-                "baseline_min_c": 26.19,
-                "baseline_max_c": 26.19,
+                "future_max_c": 28.17,
                 "future_min_c": 28.17,
-                "future_max_c": 28.17
+                "baseline_max_c": 26.19,
+                "baseline_min_c": 26.19
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1369.2,
-              "future_annual_mm": 1232.4,
               "change_mm": -136.9,
-              "change_percent": -10.0
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 20.9,
-              "mean_min_temp_future_c": 22.64,
-              "tropical_nights_baseline_estimate": 143,
-              "tropical_nights_future_estimate": 188,
-              "change_days_estimate": 45,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -10.0,
+              "future_annual_mm": 1232.4,
+              "baseline_annual_mm": 1369.2
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.75,
-              "mean_daily_precip_future_mm": 3.38,
-              "consecutive_dry_days_baseline_estimate": 42,
-              "consecutive_dry_days_future_estimate": 46,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 4,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 3.38,
+              "mean_daily_precip_baseline_mm": 3.75,
+              "consecutive_dry_days_future_estimate": 46,
+              "consecutive_dry_days_baseline_estimate": 42
             }
           }
         },
         "ssp585": {
           "2011-2040": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 19,
+              "mean_min_temp_future_c": 21.64,
+              "mean_min_temp_baseline_c": 20.9,
+              "tropical_nights_future_estimate": 162,
+              "tropical_nights_baseline_estimate": 143
+            },
             "temperature": {
-              "baseline_mean_c": 26.19,
-              "future_mean_c": 27.1,
               "change_c": 0.9,
+              "future_mean_c": 27.1,
+              "baseline_mean_c": 26.19,
               "spatial_variation": {
-                "baseline_min_c": 26.19,
-                "baseline_max_c": 26.19,
+                "future_max_c": 27.1,
                 "future_min_c": 27.1,
-                "future_max_c": 27.1
+                "baseline_max_c": 26.19,
+                "baseline_min_c": 26.19
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1369.2,
-              "future_annual_mm": 1274.4,
               "change_mm": -94.8,
-              "change_percent": -6.9
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 20.9,
-              "mean_min_temp_future_c": 21.64,
-              "tropical_nights_baseline_estimate": 143,
-              "tropical_nights_future_estimate": 162,
-              "change_days_estimate": 19,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -6.9,
+              "future_annual_mm": 1274.4,
+              "baseline_annual_mm": 1369.2
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.75,
-              "mean_daily_precip_future_mm": 3.49,
-              "consecutive_dry_days_baseline_estimate": 42,
-              "consecutive_dry_days_future_estimate": 45,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 3,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 3.49,
+              "mean_daily_precip_baseline_mm": 3.75,
+              "consecutive_dry_days_future_estimate": 45,
+              "consecutive_dry_days_baseline_estimate": 42
             }
           },
           "2041-2070": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 45,
+              "mean_min_temp_future_c": 22.64,
+              "mean_min_temp_baseline_c": 20.9,
+              "tropical_nights_future_estimate": 188,
+              "tropical_nights_baseline_estimate": 143
+            },
             "temperature": {
-              "baseline_mean_c": 26.19,
-              "future_mean_c": 28.23,
               "change_c": 2.04,
+              "future_mean_c": 28.23,
+              "baseline_mean_c": 26.19,
               "spatial_variation": {
-                "baseline_min_c": 26.19,
-                "baseline_max_c": 26.19,
+                "future_max_c": 28.23,
                 "future_min_c": 28.23,
-                "future_max_c": 28.23
+                "baseline_max_c": 26.19,
+                "baseline_min_c": 26.19
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1369.2,
-              "future_annual_mm": 1207.9,
               "change_mm": -161.3,
-              "change_percent": -11.8
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 20.9,
-              "mean_min_temp_future_c": 22.64,
-              "tropical_nights_baseline_estimate": 143,
-              "tropical_nights_future_estimate": 188,
-              "change_days_estimate": 45,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -11.8,
+              "future_annual_mm": 1207.9,
+              "baseline_annual_mm": 1369.2
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.75,
-              "mean_daily_precip_future_mm": 3.31,
-              "consecutive_dry_days_baseline_estimate": 42,
-              "consecutive_dry_days_future_estimate": 46,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 4,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 3.31,
+              "mean_daily_precip_baseline_mm": 3.75,
+              "consecutive_dry_days_future_estimate": 46,
+              "consecutive_dry_days_baseline_estimate": 42
             }
           },
           "2071-2100": {
+            "heat_stress": {
+              "note": "Tropical nights estimated from mean minimum temperature",
+              "change_days_estimate": 76,
+              "mean_min_temp_future_c": 23.81,
+              "mean_min_temp_baseline_c": 20.9,
+              "tropical_nights_future_estimate": 219,
+              "tropical_nights_baseline_estimate": 143
+            },
             "temperature": {
-              "baseline_mean_c": 26.19,
-              "future_mean_c": 29.67,
               "change_c": 3.48,
+              "future_mean_c": 29.67,
+              "baseline_mean_c": 26.19,
               "spatial_variation": {
-                "baseline_min_c": 26.19,
-                "baseline_max_c": 26.19,
+                "future_max_c": 29.67,
                 "future_min_c": 29.67,
-                "future_max_c": 29.67
+                "baseline_max_c": 26.19,
+                "baseline_min_c": 26.19
               }
             },
             "precipitation": {
-              "baseline_annual_mm": 1369.2,
-              "future_annual_mm": 990.1,
               "change_mm": -379.1,
-              "change_percent": -27.7
-            },
-            "heat_stress": {
-              "mean_min_temp_baseline_c": 20.9,
-              "mean_min_temp_future_c": 23.81,
-              "tropical_nights_baseline_estimate": 143,
-              "tropical_nights_future_estimate": 219,
-              "change_days_estimate": 76,
-              "note": "Tropical nights estimated from mean minimum temperature"
+              "change_percent": -27.7,
+              "future_annual_mm": 990.1,
+              "baseline_annual_mm": 1369.2
             },
             "drought_indicators": {
-              "mean_daily_precip_baseline_mm": 3.75,
-              "mean_daily_precip_future_mm": 2.71,
-              "consecutive_dry_days_baseline_estimate": 42,
-              "consecutive_dry_days_future_estimate": 52,
+              "note": "Drought indicators estimated from mean precipitation patterns",
+              "drought_risk_future": "Medium",
               "change_days_estimate": 10,
               "drought_risk_baseline": "Medium",
-              "drought_risk_future": "Medium",
-              "note": "Drought indicators estimated from mean precipitation patterns"
+              "mean_daily_precip_future_mm": 2.71,
+              "mean_daily_precip_baseline_mm": 3.75,
+              "consecutive_dry_days_future_estimate": 52,
+              "consecutive_dry_days_baseline_estimate": 42
             }
           }
         }
       },
+      "model_list": [
+        "ACCESS-CM2",
+        "GFDL-ESM4",
+        "MRI-ESM2-0"
+      ],
+      "resolution": "0.25 degrees (~27km)",
+      "models_used": 3,
       "extracted_at": "2026-01-07T07:51:14.912984",
-      "data_available": true
-    },
-    "ndvi_trend": {
       "data_available": true,
-      "extracted_at": "2026-02-16T01:27:33.892606",
-      "source": "MODIS MOD13A2 v061",
-      "resolution_m": 1000,
-      "mean_ndvi_2000_2005": 0.8079,
-      "mean_ndvi_2018_2023": 0.8191,
-      "trend_per_year": 0.000894,
-      "trend_per_decade": 0.0089,
-      "trend_direction": "improving",
-      "period": "2000-2023",
-      "n_years": 24
-    },
-    "soil": {
-      "source": "OpenLandMap",
-      "resolution": "250m",
-      "organic_carbon_g_kg": 11.140340323878931,
-      "ph_h2o": 7.395092913958299
-    },
-    "surface_water": {
-      "source": "JRC Global Surface Water",
-      "resolution": "30m",
-      "permanent_water_km2": 0.66
+      "future_periods": [
+        "2011-2040",
+        "2041-2070",
+        "2071-2100"
+      ],
+      "baseline_period": "1981-2010"
     }
   },
   "external_data": {
+    "cenapred_disasters": {
+      "filter": "Hidrometeorológico only",
+      "period": "2000-2023",
+      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
+      "by_type": {
+        "Lluvias": {
+          "deaths": 0,
+          "events": 6,
+          "affected": 136699,
+          "damage_mdp": 248.15
+        },
+        "Granizada": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 100,
+          "damage_mdp": 0.09
+        },
+        "Fuertes vientos": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 37187,
+          "damage_mdp": 67.78
+        },
+        "Ciclón tropical": {
+          "deaths": 1,
+          "events": 4,
+          "affected": 128778,
+          "damage_mdp": 3713.38
+        },
+        "Tormenta tropical": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 98,
+          "damage_mdp": 0.05
+        }
+      },
+      "by_year": {
+        "2003": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 182,
+          "damage_mdp": 0.0
+        },
+        "2005": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 10112,
+          "damage_mdp": 1111.0
+        },
+        "2007": {
+          "deaths": 0,
+          "events": 2,
+          "affected": 97920,
+          "damage_mdp": 2337.59
+        },
+        "2013": {
+          "deaths": 1,
+          "events": 2,
+          "affected": 0,
+          "damage_mdp": 0.0
+        },
+        "2014": {
+          "deaths": 0,
+          "events": 2,
+          "affected": 32718,
+          "damage_mdp": 248.15
+        },
+        "2015": {
+          "deaths": 0,
+          "events": 2,
+          "affected": 103799,
+          "damage_mdp": 0.0
+        },
+        "2016": {
+          "deaths": 0,
+          "events": 1,
+          "affected": 37187,
+          "damage_mdp": 67.78
+        },
+        "2020": {
+          "deaths": 0,
+          "events": 2,
+          "affected": 20944,
+          "damage_mdp": 264.93
+        }
+      },
+      "worst_event": {
+        "date": "2013-09-19",
+        "type": "Ciclón tropical",
+        "state": "Quintana Roo",
+        "deaths": 1,
+        "affected": 0,
+        "damage_mdp": 0.0,
+        "description": "Afectaciones a causa de la iteracción de los ciclones tropicales Ingrid y Manuel. ",
+        "houses_damaged": 0,
+        "municipalities": "Benito Juárez, Cozumel, Isla Mujeres, Lázaro Cárdenas y Solidaridad"
+      },
+      "extracted_at": "2026-03-10T15:18:48.168282",
+      "match_method": "municipality_overlap",
+      "total_deaths": 1,
+      "total_events": 13,
+      "data_available": true,
+      "total_affected": 302862,
+      "state_matched_events": 0,
+      "total_houses_damaged": 21418,
+      "total_damage_million_pesos": 4029.46,
+      "municipality_matched_events": 13
+    },
     "gbif_species": {
       "source": "GBIF (Global Biodiversity Information Facility)",
       "query_date": "2026-01-03T01:05:32.022239",
-      "total_occurrences": 16660,
-      "unique_species": 124,
+      "top_species": [
+        {
+          "class": "Mammalia",
+          "genus": "Ateles",
+          "order": "Primates",
+          "family": "Atelidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2436643,
+          "occurrences": 347,
+          "scientific_name": "Ateles geoffroyi"
+        },
+        {
+          "class": "Aves",
+          "genus": "Eumomota",
+          "order": "Coraciiformes",
+          "family": "Momotidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2475276,
+          "occurrences": 286,
+          "scientific_name": "Eumomota superciliosa"
+        },
+        {
+          "class": "Aves",
+          "genus": "Quiscalus",
+          "order": "Passeriformes",
+          "family": "Icteridae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 9476062,
+          "occurrences": 275,
+          "scientific_name": "Quiscalus mexicanus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Cyanocorax",
+          "order": "Passeriformes",
+          "family": "Corvidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2482565,
+          "occurrences": 268,
+          "scientific_name": "Cyanocorax yncas"
+        },
+        {
+          "class": "Aves",
+          "genus": "Dives",
+          "order": "Passeriformes",
+          "family": "Icteridae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2484434,
+          "occurrences": 267,
+          "scientific_name": "Dives dives"
+        },
+        {
+          "class": "Aves",
+          "genus": "Piaya",
+          "order": "Cuculiformes",
+          "family": "Cuculidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2496432,
+          "occurrences": 255,
+          "scientific_name": "Piaya cayana"
+        },
+        {
+          "class": "Aves",
+          "genus": "Myiozetetes",
+          "order": "Passeriformes",
+          "family": "Tyrannidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2482913,
+          "occurrences": 251,
+          "scientific_name": "Myiozetetes similis"
+        },
+        {
+          "class": "Aves",
+          "genus": "Setophaga",
+          "order": "Passeriformes",
+          "family": "Parulidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 6093209,
+          "occurrences": 241,
+          "scientific_name": "Setophaga magnolia"
+        },
+        {
+          "class": "Aves",
+          "genus": "Tachybaptus",
+          "order": "Podicipediformes",
+          "family": "Podicipedidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2482044,
+          "occurrences": 221,
+          "scientific_name": "Tachybaptus dominicus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Xiphorhynchus",
+          "order": "Passeriformes",
+          "family": "Furnariidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5230178,
+          "occurrences": 220,
+          "scientific_name": "Xiphorhynchus flavigaster"
+        },
+        {
+          "class": "Aves",
+          "genus": "Cathartes",
+          "order": "Accipitriformes",
+          "family": "Cathartidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2481930,
+          "occurrences": 218,
+          "scientific_name": "Cathartes aura"
+        },
+        {
+          "class": "Aves",
+          "genus": "Cyclarhis",
+          "order": "Passeriformes",
+          "family": "Vireonidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2487404,
+          "occurrences": 213,
+          "scientific_name": "Cyclarhis gujanensis"
+        },
+        {
+          "class": "Aves",
+          "genus": "Vireo",
+          "order": "Passeriformes",
+          "family": "Vireonidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2487413,
+          "occurrences": 206,
+          "scientific_name": "Vireo griseus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Mniotilta",
+          "order": "Passeriformes",
+          "family": "Parulidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2489613,
+          "occurrences": 201,
+          "scientific_name": "Mniotilta varia"
+        },
+        {
+          "class": "Aves",
+          "genus": "Melanerpes",
+          "order": "Piciformes",
+          "family": "Picidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2478081,
+          "occurrences": 197,
+          "scientific_name": "Melanerpes aurifrons"
+        },
+        {
+          "class": "Aves",
+          "genus": "Icterus",
+          "order": "Passeriformes",
+          "family": "Icteridae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5229893,
+          "occurrences": 190,
+          "scientific_name": "Icterus gularis"
+        },
+        {
+          "class": "Aves",
+          "genus": "Coragyps",
+          "order": "Accipitriformes",
+          "family": "Cathartidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2481942,
+          "occurrences": 190,
+          "scientific_name": "Coragyps atratus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Saltator",
+          "order": "Passeriformes",
+          "family": "Thraupidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5230896,
+          "occurrences": 188,
+          "scientific_name": "Saltator atriceps"
+        },
+        {
+          "class": "Aves",
+          "genus": "Amblycercus",
+          "order": "Passeriformes",
+          "family": "Icteridae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2484419,
+          "occurrences": 184,
+          "scientific_name": "Amblycercus holosericeus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Trogon",
+          "order": "Trogoniformes",
+          "family": "Trogonidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2496699,
+          "occurrences": 183,
+          "scientific_name": "Trogon melanocephalus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Arremonops",
+          "order": "Passeriformes",
+          "family": "Passerellidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2491042,
+          "occurrences": 174,
+          "scientific_name": "Arremonops chloronotus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Trogon",
+          "order": "Trogoniformes",
+          "family": "Trogonidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5788446,
+          "occurrences": 173,
+          "scientific_name": "Trogon caligatus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Setophaga",
+          "order": "Passeriformes",
+          "family": "Parulidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 6093374,
+          "occurrences": 168,
+          "scientific_name": "Setophaga citrina"
+        },
+        {
+          "class": "Aves",
+          "genus": "Podilymbus",
+          "order": "Podicipediformes",
+          "family": "Podicipedidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2482077,
+          "occurrences": 167,
+          "scientific_name": "Podilymbus podiceps"
+        },
+        {
+          "class": "Aves",
+          "genus": "Aratinga",
+          "order": "Psittaciformes",
+          "family": "Psittacidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2479107,
+          "occurrences": 164,
+          "scientific_name": "Aratinga nana"
+        },
+        {
+          "class": "Aves",
+          "genus": "Amazona",
+          "order": "Psittaciformes",
+          "family": "Psittacidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2479618,
+          "occurrences": 154,
+          "scientific_name": "Amazona albifrons"
+        },
+        {
+          "class": "Aves",
+          "genus": "Zenaida",
+          "order": "Columbiformes",
+          "family": "Columbidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2495370,
+          "occurrences": 152,
+          "scientific_name": "Zenaida asiatica"
+        },
+        {
+          "class": "Aves",
+          "genus": "Ardea",
+          "order": "Pelecaniformes",
+          "family": "Ardeidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 9752617,
+          "occurrences": 147,
+          "scientific_name": "Ardea alba"
+        },
+        {
+          "class": "Aves",
+          "genus": "Pachyramphus",
+          "order": "Passeriformes",
+          "family": "Cotingidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5230329,
+          "occurrences": 144,
+          "scientific_name": "Pachyramphus aglaiae"
+        },
+        {
+          "class": "Aves",
+          "genus": "Icterus",
+          "order": "Passeriformes",
+          "family": "Icteridae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5229882,
+          "occurrences": 143,
+          "scientific_name": "Icterus cucullatus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Glaucidium",
+          "order": "Strigiformes",
+          "family": "Strigidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5232118,
+          "occurrences": 137,
+          "scientific_name": "Glaucidium brasilianum"
+        },
+        {
+          "class": "Aves",
+          "genus": "Setophaga",
+          "order": "Passeriformes",
+          "family": "Parulidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 6092631,
+          "occurrences": 136,
+          "scientific_name": "Setophaga virens"
+        },
+        {
+          "class": "Aves",
+          "genus": "Columbina",
+          "order": "Columbiformes",
+          "family": "Columbidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2495858,
+          "occurrences": 134,
+          "scientific_name": "Columbina talpacoti"
+        },
+        {
+          "class": "Aves",
+          "genus": "Piranga",
+          "order": "Passeriformes",
+          "family": "Cardinalidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2488485,
+          "occurrences": 132,
+          "scientific_name": "Piranga rubra"
+        },
+        {
+          "class": "Aves",
+          "genus": "Hylophilus",
+          "order": "Passeriformes",
+          "family": "Vireonidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5230500,
+          "occurrences": 129,
+          "scientific_name": "Hylophilus decurtatus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Euphonia",
+          "order": "Passeriformes",
+          "family": "Fringillidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2487949,
+          "occurrences": 128,
+          "scientific_name": "Euphonia hirundinacea"
+        },
+        {
+          "class": "Aves",
+          "genus": "Setophaga",
+          "order": "Passeriformes",
+          "family": "Parulidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2489985,
+          "occurrences": 125,
+          "scientific_name": "Setophaga ruticilla"
+        },
+        {
+          "class": "Aves",
+          "genus": "Amazilia",
+          "order": "Apodiformes",
+          "family": "Trochilidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2476417,
+          "occurrences": 124,
+          "scientific_name": "Amazilia rutila"
+        },
+        {
+          "class": "Aves",
+          "genus": "Tyrannus",
+          "order": "Passeriformes",
+          "family": "Tyrannidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5229662,
+          "occurrences": 121,
+          "scientific_name": "Tyrannus melancholicus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Crotophaga",
+          "order": "Cuculiformes",
+          "family": "Cuculidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2496211,
+          "occurrences": 119,
+          "scientific_name": "Crotophaga sulcirostris"
+        },
+        {
+          "class": "Aves",
+          "genus": "Myiarchus",
+          "order": "Passeriformes",
+          "family": "Tyrannidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2483531,
+          "occurrences": 117,
+          "scientific_name": "Myiarchus tuberculifer"
+        },
+        {
+          "class": "Aves",
+          "genus": "Momotus",
+          "order": "Coraciiformes",
+          "family": "Momotidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 6100745,
+          "occurrences": 115,
+          "scientific_name": "Momotus lessonii"
+        },
+        {
+          "class": "Aves",
+          "genus": "Saltator",
+          "order": "Passeriformes",
+          "family": "Thraupidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 9126320,
+          "occurrences": 106,
+          "scientific_name": "Saltator grandis"
+        },
+        {
+          "class": "Aves",
+          "genus": "Cyanocorax",
+          "order": "Passeriformes",
+          "family": "Corvidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2482574,
+          "occurrences": 105,
+          "scientific_name": "Cyanocorax yucatanicus"
+        },
+        {
+          "class": "Aves",
+          "genus": "Ortalis",
+          "order": "Galliformes",
+          "family": "Cracidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5229429,
+          "occurrences": 101,
+          "scientific_name": "Ortalis vetula"
+        },
+        {
+          "class": "Aves",
+          "genus": "Chlorestes",
+          "order": "Apodiformes",
+          "family": "Trochilidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 11055764,
+          "occurrences": 99,
+          "scientific_name": "Chlorestes candida"
+        },
+        {
+          "class": "Aves",
+          "genus": "Icterus",
+          "order": "Passeriformes",
+          "family": "Icteridae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5229869,
+          "occurrences": 99,
+          "scientific_name": "Icterus mesomelas"
+        },
+        {
+          "class": "Aves",
+          "genus": "Eucometis",
+          "order": "Passeriformes",
+          "family": "Thraupidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 2488524,
+          "occurrences": 98,
+          "scientific_name": "Eucometis penicillata"
+        },
+        {
+          "class": "Aves",
+          "genus": "Icterus",
+          "order": "Passeriformes",
+          "family": "Icteridae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5229889,
+          "occurrences": 95,
+          "scientific_name": "Icterus prosthemelas"
+        },
+        {
+          "class": "Aves",
+          "genus": "Rhynchocyclus",
+          "order": "Passeriformes",
+          "family": "Tyrannidae",
+          "phylum": "Chordata",
+          "kingdom": "Animalia",
+          "taxon_key": 5229708,
+          "occurrences": 93,
+          "scientific_name": "Rhynchocyclus brevirostris"
+        }
+      ],
       "bounding_box": {
-        "minLon": -87.6833082534461,
+        "maxLat": 20.75333405824656,
         "maxLon": -87.62492078403321,
         "minLat": 20.60710230146199,
-        "maxLat": 20.75333405824656
+        "minLon": -87.6833082534461
       },
+      "unique_species": 124,
       "species_by_class": {
         "Aves": 77,
         "Insecta": 10,
-        "Squamata": 12,
-        "Agaricomycetes": 1,
+        "Unknown": 2,
         "Amphibia": 5,
-        "Crocodylia": 1,
         "Mammalia": 5,
-        "Diplopoda": 1,
+        "Squamata": 12,
         "Arachnida": 1,
+        "Diplopoda": 1,
+        "Crocodylia": 1,
+        "Gastropoda": 1,
         "Liliopsida": 5,
         "Magnoliopsida": 3,
-        "Unknown": 2,
-        "Gastropoda": 1
+        "Agaricomycetes": 1
       },
-      "top_species": [
-        {
-          "scientific_name": "Ateles geoffroyi",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Mammalia",
-          "order": "Primates",
-          "family": "Atelidae",
-          "genus": "Ateles",
-          "taxon_key": 2436643,
-          "occurrences": 347
-        },
-        {
-          "scientific_name": "Eumomota superciliosa",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Coraciiformes",
-          "family": "Momotidae",
-          "genus": "Eumomota",
-          "taxon_key": 2475276,
-          "occurrences": 286
-        },
-        {
-          "scientific_name": "Quiscalus mexicanus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Icteridae",
-          "genus": "Quiscalus",
-          "taxon_key": 9476062,
-          "occurrences": 275
-        },
-        {
-          "scientific_name": "Cyanocorax yncas",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Corvidae",
-          "genus": "Cyanocorax",
-          "taxon_key": 2482565,
-          "occurrences": 268
-        },
-        {
-          "scientific_name": "Dives dives",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Icteridae",
-          "genus": "Dives",
-          "taxon_key": 2484434,
-          "occurrences": 267
-        },
-        {
-          "scientific_name": "Piaya cayana",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Cuculiformes",
-          "family": "Cuculidae",
-          "genus": "Piaya",
-          "taxon_key": 2496432,
-          "occurrences": 255
-        },
-        {
-          "scientific_name": "Myiozetetes similis",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Tyrannidae",
-          "genus": "Myiozetetes",
-          "taxon_key": 2482913,
-          "occurrences": 251
-        },
-        {
-          "scientific_name": "Setophaga magnolia",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Parulidae",
-          "genus": "Setophaga",
-          "taxon_key": 6093209,
-          "occurrences": 241
-        },
-        {
-          "scientific_name": "Tachybaptus dominicus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Podicipediformes",
-          "family": "Podicipedidae",
-          "genus": "Tachybaptus",
-          "taxon_key": 2482044,
-          "occurrences": 221
-        },
-        {
-          "scientific_name": "Xiphorhynchus flavigaster",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Furnariidae",
-          "genus": "Xiphorhynchus",
-          "taxon_key": 5230178,
-          "occurrences": 220
-        },
-        {
-          "scientific_name": "Cathartes aura",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Accipitriformes",
-          "family": "Cathartidae",
-          "genus": "Cathartes",
-          "taxon_key": 2481930,
-          "occurrences": 218
-        },
-        {
-          "scientific_name": "Cyclarhis gujanensis",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Vireonidae",
-          "genus": "Cyclarhis",
-          "taxon_key": 2487404,
-          "occurrences": 213
-        },
-        {
-          "scientific_name": "Vireo griseus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Vireonidae",
-          "genus": "Vireo",
-          "taxon_key": 2487413,
-          "occurrences": 206
-        },
-        {
-          "scientific_name": "Mniotilta varia",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Parulidae",
-          "genus": "Mniotilta",
-          "taxon_key": 2489613,
-          "occurrences": 201
-        },
-        {
-          "scientific_name": "Melanerpes aurifrons",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Piciformes",
-          "family": "Picidae",
-          "genus": "Melanerpes",
-          "taxon_key": 2478081,
-          "occurrences": 197
-        },
-        {
-          "scientific_name": "Icterus gularis",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Icteridae",
-          "genus": "Icterus",
-          "taxon_key": 5229893,
-          "occurrences": 190
-        },
-        {
-          "scientific_name": "Coragyps atratus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Accipitriformes",
-          "family": "Cathartidae",
-          "genus": "Coragyps",
-          "taxon_key": 2481942,
-          "occurrences": 190
-        },
-        {
-          "scientific_name": "Saltator atriceps",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Thraupidae",
-          "genus": "Saltator",
-          "taxon_key": 5230896,
-          "occurrences": 188
-        },
-        {
-          "scientific_name": "Amblycercus holosericeus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Icteridae",
-          "genus": "Amblycercus",
-          "taxon_key": 2484419,
-          "occurrences": 184
-        },
-        {
-          "scientific_name": "Trogon melanocephalus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Trogoniformes",
-          "family": "Trogonidae",
-          "genus": "Trogon",
-          "taxon_key": 2496699,
-          "occurrences": 183
-        },
-        {
-          "scientific_name": "Arremonops chloronotus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Passerellidae",
-          "genus": "Arremonops",
-          "taxon_key": 2491042,
-          "occurrences": 174
-        },
-        {
-          "scientific_name": "Trogon caligatus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Trogoniformes",
-          "family": "Trogonidae",
-          "genus": "Trogon",
-          "taxon_key": 5788446,
-          "occurrences": 173
-        },
-        {
-          "scientific_name": "Setophaga citrina",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Parulidae",
-          "genus": "Setophaga",
-          "taxon_key": 6093374,
-          "occurrences": 168
-        },
-        {
-          "scientific_name": "Podilymbus podiceps",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Podicipediformes",
-          "family": "Podicipedidae",
-          "genus": "Podilymbus",
-          "taxon_key": 2482077,
-          "occurrences": 167
-        },
-        {
-          "scientific_name": "Aratinga nana",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Psittaciformes",
-          "family": "Psittacidae",
-          "genus": "Aratinga",
-          "taxon_key": 2479107,
-          "occurrences": 164
-        },
-        {
-          "scientific_name": "Amazona albifrons",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Psittaciformes",
-          "family": "Psittacidae",
-          "genus": "Amazona",
-          "taxon_key": 2479618,
-          "occurrences": 154
-        },
-        {
-          "scientific_name": "Zenaida asiatica",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Columbiformes",
-          "family": "Columbidae",
-          "genus": "Zenaida",
-          "taxon_key": 2495370,
-          "occurrences": 152
-        },
-        {
-          "scientific_name": "Ardea alba",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Pelecaniformes",
-          "family": "Ardeidae",
-          "genus": "Ardea",
-          "taxon_key": 9752617,
-          "occurrences": 147
-        },
-        {
-          "scientific_name": "Pachyramphus aglaiae",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Cotingidae",
-          "genus": "Pachyramphus",
-          "taxon_key": 5230329,
-          "occurrences": 144
-        },
-        {
-          "scientific_name": "Icterus cucullatus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Icteridae",
-          "genus": "Icterus",
-          "taxon_key": 5229882,
-          "occurrences": 143
-        },
-        {
-          "scientific_name": "Glaucidium brasilianum",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Strigiformes",
-          "family": "Strigidae",
-          "genus": "Glaucidium",
-          "taxon_key": 5232118,
-          "occurrences": 137
-        },
-        {
-          "scientific_name": "Setophaga virens",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Parulidae",
-          "genus": "Setophaga",
-          "taxon_key": 6092631,
-          "occurrences": 136
-        },
-        {
-          "scientific_name": "Columbina talpacoti",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Columbiformes",
-          "family": "Columbidae",
-          "genus": "Columbina",
-          "taxon_key": 2495858,
-          "occurrences": 134
-        },
-        {
-          "scientific_name": "Piranga rubra",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Cardinalidae",
-          "genus": "Piranga",
-          "taxon_key": 2488485,
-          "occurrences": 132
-        },
-        {
-          "scientific_name": "Hylophilus decurtatus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Vireonidae",
-          "genus": "Hylophilus",
-          "taxon_key": 5230500,
-          "occurrences": 129
-        },
-        {
-          "scientific_name": "Euphonia hirundinacea",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Fringillidae",
-          "genus": "Euphonia",
-          "taxon_key": 2487949,
-          "occurrences": 128
-        },
-        {
-          "scientific_name": "Setophaga ruticilla",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Parulidae",
-          "genus": "Setophaga",
-          "taxon_key": 2489985,
-          "occurrences": 125
-        },
-        {
-          "scientific_name": "Amazilia rutila",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Apodiformes",
-          "family": "Trochilidae",
-          "genus": "Amazilia",
-          "taxon_key": 2476417,
-          "occurrences": 124
-        },
-        {
-          "scientific_name": "Tyrannus melancholicus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Tyrannidae",
-          "genus": "Tyrannus",
-          "taxon_key": 5229662,
-          "occurrences": 121
-        },
-        {
-          "scientific_name": "Crotophaga sulcirostris",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Cuculiformes",
-          "family": "Cuculidae",
-          "genus": "Crotophaga",
-          "taxon_key": 2496211,
-          "occurrences": 119
-        },
-        {
-          "scientific_name": "Myiarchus tuberculifer",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Tyrannidae",
-          "genus": "Myiarchus",
-          "taxon_key": 2483531,
-          "occurrences": 117
-        },
-        {
-          "scientific_name": "Momotus lessonii",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Coraciiformes",
-          "family": "Momotidae",
-          "genus": "Momotus",
-          "taxon_key": 6100745,
-          "occurrences": 115
-        },
-        {
-          "scientific_name": "Saltator grandis",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Thraupidae",
-          "genus": "Saltator",
-          "taxon_key": 9126320,
-          "occurrences": 106
-        },
-        {
-          "scientific_name": "Cyanocorax yucatanicus",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Corvidae",
-          "genus": "Cyanocorax",
-          "taxon_key": 2482574,
-          "occurrences": 105
-        },
-        {
-          "scientific_name": "Ortalis vetula",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Galliformes",
-          "family": "Cracidae",
-          "genus": "Ortalis",
-          "taxon_key": 5229429,
-          "occurrences": 101
-        },
-        {
-          "scientific_name": "Chlorestes candida",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Apodiformes",
-          "family": "Trochilidae",
-          "genus": "Chlorestes",
-          "taxon_key": 11055764,
-          "occurrences": 99
-        },
-        {
-          "scientific_name": "Icterus mesomelas",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Icteridae",
-          "genus": "Icterus",
-          "taxon_key": 5229869,
-          "occurrences": 99
-        },
-        {
-          "scientific_name": "Eucometis penicillata",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Thraupidae",
-          "genus": "Eucometis",
-          "taxon_key": 2488524,
-          "occurrences": 98
-        },
-        {
-          "scientific_name": "Icterus prosthemelas",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Icteridae",
-          "genus": "Icterus",
-          "taxon_key": 5229889,
-          "occurrences": 95
-        },
-        {
-          "scientific_name": "Rhynchocyclus brevirostris",
-          "kingdom": "Animalia",
-          "phylum": "Chordata",
-          "class": "Aves",
-          "order": "Passeriformes",
-          "family": "Tyrannidae",
-          "genus": "Rhynchocyclus",
-          "taxon_key": 5229708,
-          "occurrences": 93
-        }
-      ]
+      "total_occurrences": 16660
     },
     "iucn_threatened": {
       "source": "GBIF IUCN Red List data",
-      "critically_endangered": [
-        "Cedrela odorata"
-      ],
       "endangered": [
         "Alouatta pigra",
         "Ateles geoffroyi"
@@ -1049,11 +1130,13 @@
         "Crax rubra",
         "Chaetura pelagica"
       ],
-      "total_threatened": 5
+      "total_threatened": 5,
+      "critically_endangered": [
+        "Cedrela odorata"
+      ]
     },
     "simec_nom059": {
       "source": "CONANP SIMEC (NOM-059-SEMARNAT-2010)",
-      "matched_simec_name": "APFF Otoch Ma’ax Yetel Kooh",
       "endangered_P": [
         "Alouatta pigra",
         "Ateles geoffroyi",
@@ -1079,6 +1162,9 @@
         "Thrinax radiata",
         "Zinnia violacea"
       ],
+      "total_species": 46,
+      "matched_simec_name": "APFF Otoch Ma’ax Yetel Kooh",
+      "probably_extinct_E": [],
       "special_protection_Pr": [
         "Amazona albifrons",
         "Aratinga nana",
@@ -1105,511 +1191,323 @@
         "Trogon collaris",
         "Vireo pallens",
         "Xenops minutus"
-      ],
-      "probably_extinct_E": [],
-      "total_species": 46
+      ]
     },
     "nom059_enciclovida": {
       "source": "NOM-059-SEMARNAT (via Enciclovida)",
       "endangered_P": [],
       "threatened_A": [],
-      "special_protection_Pr": [],
-      "probably_extinct_E": [],
       "total_nom059": 0,
-      "species_checked": 50
+      "species_checked": 50,
+      "probably_extinct_E": [],
+      "special_protection_Pr": []
     },
     "inegi_census": {
       "source": "INEGI Censo 2020 (ITER)",
-      "localities_in_area": 3,
-      "total_population": 169,
-      "female_population": 72,
-      "male_population": 95,
-      "female_percent": 42.6,
-      "indigenous_speakers_3plus": 153,
-      "indigenous_speakers_5plus": 147,
-      "indigenous_households_pop": 163,
-      "afromexican_population": 0,
-      "population_60plus": 14,
-      "economically_active": 60,
       "employed": 60,
       "unemployed": 0,
-      "illiterate_15plus": 23,
-      "no_schooling_15plus": 24,
-      "post_basic_education_18plus": 19,
-      "avg_schooling_years": 4.3,
-      "no_health_services": 67,
-      "with_health_services": 100,
+      "female_percent": 42.6,
+      "homes_no_water": 4,
+      "male_population": 95,
       "with_disability": 5,
       "homes_dirt_floor": 11,
-      "homes_no_electricity": 2,
-      "homes_no_water": 4,
+      "total_households": 34,
+      "total_population": 169,
+      "female_population": 72,
       "homes_no_drainage": 31,
       "homes_no_services": 2,
-      "total_households": 34,
-      "female_headed_households": 6,
+      "illiterate_15plus": 23,
+      "population_60plus": 14,
       "sample_localities": [
         "Chun Yaxché",
         "Punta Laguna",
         "Santa Clara"
-      ]
+      ],
+      "localities_in_area": 3,
+      "no_health_services": 67,
+      "avg_schooling_years": 4.3,
+      "economically_active": 60,
+      "no_schooling_15plus": 24,
+      "homes_no_electricity": 2,
+      "with_health_services": 100,
+      "afromexican_population": 0,
+      "female_headed_households": 6,
+      "indigenous_households_pop": 163,
+      "indigenous_speakers_3plus": 153,
+      "indigenous_speakers_5plus": 147,
+      "post_basic_education_18plus": 19
     },
     "extracted_at": "2026-01-03T01:06:43.036207",
     "coneval_irs": {
       "source": "CONEVAL IRS 2020 (Indice de Rezago Social)",
+      "extracted_at": "2026-01-03T11:21:09.270916",
       "data_available": true,
-      "municipalities_count": 1,
-      "total_population": 333800,
-      "irs_weighted_mean": -0.9893,
-      "irs_predominant_category": "Muy bajo",
-      "irs_category_distribution": {
-        "Muy bajo": 1
-      },
-      "municipalities": [
-        {
-          "name": "Solidaridad",
-          "state": "Quintana Roo",
-          "population": 333800,
-          "irs_index": -0.9893,
-          "irs_category": "Muy bajo",
-          "national_rank": 2166
-        }
-      ],
       "interpretation": {
         "irs_index": "Social Lag Index: negative values = low lag (better conditions), positive = high lag (worse conditions)",
         "categories": "Muy bajo (best) → Bajo → Medio → Alto → Muy alto (worst)",
         "weighted_mean": "Population-weighted average across all municipalities intersecting ANP"
       },
-      "extracted_at": "2026-01-03T11:21:09.270916"
+      "municipalities": [
+        {
+          "name": "Solidaridad",
+          "state": "Quintana Roo",
+          "irs_index": -0.9893,
+          "population": 333800,
+          "irs_category": "Muy bajo",
+          "national_rank": 2166
+        }
+      ],
+      "total_population": 333800,
+      "irs_weighted_mean": -0.9893,
+      "municipalities_count": 1,
+      "irs_predominant_category": "Muy bajo",
+      "irs_category_distribution": {
+        "Muy bajo": 1
+      }
     },
     "inaturalist": {
       "source": "iNaturalist (Naturalista)",
-      "data_available": true,
-      "total_observations": 1545,
-      "unique_species": 470,
-      "species_by_group": {
-        "Mammalia": 16,
-        "Amphibia": 13,
-        "Reptilia": 49,
-        "Aves": 170,
-        "Plantae": 79,
-        "Insecta": 110,
-        "Actinopterygii": 4,
-        "Fungi": 16,
-        "Arachnida": 10,
-        "Mollusca": 1,
-        "Animalia": 2
-      },
       "top_species": [
         {
-          "scientific_name": "Ateles geoffroyi",
+          "taxon_id": 43411,
           "common_name": "Mono Araña Centroamericano",
           "iconic_taxon": "Mammalia",
           "observations": 47,
-          "taxon_id": 43411
+          "scientific_name": "Ateles geoffroyi"
         },
         {
-          "scientific_name": "Incilius valliceps",
+          "taxon_id": 65860,
           "common_name": "Sapo costero",
           "iconic_taxon": "Amphibia",
           "observations": 40,
-          "taxon_id": 65860
+          "scientific_name": "Incilius valliceps"
         },
         {
-          "scientific_name": "Anolis lemurinus",
+          "taxon_id": 116430,
           "common_name": "Anolis fantasma",
           "iconic_taxon": "Reptilia",
           "observations": 38,
-          "taxon_id": 116430
+          "scientific_name": "Anolis lemurinus"
         },
         {
-          "scientific_name": "Eumomota superciliosa",
+          "taxon_id": 2168,
           "common_name": "Momoto Cejas Azules",
           "iconic_taxon": "Aves",
           "observations": 26,
-          "taxon_id": 2168
+          "scientific_name": "Eumomota superciliosa"
         },
         {
-          "scientific_name": "Rhinella horribilis",
+          "taxon_id": 517119,
           "common_name": "Sapo gigante",
           "iconic_taxon": "Amphibia",
           "observations": 26,
-          "taxon_id": 517119
+          "scientific_name": "Rhinella horribilis"
         },
         {
-          "scientific_name": "Basiliscus vittatus",
+          "taxon_id": 33118,
           "common_name": "Toloque rayado",
           "iconic_taxon": "Reptilia",
           "observations": 24,
-          "taxon_id": 33118
+          "scientific_name": "Basiliscus vittatus"
         },
         {
-          "scientific_name": "Driophlox fuscicauda",
+          "taxon_id": 1586402,
           "common_name": "Piranga Hormiguera Garganta Roja",
           "iconic_taxon": "Aves",
           "observations": 24,
-          "taxon_id": 1586402
+          "scientific_name": "Driophlox fuscicauda"
         },
         {
-          "scientific_name": "Tachybaptus dominicus",
+          "taxon_id": 4239,
           "common_name": "Zambullidor Menor",
           "iconic_taxon": "Aves",
           "observations": 23,
-          "taxon_id": 4239
+          "scientific_name": "Tachybaptus dominicus"
         },
         {
-          "scientific_name": "Holcosus undulatus",
+          "taxon_id": 318696,
           "common_name": "Lagartija arcoiris",
           "iconic_taxon": "Reptilia",
           "observations": 22,
-          "taxon_id": 318696
+          "scientific_name": "Holcosus undulatus"
         },
         {
-          "scientific_name": "Agalychnis taylori",
+          "taxon_id": 1273649,
           "common_name": "Rana de árbol de ojos rojos",
           "iconic_taxon": "Amphibia",
           "observations": 22,
-          "taxon_id": 1273649
+          "scientific_name": "Agalychnis taylori"
         },
         {
-          "scientific_name": "Anolis rodriguezii",
+          "taxon_id": 539334,
           "common_name": "anolis liso del sureste",
           "iconic_taxon": "Reptilia",
           "observations": 21,
-          "taxon_id": 539334
+          "scientific_name": "Anolis rodriguezii"
         },
         {
-          "scientific_name": "Trogon caligatus",
+          "taxon_id": 73523,
           "common_name": "Coa Violácea Norteña",
           "iconic_taxon": "Aves",
           "observations": 20,
-          "taxon_id": 73523
+          "scientific_name": "Trogon caligatus"
         },
         {
-          "scientific_name": "Lithobates brownorum",
+          "taxon_id": 70725,
           "common_name": "Rana leopardo",
           "iconic_taxon": "Amphibia",
           "observations": 19,
-          "taxon_id": 70725
+          "scientific_name": "Lithobates brownorum"
         },
         {
-          "scientific_name": "Corytophanes hernandesii",
+          "taxon_id": 33116,
           "common_name": "Turipache de montaña",
           "iconic_taxon": "Reptilia",
           "observations": 18,
-          "taxon_id": 33116
+          "scientific_name": "Corytophanes hernandesii"
         },
         {
-          "scientific_name": "Aechmea bracteata",
+          "taxon_id": 210961,
           "common_name": "Gallito",
           "iconic_taxon": "Plantae",
           "observations": 17,
-          "taxon_id": 210961
+          "scientific_name": "Aechmea bracteata"
         },
         {
-          "scientific_name": "Triprion petasatus",
+          "taxon_id": 24436,
           "common_name": "Rana cabeza de pala",
           "iconic_taxon": "Amphibia",
           "observations": 16,
-          "taxon_id": 24436
+          "scientific_name": "Triprion petasatus"
         },
         {
-          "scientific_name": "Trogon melanocephalus",
+          "taxon_id": 20737,
           "common_name": "Coa Cabeza Negra",
           "iconic_taxon": "Aves",
           "observations": 15,
-          "taxon_id": 20737
+          "scientific_name": "Trogon melanocephalus"
         },
         {
-          "scientific_name": "Smilisca baudinii",
+          "taxon_id": 24277,
           "common_name": "Rana arborícola mexicana",
           "iconic_taxon": "Amphibia",
           "observations": 14,
-          "taxon_id": 24277
+          "scientific_name": "Smilisca baudinii"
         },
         {
-          "scientific_name": "Piaya cayana",
+          "taxon_id": 1758,
           "common_name": "Cuclillo Canelo Común",
           "iconic_taxon": "Aves",
           "observations": 13,
-          "taxon_id": 1758
+          "scientific_name": "Piaya cayana"
         },
         {
-          "scientific_name": "Coleonyx elegans",
+          "taxon_id": 33384,
           "common_name": "Geco yucateco de bandas",
           "iconic_taxon": "Reptilia",
           "observations": 13,
-          "taxon_id": 33384
+          "scientific_name": "Coleonyx elegans"
         },
         {
-          "scientific_name": "Caligo telamonius",
+          "taxon_id": 55010,
           "common_name": "Mariposa Búho pálido",
           "iconic_taxon": "Insecta",
           "observations": 13,
-          "taxon_id": 55010
+          "scientific_name": "Caligo telamonius"
         },
         {
-          "scientific_name": "Hypopachus variolosus",
+          "taxon_id": 25185,
           "common_name": "Rana termitera",
           "iconic_taxon": "Amphibia",
           "observations": 12,
-          "taxon_id": 25185
+          "scientific_name": "Hypopachus variolosus"
         },
         {
-          "scientific_name": "Alouatta pigra",
+          "taxon_id": 43439,
           "common_name": "Mono aullador negro",
           "iconic_taxon": "Mammalia",
           "observations": 12,
-          "taxon_id": 43439
+          "scientific_name": "Alouatta pigra"
         },
         {
-          "scientific_name": "Eucometis penicillata",
+          "taxon_id": 10698,
           "common_name": "Tangara Cabeza Gris",
           "iconic_taxon": "Aves",
           "observations": 11,
-          "taxon_id": 10698
+          "scientific_name": "Eucometis penicillata"
         },
         {
-          "scientific_name": "Siproeta stelenes",
+          "taxon_id": 50336,
           "common_name": "Mariposa malaquita",
           "iconic_taxon": "Insecta",
           "observations": 11,
-          "taxon_id": 50336
+          "scientific_name": "Siproeta stelenes"
         },
         {
-          "scientific_name": "Rupornis magnirostris",
+          "taxon_id": 201041,
           "common_name": "Aguililla caminera",
           "iconic_taxon": "Aves",
           "observations": 10,
-          "taxon_id": 201041
+          "scientific_name": "Rupornis magnirostris"
         },
         {
-          "scientific_name": "Xiphorhynchus flavigaster",
+          "taxon_id": 11051,
           "common_name": "Trepatroncos bigotudo",
           "iconic_taxon": "Aves",
           "observations": 9,
-          "taxon_id": 11051
+          "scientific_name": "Xiphorhynchus flavigaster"
         },
         {
-          "scientific_name": "Craugastor yucatanensis",
+          "taxon_id": 65314,
           "common_name": "Rana ladradora yucateca",
           "iconic_taxon": "Amphibia",
           "observations": 9,
-          "taxon_id": 65314
+          "scientific_name": "Craugastor yucatanensis"
         },
         {
-          "scientific_name": "Setophaga magnolia",
+          "taxon_id": 145235,
           "common_name": "Chipe de Magnolias",
           "iconic_taxon": "Aves",
           "observations": 9,
-          "taxon_id": 145235
+          "scientific_name": "Setophaga magnolia"
         },
         {
-          "scientific_name": "Anthurium schlechtendalii",
+          "taxon_id": 281579,
           "common_name": "cola de faisán",
           "iconic_taxon": "Plantae",
           "observations": 9,
-          "taxon_id": 281579
+          "scientific_name": "Anthurium schlechtendalii"
         }
       ],
       "bounding_box": {
-        "minLon": -87.6833082534461,
+        "maxLat": 20.753334058246583,
         "maxLon": -87.62492078403321,
         "minLat": 20.607102301461964,
-        "maxLat": 20.753334058246583
+        "minLon": -87.6833082534461
+      },
+      "extracted_at": "2026-01-03T11:51:31.673196",
+      "data_available": true,
+      "interpretation": {
+        "note": "Citizen science data - effort varies by accessibility",
+        "species": "Unique species identified by community",
+        "observations": "Total research-grade observations in area"
       },
       "quality_filter": "research-grade only",
-      "interpretation": {
-        "observations": "Total research-grade observations in area",
-        "species": "Unique species identified by community",
-        "note": "Citizen science data - effort varies by accessibility"
+      "unique_species": 470,
+      "species_by_group": {
+        "Aves": 170,
+        "Fungi": 16,
+        "Insecta": 110,
+        "Plantae": 79,
+        "Amphibia": 13,
+        "Animalia": 2,
+        "Mammalia": 16,
+        "Mollusca": 1,
+        "Reptilia": 49,
+        "Arachnida": 10,
+        "Actinopterygii": 4
       },
-      "extracted_at": "2026-01-03T11:51:31.673196"
-    },
-    "cenapred_disasters": {
-      "source": "CENAPRED Atlas Nacional de Riesgos 2000-2023",
-      "period": "2000-2023",
-      "filter": "Hidrometeorológico only",
-      "match_method": "municipality_overlap",
-      "municipality_matched_events": 13,
-      "state_matched_events": 24,
-      "total_events": 37,
-      "total_deaths": 133,
-      "total_affected": 443178,
-      "total_houses_damaged": 35520,
-      "total_damage_million_pesos": 5923.16,
-      "by_type": {
-        "Temperatura extrema": {
-          "events": 13,
-          "deaths": 37,
-          "affected": 214,
-          "damage_mdp": 31.04
-        },
-        "Lluvias": {
-          "events": 12,
-          "deaths": 95,
-          "affected": 270160,
-          "damage_mdp": 2005.51
-        },
-        "Ciclón tropical": {
-          "events": 7,
-          "deaths": 1,
-          "affected": 135418,
-          "damage_mdp": 3756.11
-        },
-        "Granizada": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 100,
-          "damage_mdp": 0.09
-        },
-        "Fuertes vientos": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 37187,
-          "damage_mdp": 67.78
-        },
-        "Inundación": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 0,
-          "damage_mdp": 62.57
-        },
-        "Tormenta tropical": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 98,
-          "damage_mdp": 0.05
-        },
-        "Bajas temperaturas": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 1,
-          "damage_mdp": 0.0
-        }
-      },
-      "by_year": {
-        "2000": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 0,
-          "damage_mdp": 42.48
-        },
-        "2001": {
-          "events": 2,
-          "deaths": 95,
-          "affected": 129454,
-          "damage_mdp": 396.9
-        },
-        "2002": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 100,
-          "damage_mdp": 1.36
-        },
-        "2003": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 182,
-          "damage_mdp": 0.0
-        },
-        "2004": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 4140,
-          "damage_mdp": 0.24
-        },
-        "2005": {
-          "events": 1,
-          "deaths": 0,
-          "affected": 10112,
-          "damage_mdp": 1111.0
-        },
-        "2007": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 97920,
-          "damage_mdp": 2337.59
-        },
-        "2013": {
-          "events": 2,
-          "deaths": 1,
-          "affected": 0,
-          "damage_mdp": 0.0
-        },
-        "2014": {
-          "events": 3,
-          "deaths": 2,
-          "affected": 32718,
-          "damage_mdp": 248.15
-        },
-        "2015": {
-          "events": 3,
-          "deaths": 2,
-          "affected": 103811,
-          "damage_mdp": 0.0
-        },
-        "2016": {
-          "events": 2,
-          "deaths": 4,
-          "affected": 37192,
-          "damage_mdp": 67.78
-        },
-        "2017": {
-          "events": 1,
-          "deaths": 1,
-          "affected": 10,
-          "damage_mdp": 0.0
-        },
-        "2018": {
-          "events": 6,
-          "deaths": 2,
-          "affected": 13,
-          "damage_mdp": 1339.14
-        },
-        "2019": {
-          "events": 1,
-          "deaths": 7,
-          "affected": 36,
-          "damage_mdp": 0.0
-        },
-        "2020": {
-          "events": 4,
-          "deaths": 3,
-          "affected": 27364,
-          "damage_mdp": 378.51
-        },
-        "2021": {
-          "events": 2,
-          "deaths": 0,
-          "affected": 4,
-          "damage_mdp": 0.0
-        },
-        "2022": {
-          "events": 1,
-          "deaths": 1,
-          "affected": 19,
-          "damage_mdp": 0.0
-        },
-        "2023": {
-          "events": 1,
-          "deaths": 15,
-          "affected": 103,
-          "damage_mdp": 0.0
-        }
-      },
-      "worst_event": {
-        "date": "2001-09-21",
-        "type": "Lluvias",
-        "description": ". En el mes de Septiembre  fue el mes que se pesento con mayor intensidad el fenomeno, provocando un total  de 95 personas muertas entre los 4 estados, Chiapas, Quintana Roo, Michoacan y Nuevo Leon con una poblacion afectada de 126, 954 personas, un total de de 14,102 viviendas dañadas, 18 escuelas ",
-        "deaths": 95,
-        "affected": 126954,
-        "houses_damaged": 14102,
-        "damage_mdp": 396.9,
-        "state": "Chiapas, Michoacan, Nuevo Leon, Quintana Roo",
-        "municipalities": "Varios Municipios"
-      },
-      "data_available": true,
-      "extracted_at": "2026-02-16T01:18:46.455326"
+      "total_observations": 1545
     }
   }
 }

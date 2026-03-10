@@ -307,17 +307,17 @@ def load_anp_municipalities(anp_id, data_file_path):
 def match_event_to_anp(event, anp_info):
     """
     Check if a CENAPRED event matches an ANP.
-    Returns match type: 'municipality', 'state', or None.
+    Returns match type: 'municipality' or None.
 
-    Strategy:
-    1. Check if any event state matches any ANP state
-    2. If municipality data available, check for municipality overlap
-    3. If no municipality data or event has "Varios Municipios", use state-level match
+    Strategy (municipality-only, no state-level fallback):
+    1. Check if any event state matches any ANP state (quick filter)
+    2. Require municipality overlap — both ANP and event must have municipality data
+    3. If either side lacks municipality data, no match (returns None)
     """
     event_states = event['estados']
     anp_states = anp_info['estados']
 
-    # Step 1: State match
+    # Step 1: State match (quick filter — skip if not even the same state)
     state_match = False
     for es in event_states:
         if es in anp_states:
@@ -327,29 +327,25 @@ def match_event_to_anp(event, anp_info):
     if not state_match:
         return None
 
-    # Step 2: If ANP has municipality data, try municipality matching
-    if anp_info['municipalities'] and event['municipios']:
-        anp_muni_names = set(m['name_normalized'] for m in anp_info['municipalities'])
-        event_munis = set(event['municipios'])
-
-        # Direct name match
-        if anp_muni_names & event_munis:
-            return 'municipality'
-
-        # Fuzzy: check if any event municipality name is contained in any ANP municipality name or vice versa
-        for em in event_munis:
-            for am in anp_muni_names:
-                if em and am and (em in am or am in em):
-                    return 'municipality'
-
-        # No municipality match - this event is in the same state but different municipalities
-        # Don't include it (too far from ANP)
+    # Step 2: Require municipality overlap on both sides
+    if not anp_info['municipalities'] or not event['municipios']:
+        # No municipality data on ANP or event — cannot confirm overlap
         return None
 
-    # Step 3: No municipality data on event or ANP → state-level match
-    if state_match:
-        return 'state'
+    anp_muni_names = set(m['name_normalized'] for m in anp_info['municipalities'])
+    event_munis = set(event['municipios'])
 
+    # Direct name match
+    if anp_muni_names & event_munis:
+        return 'municipality'
+
+    # Fuzzy: check if any event municipality name is contained in any ANP municipality name or vice versa
+    for em in event_munis:
+        for am in anp_muni_names:
+            if em and am and (em in am or am in em):
+                return 'municipality'
+
+    # No municipality match
     return None
 
 
