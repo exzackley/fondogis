@@ -229,6 +229,133 @@ def extract_slr_projection(centroid_point, buffer_km=50):
         return None
 
 
+def extract_slr_rate_coastal(anp_boundary, buffer_km=75):
+    """Extract SLR rate from the nearest ocean pixel to the ANP boundary.
+
+    Uses inverse-distance-squared weighting so the closest ocean pixel
+    dominates the result (~90%+ of weight). This is more accurate for
+    coastal ANPs whose centroids may be inland.
+
+    Args:
+        anp_boundary: ee.Geometry of the ANP polygon
+        buffer_km: Buffer radius in km to search for ocean pixels
+
+    Returns:
+        dict with coastal rate info or None
+    """
+    try:
+        slp = ee.ImageCollection(IPCC_SLP_COLLECTION)
+        img_2020 = slp.filter(ee.Filter.eq('system:index', 'ssp585_2020')).first()
+
+        search_zone = anp_boundary.buffer(buffer_km * 1000)
+        boundary_fc = ee.FeatureCollection([ee.Feature(anp_boundary)])
+
+        # Distance from each pixel to the ANP boundary (meters), min 1m to avoid /0
+        distance = boundary_fc.distance(buffer_km * 1000).max(1)
+        # Inverse-square weight — closest pixels dominate
+        weight = distance.pow(-2)
+
+        rate_img = img_2020.select([RATE_BAND, RATE_BAND_LOW, RATE_BAND_HIGH])
+
+        # Weighted rate: sum(rate * w) / sum(w)
+        weighted = rate_img.multiply(weight)
+        combined = weighted.addBands(weight.rename('weight'))
+
+        stats = combined.reduceRegion(
+            reducer=ee.Reducer.sum(),
+            geometry=search_zone,
+            scale=50000,
+            maxPixels=1e6
+        ).getInfo()
+
+        w_sum = stats.get('weight')
+        rate_sum = stats.get(RATE_BAND)
+
+        if w_sum and w_sum > 0 and rate_sum is not None:
+            rate = rate_sum / w_sum
+            low_sum = stats.get(RATE_BAND_LOW, 0) or 0
+            high_sum = stats.get(RATE_BAND_HIGH, 0) or 0
+            return {
+                'rate_mm_per_year': round(rate, 2),
+                'rate_low_mm_per_year': round(low_sum / w_sum, 2),
+                'rate_high_mm_per_year': round(high_sum / w_sum, 2),
+                'method': 'inverse_distance_weighted',
+                'buffer_km': buffer_km,
+                'source': 'IPCC AR6 SLP (2020, nearest-coast IDW)',
+            }
+
+        # Try larger buffer if no ocean pixels found
+        if buffer_km < 150:
+            return extract_slr_rate_coastal(anp_boundary, buffer_km=150)
+
+        return None
+
+    except Exception as e:
+        print(f"    Warning: Coastal SLR rate extraction failed: {e}")
+        return None
+
+
+def extract_slr_projection_coastal(anp_boundary, buffer_km=75):
+    """Extract projected SLR by 2050 from the nearest ocean pixel to the ANP boundary.
+
+    Same inverse-distance weighting approach as extract_slr_rate_coastal.
+
+    Args:
+        anp_boundary: ee.Geometry of the ANP polygon
+        buffer_km: Buffer radius in km
+
+    Returns:
+        dict with coastal projection info or None
+    """
+    try:
+        slp = ee.ImageCollection(IPCC_SLP_COLLECTION)
+        img_2050 = slp.filter(ee.Filter.eq('system:index', 'ssp585_2050')).first()
+
+        search_zone = anp_boundary.buffer(buffer_km * 1000)
+        boundary_fc = ee.FeatureCollection([ee.Feature(anp_boundary)])
+
+        distance = boundary_fc.distance(buffer_km * 1000).max(1)
+        weight = distance.pow(-2)
+
+        value_img = img_2050.select([VALUE_BAND, VALUE_BAND_LOW, VALUE_BAND_HIGH])
+        weighted = value_img.multiply(weight)
+        combined = weighted.addBands(weight.rename('weight'))
+
+        stats = combined.reduceRegion(
+            reducer=ee.Reducer.sum(),
+            geometry=search_zone,
+            scale=50000,
+            maxPixels=1e6
+        ).getInfo()
+
+        w_sum = stats.get('weight')
+        value_sum = stats.get(VALUE_BAND)
+
+        if w_sum and w_sum > 0 and value_sum is not None:
+            value_mm = value_sum / w_sum
+            low_sum = stats.get(VALUE_BAND_LOW, 0) or 0
+            high_sum = stats.get(VALUE_BAND_HIGH, 0) or 0
+            return {
+                'slr_2050_mm': round(value_mm, 1),
+                'slr_2050_cm': round(value_mm / 10.0, 1),
+                'slr_2050_low_cm': round((low_sum / w_sum) / 10.0, 1),
+                'slr_2050_high_cm': round((high_sum / w_sum) / 10.0, 1),
+                'scenario': 'SSP5-8.5',
+                'method': 'inverse_distance_weighted',
+                'buffer_km': buffer_km,
+                'source': 'IPCC AR6 Sea Level Projections (nearest-coast IDW)',
+            }
+
+        if buffer_km < 150:
+            return extract_slr_projection_coastal(anp_boundary, buffer_km=150)
+
+        return None
+
+    except Exception as e:
+        print(f"    Warning: Coastal SLR projection extraction failed: {e}")
+        return None
+
+
 def extract_inundation_risk(boundary_geometry, bounds_geometry):
     """Calculate percentage of ANP area below 1m elevation.
 
@@ -312,7 +439,7 @@ def extract_sea_level_rise(anp_id, anp_data, boundary_geojson):
         result['error'] = 'No centroid geometry available'
         return result
 
-    # 1. Observed SLR rate
+    # 1. Observed SLR rate (centroid-based, for backward compatibility)
     rate_data = extract_slr_rate(centroid_point)
     if rate_data:
         result['observed_trend_mm_per_year'] = rate_data['rate_mm_per_year']
@@ -326,7 +453,20 @@ def extract_sea_level_rise(anp_id, anp_data, boundary_geojson):
         result['observed_trend_mm_per_year'] = None
         result['observed_period'] = None
 
-    # 2. Projected SLR by 2050
+    # 1b. Coastal SLR rate (nearest ocean pixel to ANP boundary)
+    if boundary_geom:
+        coastal_rate = extract_slr_rate_coastal(boundary_geom)
+        if coastal_rate:
+            result['observed_trend_coastal_mm_per_year'] = coastal_rate['rate_mm_per_year']
+            result['observed_trend_coastal_range_mm_per_year'] = [
+                coastal_rate['rate_low_mm_per_year'],
+                coastal_rate['rate_high_mm_per_year']
+            ]
+            result['coastal_extraction_method'] = coastal_rate['method']
+            result['coastal_buffer_km'] = coastal_rate['buffer_km']
+            result['data_available'] = True
+
+    # 2. Projected SLR by 2050 (centroid-based)
     proj_data = extract_slr_projection(centroid_point)
     if proj_data:
         result['projected_slr_2050_cm'] = proj_data['slr_2050_cm']
@@ -341,6 +481,17 @@ def extract_sea_level_rise(anp_id, anp_data, boundary_geojson):
         result['projected_slr_2050_cm'] = None
         result['projected_scenario'] = 'SSP5-8.5'
         result['projected_quantile'] = 0.5
+
+    # 2b. Coastal SLR projection (nearest ocean pixel)
+    if boundary_geom:
+        coastal_proj = extract_slr_projection_coastal(boundary_geom)
+        if coastal_proj:
+            result['projected_slr_2050_coastal_cm'] = coastal_proj['slr_2050_cm']
+            result['projected_slr_2050_coastal_range_cm'] = [
+                coastal_proj['slr_2050_low_cm'],
+                coastal_proj['slr_2050_high_cm']
+            ]
+            result['data_available'] = True
 
     # 3. Inundation risk
     inundation_data = extract_inundation_risk(boundary_geom, bounds_geom)
@@ -404,11 +555,14 @@ def process_anp(anp_id, use_database=True):
         # Print summary
         if slr_data.get('data_available'):
             rate = slr_data.get('observed_trend_mm_per_year')
+            coastal_rate = slr_data.get('observed_trend_coastal_mm_per_year')
             proj = slr_data.get('projected_slr_2050_cm')
             inund = slr_data.get('inundation_pct_at_1m')
             parts = []
             if rate is not None:
                 parts.append(f"rate={rate}mm/yr")
+            if coastal_rate is not None:
+                parts.append(f"coastal={coastal_rate}mm/yr")
             if proj is not None:
                 parts.append(f"2050={proj}cm")
             if inund is not None:

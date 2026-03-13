@@ -47,6 +47,11 @@ python3 add_coneval_poverty.py                  # CONEVAL social lag index
 python3 add_inaturalist_data.py                 # iNaturalist observations
 python3 extract_external_data.py --all          # GBIF, SIMEC, INEGI
 
+# Coastal ANP data layers
+python3 add_cenapred_disasters.py                    # CENAPRED hydrometeorological events
+python3 add_declaratorias_riesgo.py                  # Federal disaster/emergency declarations
+python3 add_sea_level_rise.py                        # IPCC AR6 SLR + Copernicus DEM inundation
+
 # Climate data (3 separate systems - see Climate Data Architecture)
 python3 add_climate_projections.py "sierra_gorda"   # GEE multi-period projections
 python3 scrape_climate_ssr.py "sierra_gorda"        # SSR API 19 indicators
@@ -70,6 +75,9 @@ python3 -m http.server 8000
 # Main dashboard:  http://localhost:8000/index.html
 # Admin panel:     http://localhost:8000/admin.html
 # Climate heatmap: http://localhost:8000/climate_heatmap.html
+# Coastal risk:    http://localhost:8000/coastal_risk_table.html
+# L&D proposal:   http://localhost:8000/loss_damage_proposal.html
+# Data dictionary: http://localhost:8000/data_dictionary.html
 ```
 
 ## Architecture
@@ -241,6 +249,16 @@ python3 add_climate_projections.py "calakmul"
 
 Do NOT run GEE batch operations via automated tool calls - they will timeout.
 
+### Coastal ANPs & Loss/Damage Analysis
+
+39 coastal ANPs form a subset used for the loss & damage proposal. Key architecture:
+
+- **`coastal_anps_registry.py`** provides `get_coastal_anps()`, `is_coastal_anp()`, `get_coastal_anp_municipalities()`, etc.
+- **`reference_data/coastal_anp_municipalities.json`** is the authoritative source of truth for which municipalities belong to each coastal ANP (90 pairs across 39 ANPs). This replaces CONEVAL/INEGI spatial intersection for coastal ANPs.
+- Municipality matching in `add_cenapred_disasters.py` and `add_declaratorias_riesgo.py` uses the authoritative list for coastal ANPs, with CONEVAL fallback for non-coastal ANPs.
+- **SLR extraction** uses inverse-distance-weighted sampling from the nearest ocean pixel to the ANP boundary polygon (not centroid), stored as `observed_trend_coastal_mm_per_year`.
+- **Proposal pipeline**: `scripts/build_proposal_data.py` → `loss_damage_proposal_data.json`; `scripts/build_correlations.py` → `loss_damage_correlations.json`; both consumed by `loss_damage_proposal.html`.
+
 ### File Locations
 
 - `anp_data/` - Generated JSON files (DO NOT hand-edit, regenerate from database)
@@ -250,8 +268,20 @@ Do NOT run GEE batch operations via automated tool calls - they will timeout.
 - `scripts/` - Import/export utilities
   - `scripts/import_json_to_db.py` - One-time JSON → DB import
   - `scripts/export_db_to_json.py` - Batch DB → JSON export
+  - `scripts/build_proposal_data.py` - Build loss & damage proposal data JSON
+  - `scripts/build_correlations.py` - Calculate vulnerability-disaster correlations
 - `reference_data/` - Static reference files (census, SIMEC, official ANP list)
+  - `reference_data/coastal_anp_municipalities.json` - **Authoritative** list of 39 coastal ANPs with 90 ANP-municipality-state pairs (source of truth for coastal municipality matching)
+  - `reference_data/coastal_municipality_coords.json` - Municipality centroid coordinates for map visualizations
 - `reference_data/fondo/` - Private FONDO internal data (gitignored)
+- `reference_data/declaratorias/` - Federal disaster/emergency declaration data files
+- `coastal_anps_subset.json` - Master reference file for 39 coastal ANPs (IDs, categories, municipalities)
+- `coastal_anps_registry.py` - Functions for accessing coastal ANP data (municipalities, IDs, categories)
+- `coastal_cenapred_slr_table.json` - Pre-built risk table: CENAPRED + declaratorias + SLR for 38 coastal ANPs
+- `coastal_anp_boundaries.geojson` - Simplified GeoJSON boundaries for 37 coastal ANPs
+- `loss_damage_proposal.html` - Formal loss & damage proposal document for FMCN
+- `loss_damage_proposal_data.json` - Generated data backing the proposal
+- `loss_damage_correlations.json` - Correlation analysis results (scatter plot data)
 - `service_account.json` - GEE service account key (gitignored)
 
 ### ANP Name Normalization

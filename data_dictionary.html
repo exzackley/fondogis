@@ -608,6 +608,35 @@ const VARIABLE_GROUPS = [
             { name: 'SLR 2050 (cm)', unit: 'cm', source: 'IPCC AR6 (SSP5-8.5)', description: 'Projected sea level rise by 2050 under high-emission scenario, relative to 1995–2014 baseline.', link: 'https://www.ipcc.ch/report/ar6/wg1/' },
             { name: 'Inundation Risk %', unit: '%', source: 'Copernicus DEM + IPCC AR6', description: 'Percentage of ANP below 1m elevation — proxy for inundation vulnerability to sea level rise and storm surge.', link: 'https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model' },
         ]
+    },
+    {
+        id: 'cenapred',
+        icon: '⚠️',
+        label: 'CENAPRED Disasters',
+        description: 'Historical hydrometeorological disaster events from CENAPRED Atlas Nacional de Riesgos (2000–2023)',
+        variables: [
+            { name: 'Total Events', unit: 'count', source: 'CENAPRED Atlas Nacional de Riesgos (2000–2023)', description: 'Total hydrometeorological disaster events (floods, tropical cyclones, severe storms, landslides) matched to ANP municipalities. Only events with confirmed municipality names are counted (municipality-only matching, no state-level fallback).', link: 'http://www.atlasnacionalderiesgos.gob.mx' },
+            { name: 'Events 2020–2023', unit: 'count', source: 'CENAPRED (2020–2023)', description: 'Hydrometeorological events in the most recent 4-year period.', link: 'http://www.atlasnacionalderiesgos.gob.mx' },
+            { name: 'Total Deaths', unit: 'persons', source: 'CENAPRED (2000–2023)', description: 'Cumulative fatalities from hydrometeorological events in matched municipalities over the full 2000–2023 period.', link: 'http://www.atlasnacionalderiesgos.gob.mx' },
+            { name: 'Total Affected', unit: 'persons', source: 'CENAPRED (2000–2023)', description: 'Cumulative population affected by hydrometeorological events in matched municipalities.', link: 'http://www.atlasnacionalderiesgos.gob.mx' },
+            { name: 'Total Damage (M MXN)', unit: 'million MXN', source: 'CENAPRED (2000–2023)', description: 'Cumulative economic damages in millions of Mexican pesos from hydrometeorological events.', link: 'http://www.atlasnacionalderiesgos.gob.mx' },
+            { name: 'Type Breakdown', unit: '—', source: 'CENAPRED (2000–2023)', description: 'Distribution of events by disaster type (e.g., Lluvias, Ciclón tropical, Tormenta severa, Inundación). Shows count and percentage per type.', link: 'http://www.atlasnacionalderiesgos.gob.mx' },
+        ]
+    },
+    {
+        id: 'declaratorias',
+        icon: '📋',
+        label: 'Emergency & Disaster Declarations',
+        description: 'Federal declarations of disaster and emergency from datos.gob.mx (SSPC/CNPC, 2018–2024)',
+        variables: [
+            { name: 'Disaster Declarations', unit: 'count', source: 'datos.gob.mx (SSPC/CNPC, 2018–2024)', description: 'Count of federal declaratorias de desastre matched to ANP municipalities. These are issued when a natural disaster causes significant damage requiring federal assistance.', link: 'https://www.datos.gob.mx' },
+            { name: 'Emergency Declarations', unit: 'count', source: 'datos.gob.mx (SSPC/CNPC, 2018–2024)', description: 'Count of federal declaratorias de emergencia matched to ANP municipalities. Issued for imminent threats requiring preventive action.', link: 'https://www.datos.gob.mx' },
+            { name: 'Total Declarations', unit: 'count', source: 'datos.gob.mx (SSPC/CNPC, 2018–2024)', description: 'Sum of disaster and emergency declarations for the ANP.', link: 'https://www.datos.gob.mx' },
+            { name: 'Population Affected', unit: 'persons', source: 'datos.gob.mx (emergency declarations)', description: 'Total population affected as reported in emergency declaration records matched to ANP municipalities.', link: 'https://www.datos.gob.mx' },
+            { name: 'Cost (M MXN)', unit: 'million MXN', source: 'datos.gob.mx (emergency declarations)', description: 'Total economic cost in millions of Mexican pesos from emergency declaration records. Includes costs of federal response and immediate recovery.', link: 'https://www.datos.gob.mx' },
+            { name: 'Declarations by Type', unit: '—', source: 'datos.gob.mx (2018–2024)', description: 'Breakdown of declarations by phenomenon type (e.g., Hidrometeorológico, Geológico, Incendio forestal). Includes all hazard types, not limited to hydrometeorological.', link: 'https://www.datos.gob.mx' },
+            { name: 'Declarations by Year', unit: '—', source: 'datos.gob.mx (2018–2024)', description: 'Annual count of declarations per year (2018–2024), disaggregated by disaster vs. emergency type.', link: 'https://www.datos.gob.mx' },
+        ]
     }
 ];
 
