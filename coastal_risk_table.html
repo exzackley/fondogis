@@ -41,7 +41,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
-            min-width: 1100px;
+            min-width: 1400px;
         }
         thead th {
             background: #1a5632;
@@ -91,7 +91,7 @@
 </head>
 <body>
     <h1>🌊 Coastal ANPs — Disaster Risk & Sea Level Rise</h1>
-    <p class="subtitle">38 Coastal Protected Areas of Mexico — CENAPRED + IPCC AR6 + Copernicus DEM</p>
+    <p class="subtitle">38 Coastal Protected Areas of Mexico — CENAPRED + Declaratorias (datos.gob.mx) + IPCC AR6 + Copernicus DEM</p>
 
     <div class="note">
         <strong>Note:</strong> CENAPRED events use <em>municipality-only matching</em> — only events confirmed in the ANP's municipalities are counted.
@@ -104,8 +104,11 @@
             <thead>
                 <tr>
                     <th data-col="name">Protected Area <span class="sort-arrow">▼</span></th>
-                    <th data-col="events_2020_2023">Events<br>2020–2023 <span class="sort-arrow">▼</span></th>
-                    <th data-col="type_breakdown">Events by Type (2000–2023) <span class="sort-arrow">▼</span></th>
+                    <th data-col="decl_desastre">Decl.<br>Disaster <span class="sort-arrow">▼</span></th>
+                    <th data-col="decl_emergencia">Decl.<br>Emergency <span class="sort-arrow">▼</span></th>
+                    <th data-col="decl_pop_affected">Decl. Pop.<br>Affected <span class="sort-arrow">▼</span></th>
+                    <th data-col="decl_cost_mdp">Decl. Cost<br>(M MXN) <span class="sort-arrow">▼</span></th>
+                    <th data-col="events_2020_2023">CENAPRED<br>2020–2023 <span class="sort-arrow">▼</span></th>
                     <th data-col="deaths_total">Deaths<br>(2000–2023) <span class="sort-arrow">▼</span></th>
                     <th data-col="affected_total">Affected<br>(2000–2023) <span class="sort-arrow">▼</span></th>
                     <th data-col="damage_total_mdp">Damage<br>(M MXN) <span class="sort-arrow">▼</span></th>
@@ -166,8 +169,11 @@
         tbody.innerHTML = data.map(r => `
             <tr>
                 <td class="name">${r.name}</td>
+                <td class="number ${(r.decl_desastre || 0) === 0 ? 'zero' : ''}">${fmt(r.decl_desastre || 0)}</td>
+                <td class="number ${(r.decl_emergencia || 0) === 0 ? 'zero' : ''}">${fmt(r.decl_emergencia || 0)}</td>
+                <td class="number">${fmt(r.decl_pop_affected || 0)}</td>
+                <td class="number">${r.decl_cost_mdp ? '$' + fmt(Math.round(r.decl_cost_mdp)) : '<span class="zero">$0</span>'}</td>
                 <td class="number ${r.events_2020_2023 === 0 ? 'zero' : ''}">${fmt(r.events_2020_2023)}</td>
-                <td class="types">${r.type_breakdown === 'No data' ? '<span class="no-data">No municipality data</span>' : r.type_breakdown}</td>
                 <td class="number ${riskClass(r.deaths_total, 20, 5)}">${fmt(r.deaths_total)}</td>
                 <td class="number">${fmt(r.affected_total)}</td>
                 <td class="number">${r.damage_total_mdp ? '$' + fmt(Math.round(r.damage_total_mdp)) : '<span class="zero">$0</span>'}</td>
@@ -178,18 +184,25 @@
 
         // Totals row
         const totals = data.reduce((acc, r) => {
+            acc.decl_d += r.decl_desastre || 0;
+            acc.decl_e += r.decl_emergencia || 0;
+            acc.decl_pop += r.decl_pop_affected || 0;
+            acc.decl_cost += r.decl_cost_mdp || 0;
             acc.events += r.events_2020_2023 || 0;
             acc.deaths += r.deaths_total || 0;
             acc.affected += r.affected_total || 0;
             acc.damage += r.damage_total_mdp || 0;
             return acc;
-        }, { events: 0, deaths: 0, affected: 0, damage: 0 });
+        }, { decl_d: 0, decl_e: 0, decl_pop: 0, decl_cost: 0, events: 0, deaths: 0, affected: 0, damage: 0 });
 
         document.getElementById('table-foot').innerHTML = `
             <tr class="totals">
                 <td>TOTAL (38 Coastal ANPs)</td>
+                <td class="number">${fmt(totals.decl_d)}</td>
+                <td class="number">${fmt(totals.decl_e)}</td>
+                <td class="number">${fmt(totals.decl_pop)}</td>
+                <td class="number">$${fmt(Math.round(totals.decl_cost))}</td>
                 <td class="number">${fmt(totals.events)}</td>
-                <td></td>
                 <td class="number">${fmt(totals.deaths)}</td>
                 <td class="number">${fmt(totals.affected)}</td>
                 <td class="number">$${fmt(Math.round(totals.damage))}</td>
@@ -225,11 +238,15 @@
     });
 
     function downloadCSV() {
-        const headers = ['Protected Area', 'Events 2020-2023', 'Events by Type (2000-2023)', 'Deaths (2000-2023)', 'Affected (2000-2023)', 'Damage (M MXN)', 'SLR Rate (mm/yr)', 'Inundation Risk (% <1m)'];
+        const headers = ['Protected Area', 'Decl. Disaster', 'Decl. Emergency', 'Decl. Pop Affected', 'Decl. Cost (M MXN)', 'CENAPRED Events 2020-2023', 'Events by Type (2000-2023)', 'Deaths (2000-2023)', 'Affected (2000-2023)', 'Damage (M MXN)', 'SLR Rate (mm/yr)', 'Inundation Risk (% <1m)'];
         const csvRows = [headers.join(',')];
         for (const r of tableData) {
             csvRows.push([
                 `"${r.name}"`,
+                r.decl_desastre || 0,
+                r.decl_emergencia || 0,
+                r.decl_pop_affected || 0,
+                r.decl_cost_mdp || 0,
                 r.events_2020_2023,
                 `"${r.type_breakdown}"`,
                 r.deaths_total,

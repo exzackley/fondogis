@@ -358,7 +358,7 @@
         footer a { color: var(--accent); text-decoration: none; }
         
         @media (max-width: 1024px) {
-            .map-card, .side-panel, .land-cover-card, .forest-card, .fire-card, .climate-card, .water-stress-card, #cenapred-section, #slr-section, #elevation-section, #ndvi-trend-section, #soil-section, #surface-water-section, #mangrove-section { grid-column: span 12; }
+            .map-card, .side-panel, .land-cover-card, .forest-card, .fire-card, .climate-card, .water-stress-card, #cenapred-section, #declaratorias-section, #slr-section, #elevation-section, #ndvi-trend-section, #soil-section, #surface-water-section, #mangrove-section { grid-column: span 12; }
             h1 { font-size: 1.8rem; }
             .top-bar { flex-direction: column; gap: 15px; }
         }
@@ -1194,6 +1194,39 @@
                 </div>
             </div>
             
+            <!-- Declaratorias de Riesgo Card -->
+            <div class="card fade-in" id="declaratorias-section" style="animation-delay: 0.93s; grid-column: span 12; display: none;">
+                <div class="card-header"><div class="card-title"><div class="card-icon">📋</div><span data-i18n="declaratorias_riesgo">Emergency & Disaster Declarations</span></div><span class="source">datos.gob.mx SSPC/CNPC 2018-2024</span></div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                        <div class="mini-value" id="decl-desastre">—</div>
+                        <div class="mini-label" data-i18n="disaster_decl">Disaster Decl.</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                        <div class="mini-value" style="color: var(--warning);" id="decl-emergencia">—</div>
+                        <div class="mini-label" data-i18n="emergency_decl">Emergency Decl.</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                        <div class="mini-value" id="decl-affected">—</div>
+                        <div class="mini-label" data-i18n="pop_affected">Pop. Affected</div>
+                    </div>
+                    <div style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; text-align: center;">
+                        <div class="mini-value" style="color: var(--danger);" id="decl-cost">—</div>
+                        <div class="mini-label" data-i18n="cost_pesos">Cost (M MXN)</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;" data-i18n="by_phenomenon_type">By Phenomenon Type</div>
+                        <div style="height: 220px;"><canvas id="declaratoriasTypeChart"></canvas></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;" data-i18n="by_year_decl">By Year</div>
+                        <div style="height: 220px;"><canvas id="declaratoriasYearChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Sea Level Rise Card (conditional - coastal only) -->
             <div class="card fade-in" id="slr-section" style="animation-delay: 0.94s; grid-column: span 6; display: none;">
                 <div class="card-header"><div class="card-title"><div class="card-icon">🌊</div><span data-i18n="sea_level_rise">Sea Level Rise</span></div><span class="source">IPCC AR6 + Copernicus DEM</span></div>
@@ -1559,7 +1592,7 @@
     
     <script>
         let map, geojsonLayer;
-        let landCoverChart, forestChart, fireChart, cenapredTypeChart, cenapredYearChart;
+        let landCoverChart, forestChart, fireChart, cenapredTypeChart, cenapredYearChart, declaratoriasTypeChart, declaratoriasYearChart;
         let anpIndex = { anps: [] };
         let anpDecrees = {};
         let currentLang = 'en';
@@ -1875,6 +1908,7 @@
                 renderInatData(data.external_data);
                 renderPovertyData(data.external_data);
                 renderCenapredCard(data.external_data);
+                renderDeclaratoriasCard(data.external_data);
                 renderSeaLevelRiseCard(data.external_data);
             } else {
                 document.getElementById('species-section').style.display = 'none';
@@ -1882,6 +1916,7 @@
                 document.getElementById('inat-section').style.display = 'none';
                 document.getElementById('poverty-section').style.display = 'none';
                 document.getElementById('cenapred-section').style.display = 'none';
+                document.getElementById('declaratorias-section').style.display = 'none';
                 document.getElementById('slr-section').style.display = 'none';
             }
             
@@ -2987,6 +3022,82 @@
             }
         }
         
+        function renderDeclaratoriasCard(extData) {
+            const section = document.getElementById('declaratorias-section');
+            const decl = extData ? extData.declaratorias_riesgo : null;
+
+            if (!decl || !decl.data_available) {
+                section.style.display = 'none';
+                return;
+            }
+            section.style.display = 'block';
+
+            document.getElementById('decl-desastre').textContent = formatNumber(decl.total_declaratorias_desastre, 0);
+            document.getElementById('decl-emergencia').textContent = formatNumber(decl.total_declaratorias_emergencia, 0);
+            document.getElementById('decl-affected').textContent = formatNumber(decl.total_poblacion_afectada, 0);
+            const costM = decl.total_costo_declaratorias_pesos != null ? (decl.total_costo_declaratorias_pesos / 1000000) : null;
+            document.getElementById('decl-cost').textContent = costM != null ? '$' + formatNumber(costM, 1) + 'M' : '—';
+
+            // By type chart
+            const byType = decl.by_type || {};
+            const typeLabels = Object.keys(byType).sort((a, b) => {
+                const aTotal = (byType[b].desastre || 0) + (byType[b].emergencia || 0);
+                const bTotal = (byType[a].desastre || 0) + (byType[a].emergencia || 0);
+                return aTotal - bTotal;
+            });
+            const typeDesastre = typeLabels.map(t => byType[t].desastre || 0);
+            const typeEmergencia = typeLabels.map(t => byType[t].emergencia || 0);
+
+            if (declaratoriasTypeChart) declaratoriasTypeChart.destroy();
+            declaratoriasTypeChart = new Chart(document.getElementById('declaratoriasTypeChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: typeLabels,
+                    datasets: [
+                        { label: 'Disaster', data: typeDesastre, backgroundColor: '#ef4444' },
+                        { label: 'Emergency', data: typeEmergencia, backgroundColor: '#f59e0b' }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true, labels: { color: '#94a3b8', boxWidth: 12 } } },
+                    scales: {
+                        x: { stacked: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                        y: { stacked: true, grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // By year chart
+            const byYear = decl.by_year || {};
+            const yearLabels = Object.keys(byYear).sort();
+            const yearDesastre = yearLabels.map(y => byYear[y].desastre || 0);
+            const yearEmergencia = yearLabels.map(y => byYear[y].emergencia || 0);
+
+            if (declaratoriasYearChart) declaratoriasYearChart.destroy();
+            declaratoriasYearChart = new Chart(document.getElementById('declaratoriasYearChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: yearLabels,
+                    datasets: [
+                        { label: 'Disaster', data: yearDesastre, backgroundColor: '#ef4444' },
+                        { label: 'Emergency', data: yearEmergencia, backgroundColor: '#f59e0b' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true, labels: { color: '#94a3b8', boxWidth: 12 } } },
+                    scales: {
+                        x: { stacked: true, grid: { display: false }, ticks: { color: '#94a3b8', maxRotation: 45 } },
+                        y: { stacked: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
         function renderSeaLevelRiseCard(extData) {
             const section = document.getElementById('slr-section');
             const slr = extData ? extData.sea_level_rise : null;

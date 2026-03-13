@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loss & Damage in Mexico's Coastal Protected Areas — Proposal</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary: #1e3a5f;
+            --accent: #c0392b;
+            --text: #222;
+            --text-light: #555;
+            --border: #ccc;
+        }
+
+        @page { size: letter; margin: 1in; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Crimson Text', Georgia, 'Times New Roman', serif;
+            color: var(--text);
+            line-height: 1.75;
+            font-size: 12pt;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.75in 1in;
+            background: white;
+        }
+
+        @media print {
+            body { padding: 0.5in 0.75in; font-size: 10.5pt; max-width: none; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+            .cover { padding: 1.8in 0 0.8in; }
+            .map-panel { height: 320px !important; }
+            .chart-box canvas { max-height: 600px !important; }
+            h2 { page-break-after: avoid; }
+            h3 { page-break-after: avoid; }
+            .figure { page-break-inside: avoid; }
+            blockquote { page-break-inside: avoid; }
+            .data-table { font-size: 0.6rem; }
+            .data-table th { padding: 3px 4px; }
+            .data-table td { padding: 2px 4px; }
+            .page-num { display: none; }
+        }
+
+        /* Cover page */
+        .cover {
+            text-align: center;
+            padding: 2.5in 0 1in;
+            border-bottom: 3px double var(--primary);
+            margin-bottom: 40px;
+        }
+        .cover h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.3;
+            margin-bottom: 12px;
+        }
+        .cover .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        .cover .org {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .cover .date {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Section headings */
+        h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 32px 0 12px;
+            padding-bottom: 4px;
+            border-bottom: 1.5px solid var(--primary);
+        }
+
+        h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 22px 0 8px;
+        }
+
+        p { margin-bottom: 10px; text-align: justify; }
+        p + p { text-indent: 0; }
+
+        strong { font-weight: 700; }
+
+        /* Figures */
+        .figure {
+            margin: 18px 0;
+            page-break-inside: avoid;
+        }
+        .figure-caption {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+        .figure-caption strong {
+            color: var(--text);
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-box {
+            position: relative;
+        }
+
+        .map-panel {
+            height: 400px;
+            border: 1px solid #ddd;
+        }
+        .map-legend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-light);
+        }
+        .legend-gradient {
+            height: 8px;
+            width: 100px;
+            border-radius: 2px;
+        }
+
+        /* Block quote for key findings */
+        blockquote {
+            border-left: 3px solid var(--primary);
+            padding: 10px 18px;
+            margin: 16px 0;
+            background: #f7f9fc;
+            font-style: italic;
+        }
+        blockquote strong { font-style: normal; }
+
+        /* Data table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            margin: 12px 0;
+        }
+        .data-table th {
+            background: var(--primary);
+            color: white;
+            padding: 6px 5px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 4px 5px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .data-table tr:nth-child(even) { background: #f9f9f9; }
+        .data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .data-table .hi { background: #fef2f2; font-weight: 600; }
+        .data-table tfoot td {
+            font-weight: 700;
+            border-top: 2px solid var(--primary);
+            background: #f0f4f8;
+        }
+
+        /* References */
+        .references {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text-light);
+        }
+        .references p { margin-bottom: 3px; text-align: left; }
+
+        .download-btn {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 4px;
+            border: none;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .download-btn:hover { opacity: 0.9; }
+
+        .page-num {
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Export toolbar -->
+    <div class="no-print" style="position: fixed; top: 15px; right: 15px; z-index: 9999; display: flex; gap: 8px;">
+        <button onclick="window.print()" style="font-family: Inter, sans-serif; background: #1e3a5f; color: white; border: none; padding: 8px 18px; border-radius: 5px; font-size: 0.85rem; cursor: pointer;">Print / Save as PDF</button>
+    </div>
+
+    <!-- COVER PAGE -->
+    <div class="cover">
+        <h1>Loss and Damage in Mexico&rsquo;s<br>Coastal Protected Areas</h1>
+        <div class="subtitle">Evidence Base for a Loss &amp; Damage Response Fund Proposal</div>
+        <div class="org">Fondo Mexicano para la Conservaci&oacute;n de la Naturaleza, A.C.</div>
+        <div class="org">FMCN</div>
+        <div class="date">March 2026</div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- SECTION 1: CURRENT CONTEXT                                       -->
+    <!-- ================================================================ -->
+    <h2>1. Current Climate and Hazard Context</h2>
+
+    <h3>1.1 Structural Exposure to Tropical Cyclones</h3>
+
+    <p>Mexico is structurally exposed to tropical cyclones due to its geographic position between the Eastern Pacific Ocean and the Atlantic basin, including the Gulf of Mexico and the Caribbean Sea. Historical cyclone track data from the International Best Track Archive for Climate Stewardship (IBTrACS) show that storms frequently approach or make landfall along both Mexican coastlines, placing Mexico among the countries most frequently impacted by tropical cyclones globally.</p>
+
+    <p>Cyclone density maps developed by NOAA demonstrate a high concentration of storm activity in the Caribbean basin and along the Pacific coast of southern Mexico. The frequency of these hazards increases the cumulative risk faced by coastal ecosystems, fisheries, tourism infrastructure, and vulnerable communities. An Extended Study Area defined by Castillo et al. extracted all tropical cyclones (TCs) between 1970 and 2023 from IBTrACS. Out of approximately 1,600 TCs recorded in the region, only 266 made landfall, yet <strong>305 TCs were associated with some disaster</strong>, regardless of whether they made landfall (Castillo et al., <em>Tropical Cyclones in Mexico: A Comparative Analysis</em>).</p>
+
+    <p>Storm surge represents one of the most destructive impacts associated with tropical cyclones. Global coastal flood hazard modelling based on the Global Tide and Surge Model (GTSM, Deltares) shows that extensive portions of Mexico&rsquo;s coastline are exposed to surge-induced flooding. Low-lying coastal regions along the Gulf of Mexico and the Caribbean are particularly vulnerable, including critical ecosystems such as mangroves, coastal lagoons, and wetlands that provide natural coastal protection but are increasingly under pressure from climate change and coastal development.</p>
+
+    <h3>1.2 Observed Sea Level Rise</h3>
+
+    <p>Satellite altimetry data confirm that sea levels are already rising across Mexico&rsquo;s coastlines. The 39 coastal protected areas analyzed in this proposal show an average observed rate of <strong><span id="txt-avg-slr">&mdash;</span> mm/year</strong>, with individual areas such as Los Petenes and R&iacute;a Lagartos exceeding 6 mm/year (IPCC AR6). Critically, <strong><span id="txt-slr-above05">37</span> of 39 coastal ANPs</strong> exhibit sea level rise rates exceeding 0.5 mm/year. This threshold is significant because, for practical coastal planning purposes, annual water levels become materially dangerous when they exceed approximately 0.5 m above the local high-tide baseline&mdash;a threshold that sustained rates of this magnitude will reach within decades, compounding the impacts of storm surges, king tides, and coastal erosion on already vulnerable ecosystems and communities. Figure 1 illustrates the spatial distribution of observed sea level rise rates across coastal ANPs.</p>
+
+    <div class="figure">
+        <div id="map-slr" class="map-panel"></div>
+        <div class="map-legend">Low <div class="legend-gradient" style="background: linear-gradient(to right, #dbeafe, #3b82f6, #1e3a5f)"></div> High</div>
+        <div class="figure-caption"><strong>Figure 1.</strong> Observed sea level rise rate (mm/year) across Mexico&rsquo;s 39 coastal protected areas. Polygon color intensity proportional to rate. Source: IPCC AR6 satellite altimetry.</div>
+    </div>
+
+    <div class="figure">
+        <div class="chart-box" style="height: 680px;"><canvas id="slrChart"></canvas></div>
+        <div class="figure-caption"><strong>Figure 2.</strong> Observed sea level rise rate for all coastal ANPs exceeding 0.5 mm/year (<span id="txt-slr-count">37</span> of 39). Areas exceeding 5 mm/year shown in red. Source: IPCC AR6.</div>
+    </div>
+
+    <h3>1.3 Current Temperature Baseline</h3>
+
+    <p>Mean annual temperatures across these coastal protected areas currently range from approximately 22&deg;C to 28&deg;C (1981&ndash;2010 baseline period, NASA NEX-GDDP-CMIP6). These warm tropical and subtropical conditions already place significant thermal stress on marine and coastal ecosystems, particularly coral reefs and mangroves. The baseline temperature distribution across all 39 areas is presented in Section 3 alongside mid-century projections.</p>
+
+    <div class="page-num">1</div>
+
+    <!-- ================================================================ -->
+    <!-- SECTION 2: DOCUMENTED LOSSES AND DAMAGES                         -->
+    <!-- ================================================================ -->
+    <div class="page-break"></div>
+    <h2>2. Documented Losses and Damages</h2>
+
+    <p>This section presents evidence of climate-related losses and damages already experienced by communities within and adjacent to Mexico&rsquo;s coastal protected areas. Data are drawn from three complementary sources: federal disaster and emergency declarations issued by Mexico&rsquo;s National Civil Protection System (datos.gob.mx, 2018&ndash;2024), the CENAPRED historical disaster database (2000&ndash;2023), and the Emergency Events Database (EM-DAT).</p>
+
+    <p>Between 2018 and 2024, Mexico&rsquo;s federal government issued a total of <strong><span id="txt-total-decl">&mdash;</span> disaster and emergency declarations</strong> affecting municipalities within <strong><span id="txt-total-anps">&mdash;</span> coastal protected areas</strong>. These declarations document impacts on over <strong><span id="txt-pop">&mdash;</span> people</strong>, with costs exceeding <strong>$<span id="txt-cost">&mdash;</span> million MXN</strong>. The CENAPRED historical record (2000&ndash;2023) further documents <strong><span id="txt-deaths">&mdash;</span> deaths</strong> from hydrometeorological events in these same municipalities.</p>
+
+    <blockquote>
+        <strong>These are not future projections.</strong> The figures presented in this section represent losses and damages already incurred by communities living within and around Mexico&rsquo;s coastal protected areas. The recurrent and cumulative nature of these impacts underscores the urgent need for dedicated financial mechanisms for loss and damage response.
+    </blockquote>
+
+    <h3>2.1 Disaster Patterns and Trends</h3>
+
+    <p>Historical disaster databases confirm that tropical cyclones have generated significant economic losses and social impacts in Mexico over recent decades. From the 34 disasters registered in EM-DAT in Mexico between 2020 and 2025, <strong>12 occurred in the project&rsquo;s target regions</strong>, most associated with tropical cyclones and floods, together affecting more than <strong>112,027 people</strong>. National records from CENAPRED show that the actual frequency of hydrometeorological impacts is significantly higher, as many localized floods, landslides, and storm-related damages do not meet global database thresholds.</p>
+
+    <p>CENAPRED socioeconomic data (1980&ndash;2023) show that Guerrero recorded more than 200 TC-related fatalities, followed by Oaxaca and Veracruz&mdash;all states containing project target ANPs. <strong><span id="txt-hydro-pct">&mdash;</span>% of all declarations</strong> affecting coastal ANPs are linked to hydrometeorological phenomena&mdash;hurricanes, severe rainfall, and flooding&mdash;events directly intensified by climate change. Figures 2 and 3 show the temporal and typological distribution of federal declarations.</p>
+
+    <div class="figure">
+        <div class="two-col">
+            <div class="chart-box" style="height: 250px;"><canvas id="yearChart"></canvas></div>
+            <div class="chart-box" style="height: 250px;"><canvas id="typeChart"></canvas></div>
+        </div>
+        <div class="figure-caption"><strong>Figure 2.</strong> Federal disaster and emergency declarations affecting coastal ANP municipalities, 2018&ndash;2024. Left: annual totals (stacked by type). Right: distribution by phenomenon type. Source: datos.gob.mx (SSPC/CNPC).</div>
+    </div>
+
+    <h3>2.2 Geographic Distribution of Impacts</h3>
+
+    <p>The spatial distribution of disaster impacts reveals clear geographic patterns. The Pacific coast of Oaxaca, Chiapas, and Jalisco shows the highest concentration of events, while the Gulf coast and Yucat&aacute;n Peninsula face compounding sea level rise risks. Figures 3 through 7 illustrate the geographic distribution of key impact variables across the 39 coastal protected areas.</p>
+
+    <div class="figure">
+        <div id="map-decl" class="map-panel"></div>
+        <div class="map-legend">Low <div class="legend-gradient" style="background: linear-gradient(to right, #fee2e2, #ef4444, #7f1d1d)"></div> High</div>
+        <div class="figure-caption"><strong>Figure 3.</strong> Total disaster and emergency declarations (2018&ndash;2024) across coastal ANPs. Circle size proportional to total declarations. Source: datos.gob.mx (SSPC/CNPC).</div>
+    </div>
+
+    <div class="figure">
+        <div id="map-pop" class="map-panel"></div>
+        <div class="map-legend">Low <div class="legend-gradient" style="background: linear-gradient(to right, #fef3c7, #f59e0b, #92400e)"></div> High</div>
+        <div class="figure-caption"><strong>Figure 4.</strong> Population affected by emergency declarations. Polygon color intensity proportional to total affected population.</div>
+    </div>
+
+    <div class="page-break"></div>
+    <div class="figure">
+        <div id="map-cost" class="map-panel"></div>
+        <div class="map-legend">Low <div class="legend-gradient" style="background: linear-gradient(to right, #ecfdf5, #10b981, #064e3b)"></div> High</div>
+        <div class="figure-caption"><strong>Figure 5.</strong> Documented economic costs of emergency declarations (million MXN). Source: datos.gob.mx.</div>
+    </div>
+
+    <div class="figure">
+        <div id="map-deaths" class="map-panel"></div>
+        <div class="map-legend">Low <div class="legend-gradient" style="background: linear-gradient(to right, #ede9fe, #8b5cf6, #3b0764)"></div> High</div>
+        <div class="figure-caption"><strong>Figure 6.</strong> Historical deaths from hydrometeorological events (CENAPRED, 2000&ndash;2023).</div>
+    </div>
+
+    <div class="figure">
+        <div id="map-combined" class="map-panel"></div>
+        <div class="map-legend">Low cost <div class="legend-gradient" style="background: linear-gradient(to right, #ecfdf5, #10b981, #064e3b)"></div> High cost &nbsp;|&nbsp; <span style="display:inline-block;width:8px;height:8px;background:#e63946;border-radius:50%;opacity:0.8;margin:0 2px"></span> declarations</div>
+        <div class="figure-caption"><strong>Figure 7.</strong> Combined view&mdash;polygon color indicates economic cost, red circles indicate total declarations.</div>
+    </div>
+
+    <h3>2.3 Most Affected Protected Areas</h3>
+
+    <p>Figure 8 presents the 15 most affected coastal ANPs by total disaster and emergency declarations (2018&ndash;2024), disaggregated by declaration type.</p>
+
+    <div class="figure">
+        <div class="chart-box" style="height: 360px;"><canvas id="topAnpChart"></canvas></div>
+        <div class="figure-caption"><strong>Figure 8.</strong> Top 15 coastal ANPs by total federal declarations (2018&ndash;2024). Red = disaster declarations; orange = emergency declarations.</div>
+    </div>
+
+    <h3>2.4 Vulnerability&ndash;Disaster Correlations</h3>
+
+    <p>Statistical analysis of the relationship between environmental vulnerability indicators and disaster outcomes across the 39 coastal ANPs reveals significant correlations that support the case for integrated conservation and climate adaptation. Figure 9 presents six scatter plots examining these relationships.</p>
+
+    <div class="figure" id="corr-section">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="chart-box" style="height: 280px;"><canvas id="corrChart0"></canvas></div>
+            <div class="chart-box" style="height: 280px;"><canvas id="corrChart1"></canvas></div>
+            <div class="chart-box" style="height: 280px;"><canvas id="corrChart2"></canvas></div>
+            <div class="chart-box" style="height: 280px;"><canvas id="corrChart3"></canvas></div>
+            <div class="chart-box" style="height: 280px;"><canvas id="corrChart4"></canvas></div>
+        </div>
+        <div class="figure-caption"><strong>Figure 9.</strong> Correlation analysis between environmental vulnerability indicators and disaster outcomes across coastal ANPs. Each point represents one protected area. Trend lines shown where correlations are statistically significant. R&sup2; values and sample sizes indicated in chart titles.</div>
+    </div>
+
+    <div id="corr-narrative"></div>
+
+    <div class="page-num">3&ndash;4</div>
+
+    <!-- ================================================================ -->
+    <!-- SECTION 3: CLIMATE PROJECTIONS                                   -->
+    <!-- ================================================================ -->
+    <div class="page-break"></div>
+    <h2>3. Climate Projections: Compounding Future Risk</h2>
+
+    <p>The documented losses presented in Section 2 will intensify under climate change. CMIP6 climate models (NASA NEX-GDDP) project significant temperature increases across all 39 coastal protected areas by mid-century under scenario SSP2-4.5 (2041&ndash;2070), with northern areas such as Alto Golfo de California experiencing increases exceeding +2&deg;C. Simultaneously, sea level rise is projected to accelerate, permanently altering coastal ecosystems that currently serve as natural buffers against storm surges and flooding.</p>
+
+    <p>The combination of rising temperatures, accelerating sea level rise, and increasing tropical cyclone intensity creates a compounding risk scenario that demands proactive financial mechanisms capable of addressing climate-related loss and damage before these projections materialize fully.</p>
+
+    <h3>3.1 Temperature: Current Baseline vs. Mid-Century Projection</h3>
+
+    <p>Figure 9 compares the current baseline mean annual temperature (1981&ndash;2010) with mid-century projections (2041&ndash;2070, SSP2-4.5) for all 39 coastal ANPs. The projected temperature increase ranges from +1.2&deg;C to +2.3&deg;C, with the most significant warming in northern Pacific and Gulf of California areas.</p>
+
+    <div class="figure">
+        <div class="two-col">
+            <div class="chart-box" style="height: 680px;"><canvas id="tempChart"></canvas></div>
+            <div class="chart-box" style="height: 680px;"><canvas id="tempChangeChart"></canvas></div>
+        </div>
+        <div class="figure-caption"><strong>Figure 9.</strong> Temperature projections for 39 coastal ANPs. Left: Baseline (blue, 1981&ndash;2010) vs. projected mean annual temperature (red, 2041&ndash;2070, SSP2-4.5). Right: Projected temperature change (&Delta;&deg;C). Areas exceeding +2&deg;C shown in red. Source: NASA NEX-GDDP-CMIP6.</div>
+    </div>
+
+    <h3>3.2 Sea Level Rise: Observed Rates and 2050 Projections</h3>
+
+    <p>Figure 10 presents both the currently observed sea level rise rates and projected cumulative rise by 2050 for all 39 coastal protected areas. Several areas in the Gulf of Mexico and Caribbean face projected rises exceeding 25 cm by 2050, which combined with increasing tropical cyclone intensity will significantly amplify storm surge impacts and threaten mangrove ecosystems that serve as critical natural infrastructure.</p>
+
+    <div class="figure">
+        <div class="two-col">
+            <div class="chart-box" style="height: 680px;"><canvas id="slrObsChart"></canvas></div>
+            <div class="chart-box" style="height: 680px;"><canvas id="slr2050Chart"></canvas></div>
+        </div>
+        <div class="figure-caption"><strong>Figure 10.</strong> Sea level rise across 39 coastal ANPs. Left: Currently observed rate (mm/year, satellite altimetry). Right: Projected cumulative sea level rise by 2050 (cm). Areas exceeding 5 mm/year (observed) or 25 cm (projected) shown in red. Sources: IPCC AR6, Copernicus.</div>
+    </div>
+
+    <div class="page-num">4</div>
+
+    <!-- ================================================================ -->
+    <!-- ANNEX: DATA TABLE                                                -->
+    <!-- ================================================================ -->
+    <div class="page-break"></div>
+    <h2>Annex: Complete Coastal ANP Risk Profile</h2>
+
+    <p>Table 1 presents the complete dataset for all 39 coastal protected areas included in this analysis, combining federal disaster declarations (2018&ndash;2024), CENAPRED historical impact data (2000&ndash;2023), observed sea level rise rates, and projected mid-century temperature change.</p>
+
+    <div class="figure">
+        <div style="overflow-x: auto;">
+            <table class="data-table" id="full-table">
+                <thead>
+                    <tr>
+                        <th>Protected Area</th>
+                        <th>Mun.</th>
+                        <th>Decl. D.</th>
+                        <th>Decl. E.</th>
+                        <th>Pop. Affected</th>
+                        <th>Cost (M MXN)</th>
+                        <th>CENAPRED Ev.</th>
+                        <th>Deaths</th>
+                        <th>SLR (mm/yr)</th>
+                        <th>&Delta;&deg;C 2050</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+                <tfoot id="table-foot"></tfoot>
+            </table>
+        </div>
+        <div class="figure-caption"><strong>Table 1.</strong> Complete risk profile for 39 coastal protected areas. Decl. D. = Disaster declarations; Decl. E. = Emergency declarations (datos.gob.mx, 2018&ndash;2024). CENAPRED data covers 2000&ndash;2023. SLR = observed sea level rise rate (IPCC AR6). &Delta;&deg;C = projected temperature change (SSP2-4.5, 2041&ndash;2070, NASA NEX-GDDP-CMIP6).</div>
+    </div>
+
+    <button class="download-btn no-print" onclick="downloadCSV()">Download CSV</button>
+
+    <!-- ================================================================ -->
+    <!-- REFERENCES                                                       -->
+    <!-- ================================================================ -->
+    <div class="page-break"></div>
+    <h2>Annex B: Data Sources and Methodology</h2>
+
+    <p>Table 2 summarizes the variables used in this analysis, their sources, spatial resolution, temporal coverage, and the calculation method applied to derive per-ANP values.</p>
+
+    <div class="figure">
+        <table class="data-table" style="font-size: 0.68rem;">
+            <thead>
+                <tr>
+                    <th>Variable</th>
+                    <th>Source</th>
+                    <th>Period</th>
+                    <th>Resolution</th>
+                    <th>Calculation Method</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Disaster declarations</strong></td>
+                    <td>datos.gob.mx (SSPC/CNPC)</td>
+                    <td>2018&ndash;2024</td>
+                    <td>Municipality</td>
+                    <td>Count of federal <em>declaratorias de desastre</em> and <em>emergencia</em> matched to ANP municipalities using an authoritative coastal municipality list. Municipality names normalized (accent-stripped, lowercase) for matching.</td>
+                </tr>
+                <tr>
+                    <td><strong>Population affected</strong></td>
+                    <td>datos.gob.mx (emergency declarations)</td>
+                    <td>2018&ndash;2024</td>
+                    <td>Municipality</td>
+                    <td>Sum of <em>poblaci&oacute;n_afectada</em> field from emergency declaration records matched to each ANP&rsquo;s municipalities.</td>
+                </tr>
+                <tr>
+                    <td><strong>Economic cost</strong></td>
+                    <td>datos.gob.mx (emergency declarations)</td>
+                    <td>2018&ndash;2024</td>
+                    <td>Municipality</td>
+                    <td>Sum of <em>costo_total</em> field from emergency declaration records. Values in MXN, converted to millions (M MXN).</td>
+                </tr>
+                <tr>
+                    <td><strong>CENAPRED events</strong></td>
+                    <td>CENAPRED Atlas Nacional de Riesgos</td>
+                    <td>2000&ndash;2023</td>
+                    <td>Municipality</td>
+                    <td>Count of hydrometeorological disaster events matched to ANP municipalities. Only events with confirmed municipality names are counted (municipality-only matching, no state-level fallback).</td>
+                </tr>
+                <tr>
+                    <td><strong>CENAPRED deaths</strong></td>
+                    <td>CENAPRED Atlas Nacional de Riesgos</td>
+                    <td>2000&ndash;2023</td>
+                    <td>Municipality</td>
+                    <td>Sum of fatalities from hydrometeorological events in matched municipalities. Full period 2000&ndash;2023.</td>
+                </tr>
+                <tr>
+                    <td><strong>Observed SLR rate</strong></td>
+                    <td>IPCC AR6 WGI (satellite altimetry)</td>
+                    <td>1993&ndash;2020</td>
+                    <td>~25 km grid</td>
+                    <td>Observed sea level trend (mm/year) from IPCC AR6 Sea Level Projection dataset. Preferred method: inverse-distance-weighted extraction from the nearest ocean pixel(s) to the ANP boundary polygon, so that the rate reflects the coastline adjacent to the ANP rather than an arbitrary buffer around its centroid. Fallback: centroid-based 50 km buffer mean for ANPs without boundary polygons.</td>
+                </tr>
+                <tr>
+                    <td><strong>Projected SLR 2050</strong></td>
+                    <td>IPCC AR6 WGI</td>
+                    <td>Projection to 2050</td>
+                    <td>~25 km grid</td>
+                    <td>Projected cumulative sea level rise by 2050 (cm) at ANP centroid under medium confidence scenario. Derived from IPCC AR6 regional sea level projections.</td>
+                </tr>
+                <tr>
+                    <td><strong>Baseline temperature</strong></td>
+                    <td>NASA NEX-GDDP-CMIP6</td>
+                    <td>1981&ndash;2010</td>
+                    <td>0.25&deg; (~25 km)</td>
+                    <td>Mean annual temperature (&deg;C) over ANP polygon area, averaged across CMIP6 multi-model ensemble for the historical baseline period.</td>
+                </tr>
+                <tr>
+                    <td><strong>Projected temperature</strong></td>
+                    <td>NASA NEX-GDDP-CMIP6</td>
+                    <td>2041&ndash;2070</td>
+                    <td>0.25&deg; (~25 km)</td>
+                    <td>Mean annual temperature (&deg;C) over ANP polygon under SSP2-4.5 scenario, CMIP6 multi-model ensemble mean. Change (&Delta;&deg;C) = projected minus baseline.</td>
+                </tr>
+                <tr>
+                    <td><strong>Inundation risk</strong></td>
+                    <td>Copernicus DEM (GLO-30)</td>
+                    <td>2021</td>
+                    <td>30 m</td>
+                    <td>Percentage of ANP area with elevation &lt;1 m above sea level, calculated from Copernicus GLO-30 DEM via Google Earth Engine zonal statistics.</td>
+                </tr>
+                <tr>
+                    <td><strong>ANP boundaries</strong></td>
+                    <td>CONANP / WDPA</td>
+                    <td>2024</td>
+                    <td>Polygon</td>
+                    <td>Official protected area boundaries from CONANP (Comisi&oacute;n Nacional de &Aacute;reas Naturales Protegidas), cross-referenced with WDPA (World Database on Protected Areas). Simplified for web rendering (coordinate precision reduced to 3 decimal places).</td>
+                </tr>
+                <tr>
+                    <td><strong>Municipality assignment</strong></td>
+                    <td>Authoritative list (FMCN)</td>
+                    <td>2026</td>
+                    <td>Municipality</td>
+                    <td>39 coastal ANPs mapped to 90 ANP-municipality-state pairs. This authoritative list replaces spatial intersection methods and is used for all municipality-level matching (declarations, CENAPRED).</td>
+                </tr>
+                <tr>
+                    <td><strong>Correlation analysis</strong></td>
+                    <td>Derived (cross-variable)</td>
+                    <td>All periods</td>
+                    <td>Per ANP</td>
+                    <td>Pearson R correlation coefficients calculated across 30&ndash;38 coastal ANPs (depending on variable availability). Scatter plots with linear trend lines shown for statistically significant correlations (p&lt;0.05). P-values approximated via t-distribution. Variables: forest loss, CENAPRED events/deaths, declarations, SLR rate, temperature change.</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="figure-caption"><strong>Table 2.</strong> Data sources, temporal coverage, spatial resolution, and calculation methodology for each variable used in this analysis. All spatial extractions performed via Google Earth Engine except where noted. Municipality matching uses normalized names (accents removed, lowercase) against the authoritative coastal ANP municipality list.</div>
+    </div>
+
+    <div class="page-num">6</div>
+
+    <div class="page-break"></div>
+    <h2>References</h2>
+    <div class="references">
+        <p>Castillo et al. <em>Tropical Cyclones in Mexico: A Comparative Analysis and Composite</em>. PreventionWeb/UNDRR.</p>
+        <p>CENAPRED (2024). Atlas Nacional de Riesgos&mdash;Base hist&oacute;rica de desastres 2000&ndash;2023. Centro Nacional de Prevenci&oacute;n de Desastres, Mexico.</p>
+        <p>Copernicus (2021). Digital Elevation Model (DEM). European Space Agency.</p>
+        <p>CRED (2025). EM-DAT: The Emergency Events Database. Universit&eacute; catholique de Louvain, Brussels.</p>
+        <p>datos.gob.mx (2025). Declaratorias de Desastre y Emergencia 2018&ndash;2024. SSPC/CNPC, Government of Mexico.</p>
+        <p>IPCC (2021). Climate Change 2021: The Physical Science Basis. AR6 Working Group I, Chapter 9: Ocean, Cryosphere and Sea Level Change.</p>
+        <p>Knapp, K.R. et al. (2010). The International Best Track Archive for Climate Stewardship (IBTrACS). <em>Bulletin of the American Meteorological Society</em>, 91(3).</p>
+        <p>Muis, S. et al. (2020). A global reanalysis of storm surges and extreme sea levels. <em>Nature Communications</em>. Global Tide and Surge Model (GTSM), Deltares.</p>
+        <p>NASA (2022). NEX-GDDP-CMIP6: NASA Earth Exchange Global Daily Downscaled Projections. NASA Center for Climate Simulation.</p>
+    </div>
+
+    <div class="page-num" style="margin-top: 40px;">5</div>
+
+    <!-- ================================================================ -->
+    <!-- JAVASCRIPT                                                       -->
+    <!-- ================================================================ -->
+    <script>
+    let DATA;
+
+    function fmt(n, d=0) {
+        if (n == null) return '\u2014';
+        return Number(n).toLocaleString('en-US', {minimumFractionDigits: d, maximumFractionDigits: d});
+    }
+
+    let CORR;
+
+    async function init() {
+        const [resp, corrResp] = await Promise.all([
+            fetch('loss_damage_proposal_data.json'),
+            fetch('loss_damage_correlations.json')
+        ]);
+        DATA = await resp.json();
+        CORR = await corrResp.json();
+        renderNarrativeText();
+        renderContextSLR();
+        await renderMaps();
+        renderYearChart();
+        renderTypeChart();
+        renderTopAnpChart();
+        renderCorrelations();
+        renderClimateCharts();
+        renderTable();
+    }
+
+    function renderNarrativeText() {
+        const s = DATA.summary;
+        document.getElementById('txt-total-decl').textContent = fmt(s.total_declaratorias);
+        document.getElementById('txt-total-anps').textContent = s.total_coastal_anps;
+        document.getElementById('txt-pop').textContent = fmt(s.total_poblacion_afectada);
+        document.getElementById('txt-cost').textContent = fmt(s.total_costo_mdp, 1);
+        document.getElementById('txt-deaths').textContent = fmt(s.cenapred.deaths);
+
+        // Hydro percentage
+        const byType = DATA.by_type;
+        let hydroTotal = 0, allTotal = 0;
+        for (const [tipo, counts] of Object.entries(byType)) {
+            const t = (counts.desastre || 0) + (counts.emergencia || 0);
+            allTotal += t;
+            if (tipo.toLowerCase().includes('hidro') || tipo.toLowerCase().includes('meteo')) {
+                hydroTotal += t;
+            }
+        }
+        document.getElementById('txt-hydro-pct').textContent = allTotal > 0 ? Math.round(hydroTotal / allTotal * 100) : '\u2014';
+
+        // Avg SLR
+        const slrValues = DATA.by_anp.filter(a => a.slr_mm_yr != null).map(a => a.slr_mm_yr);
+        const avgSlr = slrValues.length > 0 ? (slrValues.reduce((a,b) => a+b, 0) / slrValues.length).toFixed(1) : '\u2014';
+        document.getElementById('txt-avg-slr').textContent = avgSlr;
+        const slrAbove05 = DATA.by_anp.filter(a => a.slr_mm_yr != null && a.slr_mm_yr > 0.5).length;
+        document.getElementById('txt-slr-above05').textContent = slrAbove05;
+        const el = document.getElementById('txt-slr-count');
+        if (el) el.textContent = slrAbove05;
+    }
+
+    function createMap(elementId) {
+        const map = L.map(elementId, {scrollWheelZoom: false}).setView([20, -100], 5);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: 'CartoDB', maxZoom: 16
+        }).addTo(map);
+        return map;
+    }
+
+    function interpolateColor(t, colors) {
+        t = Math.max(0, Math.min(1, t));
+        const n = colors.length - 1;
+        const i = Math.floor(t * n);
+        const f = t * n - i;
+        const c1 = colors[Math.min(i, n)];
+        const c2 = colors[Math.min(i + 1, n)];
+        const r = Math.round(c1[0] + (c2[0] - c1[0]) * f);
+        const g = Math.round(c1[1] + (c2[1] - c1[1]) * f);
+        const b = Math.round(c1[2] + (c2[2] - c1[2]) * f);
+        return `rgb(${r},${g},${b})`;
+    }
+
+    function addCircles(map, getValue, colorStops, popupFn) {
+        const values = DATA.by_anp.filter(a => a.centroid && getValue(a) != null).map(a => getValue(a));
+        const maxVal = Math.max(...values, 1);
+        DATA.by_anp.forEach(anp => {
+            if (!anp.centroid) return;
+            const val = getValue(anp);
+            if (val == null) return;
+            const [lng, lat] = anp.centroid;
+            const t = val / maxVal;
+            const r = 4 + t * 22;
+            L.circleMarker([lat, lng], {
+                radius: r, fillColor: interpolateColor(t, colorStops),
+                fillOpacity: 0.75, color: '#333', weight: 0.8
+            }).addTo(map).bindPopup(popupFn(anp, val));
+        });
+    }
+
+    let BOUNDARIES = null;
+
+    async function loadBoundaries() {
+        try {
+            const resp = await fetch('coastal_anp_boundaries.geojson');
+            BOUNDARIES = await resp.json();
+        } catch(e) { console.warn('Could not load boundaries:', e); }
+    }
+
+    function addPolygons(map, propKey, colorStops, labelFn) {
+        if (!BOUNDARIES) return;
+        const values = BOUNDARIES.features.map(f => f.properties[propKey]).filter(v => v != null && v > 0);
+        const maxVal = Math.max(...values, 1);
+        L.geoJSON(BOUNDARIES, {
+            style: function(feature) {
+                const val = feature.properties[propKey];
+                if (val == null || val === 0) return { fillColor: '#d1d5db', fillOpacity: 0.3, color: '#666', weight: 1 };
+                const t = val / maxVal;
+                return { fillColor: interpolateColor(t, colorStops), fillOpacity: 0.7, color: '#333', weight: 1.2 };
+            },
+            onEachFeature: function(feature, layer) {
+                const p = feature.properties;
+                layer.bindPopup(`<strong>${p.name}</strong><br>${labelFn(p, p[propKey])}`);
+            }
+        }).addTo(map);
+    }
+
+    async function renderMaps() {
+        await loadBoundaries();
+        const popupBase = (anp) => `<strong>${anp.name}</strong>`;
+
+        // Declarations (circles)
+        const mapDecl = createMap('map-decl');
+        addCircles(mapDecl, a => a.declaratorias_total,
+            [[254,226,226],[239,68,68],[127,29,29]],
+            (a, v) => `${popupBase(a)}<br>Declarations: ${v} (D:${a.declaratorias_desastre} E:${a.declaratorias_emergencia})`
+        );
+
+        // Population (polygons)
+        const mapPop = createMap('map-pop');
+        addPolygons(mapPop, 'pop_affected', [[254,243,199],[245,158,11],[146,64,14]],
+            (p, v) => `Pop. affected: ${fmt(v)}`);
+
+        // Cost (polygons)
+        const mapCost = createMap('map-cost');
+        addPolygons(mapCost, 'cost_mdp', [[236,253,245],[16,185,129],[6,78,59]],
+            (p, v) => `Cost: $${fmt(v, 1)}M MXN`);
+
+        // Deaths (polygons)
+        const mapDeaths = createMap('map-deaths');
+        addPolygons(mapDeaths, 'cenapred_deaths', [[237,233,254],[139,92,246],[59,7,100]],
+            (p, v) => `Deaths: ${v} (CENAPRED 2000-2023)`);
+
+        // SLR (polygons — section 1)
+        const mapSlr = createMap('map-slr');
+        addPolygons(mapSlr, 'slr_mm_yr', [[219,234,254],[59,130,246],[30,58,95]],
+            (p, v) => `SLR: ${v != null ? v.toFixed(1) : '\u2014'} mm/yr`);
+
+        // Combined (cost polygons + declaration circles)
+        const mapComb = createMap('map-combined');
+        addPolygons(mapComb, 'cost_mdp', [[236,253,245],[16,185,129],[6,78,59]],
+            (p, v) => `Cost: $${fmt(v, 1)}M MXN`);
+        const declValues = DATA.by_anp.filter(a => a.centroid && a.declaratorias_total > 0).map(a => a.declaratorias_total);
+        const maxDecl = Math.max(...declValues, 1);
+        DATA.by_anp.forEach(anp => {
+            if (!anp.centroid || !anp.declaratorias_total) return;
+            const [lng, lat] = anp.centroid;
+            const t = anp.declaratorias_total / maxDecl;
+            L.circleMarker([lat, lng], {
+                radius: 5 + t * 20, fillColor: '#e63946', fillOpacity: 0.55, color: '#b91c1c', weight: 1.5
+            }).addTo(mapComb).bindPopup(`${popupBase(anp)}<br>Declarations: ${anp.declaratorias_total}<br>Cost: $${fmt(anp.costo_mdp, 1)}M MXN`);
+        });
+    }
+
+    function renderContextSLR() {
+        const filtered = [...DATA.by_anp].filter(a => a.slr_mm_yr != null && a.slr_mm_yr > 0.5).sort((a,b) => b.slr_mm_yr - a.slr_mm_yr);
+        const el = document.getElementById('slrChart');
+        el.parentElement.style.height = Math.max(340, filtered.length * 18) + 'px';
+        new Chart(el, {
+            type: 'bar',
+            data: {
+                labels: filtered.map(a => a.name.length > 28 ? a.name.substring(0,26)+'\u2026' : a.name),
+                datasets: [{ data: filtered.map(a => a.slr_mm_yr), backgroundColor: filtered.map(a => a.slr_mm_yr > 5 ? '#c0392b' : '#2980b9') }]
+            },
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { title: { display: true, text: 'mm/year (observed)' }, ticks: { font: { size: 9 } } }, y: { ticks: { font: { size: 7 } } } }
+            }
+        });
+    }
+
+    function renderYearChart() {
+        const byYear = DATA.by_year;
+        const years = Object.keys(byYear).sort();
+        new Chart(document.getElementById('yearChart'), {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    { label: 'Disaster', data: years.map(y => byYear[y].desastre || 0), backgroundColor: '#c0392b' },
+                    { label: 'Emergency', data: years.map(y => byYear[y].emergencia || 0), backgroundColor: '#e67e22' }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { font: { size: 10 } } } },
+                scales: { x: { stacked: true }, y: { stacked: true, title: { display: true, text: 'Declarations' } } }
+            }
+        });
+    }
+
+    function renderTypeChart() {
+        const byType = DATA.by_type;
+        const types = Object.keys(byType).sort((a, b) => {
+            const ta = (byType[a].desastre||0) + (byType[a].emergencia||0);
+            const tb = (byType[b].desastre||0) + (byType[b].emergencia||0);
+            return tb - ta;
+        });
+        const totals = types.map(t => (byType[t].desastre||0) + (byType[t].emergencia||0));
+        const colors = ['#c0392b', '#e67e22', '#2980b9', '#27ae60', '#8e44ad', '#e84393', '#00b894', '#6c5ce7'];
+        new Chart(document.getElementById('typeChart'), {
+            type: 'doughnut',
+            data: { labels: types, datasets: [{ data: totals, backgroundColor: colors.slice(0, types.length) }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 9 }, boxWidth: 10 } } } }
+        });
+    }
+
+    function renderTopAnpChart() {
+        const top = DATA.by_anp.slice(0, 15);
+        new Chart(document.getElementById('topAnpChart'), {
+            type: 'bar',
+            data: {
+                labels: top.map(a => a.name.length > 28 ? a.name.substring(0, 26) + '\u2026' : a.name),
+                datasets: [
+                    { label: 'Disaster', data: top.map(a => a.declaratorias_desastre), backgroundColor: '#c0392b' },
+                    { label: 'Emergency', data: top.map(a => a.declaratorias_emergencia), backgroundColor: '#e67e22' }
+                ]
+            },
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { font: { size: 9 } } } },
+                scales: { x: { stacked: true, title: { display: true, text: 'Declarations' } }, y: { stacked: true, ticks: { font: { size: 9 } } } }
+            }
+        });
+    }
+
+    function renderCorrelations() {
+        if (!CORR || !CORR.correlations) return;
+        const colors = ['#c0392b', '#2980b9', '#8e44ad', '#27ae60', '#e67e22', '#16a085'];
+
+        CORR.correlations.forEach((c, i) => {
+            const canvas = document.getElementById('corrChart' + i);
+            if (!canvas) return;
+
+            const sigLabel = c.p_value <= 0.001 ? '***' : c.p_value <= 0.01 ? '**' : c.p_value <= 0.05 ? '*' : 'ns';
+            const titleText = `${c.x_label} vs ${c.y_label}`;
+            const subtitleText = `R\u00B2=${c.r_squared.toFixed(2)}, R=${c.r > 0 ? '+' : ''}${c.r.toFixed(2)}, n=${c.n} ${sigLabel}`;
+
+            // Build scatter data
+            const scatterData = c.points.map(p => ({ x: p.x, y: p.y, name: p.name }));
+
+            // Build trend line
+            const datasets = [{
+                label: 'ANPs',
+                data: scatterData,
+                backgroundColor: colors[i] + 'aa',
+                borderColor: colors[i],
+                pointRadius: 5,
+                pointHoverRadius: 7,
+            }];
+
+            if (c.slope != null && c.significant) {
+                const xs = c.points.map(p => p.x);
+                const minX = Math.min(...xs);
+                const maxX = Math.max(...xs);
+                datasets.push({
+                    label: 'Trend',
+                    type: 'line',
+                    data: [
+                        { x: minX, y: c.intercept + c.slope * minX },
+                        { x: maxX, y: c.intercept + c.slope * maxX }
+                    ],
+                    borderColor: colors[i] + '88',
+                    borderWidth: 2,
+                    borderDash: [6, 3],
+                    pointRadius: 0,
+                    fill: false,
+                });
+            }
+
+            new Chart(canvas, {
+                type: 'scatter',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: [titleText, subtitleText], font: { size: 9 }, padding: { bottom: 4 } },
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    const p = ctx.raw;
+                                    return p.name ? `${p.name}: (${p.x}, ${p.y})` : `(${p.x}, ${p.y})`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: c.x_label, font: { size: 8 } }, ticks: { font: { size: 8 } } },
+                        y: { title: { display: true, text: c.y_label, font: { size: 8 } }, ticks: { font: { size: 8 } } }
+                    }
+                }
+            });
+        });
+
+        // Render narrative paragraphs for significant correlations
+        const narDiv = document.getElementById('corr-narrative');
+        if (narDiv) {
+            const sigCorrs = CORR.correlations.filter(c => c.significant);
+            if (sigCorrs.length > 0) {
+                let html = '<blockquote><strong>Key findings:</strong> ';
+                html += sigCorrs.map(c => {
+                    const dir = c.r > 0 ? 'positive' : 'negative';
+                    return `${c.narrative} (R\u00B2=${c.r_squared.toFixed(2)}, p&lt;${c.p_value <= 0.001 ? '0.001' : c.p_value <= 0.01 ? '0.01' : '0.05'}, n=${c.n})`;
+                }).join(' ');
+                html += '</blockquote>';
+                narDiv.innerHTML = html;
+            }
+        }
+    }
+
+    function renderClimateCharts() {
+        const trunc = (a) => a.name.length > 28 ? a.name.substring(0,26)+'\u2026' : a.name;
+
+        // Temperature: baseline vs projected
+        const allByTemp = [...DATA.by_anp].sort((a,b) => (b.temp_future_2050 || 0) - (a.temp_future_2050 || 0));
+        new Chart(document.getElementById('tempChart'), {
+            type: 'bar',
+            data: {
+                labels: allByTemp.map(trunc),
+                datasets: [
+                    { label: 'Baseline (1981\u20132010)', data: allByTemp.map(a => a.temp_baseline || 0), backgroundColor: '#93c5fd' },
+                    { label: 'Projected (2041\u20132070)', data: allByTemp.map(a => a.temp_future_2050 || 0), backgroundColor: '#c0392b' }
+                ]
+            },
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { font: { size: 9 } } } },
+                scales: { x: { title: { display: true, text: '\u00B0C' } }, y: { ticks: { font: { size: 7 } } } }
+            }
+        });
+
+        // Temperature change delta
+        const allByDelta = [...DATA.by_anp].sort((a,b) => (b.temp_change_2050 || 0) - (a.temp_change_2050 || 0));
+        new Chart(document.getElementById('tempChangeChart'), {
+            type: 'bar',
+            data: {
+                labels: allByDelta.map(trunc),
+                datasets: [{ data: allByDelta.map(a => a.temp_change_2050 || 0), backgroundColor: allByDelta.map(a => (a.temp_change_2050 || 0) > 2 ? '#c0392b' : a.temp_change_2050 != null ? '#e67e22' : '#d1d5db') }]
+            },
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { title: { display: true, text: '\u0394\u00B0C (SSP2-4.5, 2041\u20132070)' } }, y: { ticks: { font: { size: 7 } } } }
+            }
+        });
+
+        // Observed SLR (all 39)
+        const allBySlr = [...DATA.by_anp].sort((a,b) => (b.slr_mm_yr || 0) - (a.slr_mm_yr || 0));
+        new Chart(document.getElementById('slrObsChart'), {
+            type: 'bar',
+            data: {
+                labels: allBySlr.map(trunc),
+                datasets: [{ data: allBySlr.map(a => a.slr_mm_yr || 0), backgroundColor: allBySlr.map(a => (a.slr_mm_yr || 0) > 5 ? '#c0392b' : a.slr_mm_yr != null ? '#2980b9' : '#d1d5db') }]
+            },
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { title: { display: true, text: 'mm/year (observed)' } }, y: { ticks: { font: { size: 7 } } } }
+            }
+        });
+
+        // Projected SLR 2050
+        const allBySlr50 = [...DATA.by_anp].sort((a,b) => (b.slr_2050_cm || 0) - (a.slr_2050_cm || 0));
+        new Chart(document.getElementById('slr2050Chart'), {
+            type: 'bar',
+            data: {
+                labels: allBySlr50.map(trunc),
+                datasets: [{ data: allBySlr50.map(a => a.slr_2050_cm || 0), backgroundColor: allBySlr50.map(a => (a.slr_2050_cm || 0) > 25 ? '#c0392b' : a.slr_2050_cm != null ? '#2980b9' : '#d1d5db') }]
+            },
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { title: { display: true, text: 'cm by 2050 (projected)' } }, y: { ticks: { font: { size: 7 } } } }
+            }
+        });
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('table-body');
+        let totals = {d:0, e:0, pop:0, cost:0, cen:0, deaths:0};
+
+        tbody.innerHTML = DATA.by_anp.map(a => {
+            totals.d += a.declaratorias_desastre;
+            totals.e += a.declaratorias_emergencia;
+            totals.pop += a.poblacion_afectada;
+            totals.cost += a.costo_mdp;
+            totals.cen += a.cenapred_events || 0;
+            totals.deaths += a.cenapred_deaths || 0;
+            const hi = a.declaratorias_total >= 10 ? ' class="hi"' : '';
+            return `<tr${hi}>
+                <td>${a.name}</td>
+                <td class="num">${a.municipalities.length}</td>
+                <td class="num">${a.declaratorias_desastre}</td>
+                <td class="num">${a.declaratorias_emergencia}</td>
+                <td class="num">${fmt(a.poblacion_afectada)}</td>
+                <td class="num">${fmt(a.costo_mdp, 1)}</td>
+                <td class="num">${a.cenapred_events || 0}</td>
+                <td class="num">${a.cenapred_deaths || 0}</td>
+                <td class="num">${a.slr_mm_yr != null ? a.slr_mm_yr.toFixed(1) : '\u2014'}</td>
+                <td class="num">${a.temp_change_2050 != null ? '+' + a.temp_change_2050.toFixed(1) : '\u2014'}</td>
+            </tr>`;
+        }).join('');
+
+        document.getElementById('table-foot').innerHTML = `<tr>
+            <td>TOTAL (${DATA.summary.total_coastal_anps} ANPs)</td>
+            <td class="num">${DATA.summary.total_municipalities}</td>
+            <td class="num">${totals.d}</td>
+            <td class="num">${totals.e}</td>
+            <td class="num">${fmt(totals.pop)}</td>
+            <td class="num">${fmt(totals.cost, 1)}</td>
+            <td class="num">${totals.cen}</td>
+            <td class="num">${totals.deaths}</td>
+            <td></td><td></td>
+        </tr>`;
+    }
+
+    function downloadCSV() {
+        const headers = ['Protected Area','Category','Municipalities','States','Decl. Disaster','Decl. Emergency','Total Decl.','Pop. Affected','Cost (M MXN)','CENAPRED Events','CENAPRED Deaths','CENAPRED Affected','CENAPRED Damage (M MXN)','SLR (mm/yr)','SLR 2050 (cm)','Inundation %','Temp Change 2050 (C)','Precip Change 2050 (%)'];
+        const rows = DATA.by_anp.map(a => [
+            a.name, a.category, a.municipalities.join('; '), a.states.join('; '),
+            a.declaratorias_desastre, a.declaratorias_emergencia, a.declaratorias_total,
+            a.poblacion_afectada, a.costo_mdp,
+            a.cenapred_events||0, a.cenapred_deaths||0, a.cenapred_affected||0, a.cenapred_damage_mdp||0,
+            a.slr_mm_yr||'', a.slr_2050_cm||'', a.inundation_pct||'',
+            a.temp_change_2050||'', a.precip_change_2050||''
+        ]);
+        const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+        const blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8;'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'coastal_anp_loss_damage_data.csv';
+        a.click();
+    }
+
+    init();
+    </script>
+</body>
+</html>

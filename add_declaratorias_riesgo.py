@@ -288,8 +288,37 @@ def load_emergencia_csv(filepath):
 def load_anp_municipalities(anp_id, data_file_path):
     """
     Load municipality info for an ANP from its data file.
+    For coastal ANPs, uses the authoritative FMCN municipality list.
+    For non-coastal ANPs, falls back to CONEVAL data.
     Returns dict with 'estados', 'municipalities', and 'match_method'.
     """
+    # For coastal ANPs, use authoritative municipality list
+    try:
+        from coastal_anps_registry import is_coastal_anp, get_coastal_anp_municipalities
+        if is_coastal_anp(anp_id):
+            coastal_munis = get_coastal_anp_municipalities(anp_id)
+            if coastal_munis:
+                muni_names = []
+                estados = []
+                for m in coastal_munis:
+                    norm_name = normalize_municipality(m['municipio'])
+                    norm_state = normalize_state(m['state'])
+                    muni_names.append({
+                        'name': m['municipio'],
+                        'name_normalized': norm_name,
+                        'state': m['state'],
+                        'state_normalized': norm_state,
+                    })
+                    if norm_state and norm_state not in estados:
+                        estados.append(norm_state)
+                return {
+                    'estados': estados,
+                    'municipalities': muni_names,
+                    'match_method': 'authoritative_coastal_list',
+                }
+    except ImportError:
+        pass
+
     if not os.path.exists(data_file_path):
         return {'estados': [], 'municipalities': [], 'match_method': 'no_data'}
 

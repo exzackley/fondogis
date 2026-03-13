@@ -11,7 +11,8 @@ Usage:
         get_coastal_anps,
         get_coastal_anp_ids,
         is_coastal_anp,
-        get_coastal_data_file
+        get_coastal_data_file,
+        get_coastal_anp_municipalities
     )
 """
 
@@ -71,6 +72,21 @@ def get_coastal_data_file(anp_id: str) -> Optional[str]:
     if anp and anp.get('data_file'):
         return f"anp_data/{anp['data_file']}"
     return None
+
+
+def get_coastal_anp_municipalities(anp_id: str) -> List[Dict]:
+    """Get authoritative municipality list for a coastal ANP.
+    Returns list of {municipio, state} dicts, or empty list if not found."""
+    anp = get_coastal_anp_by_id(anp_id)
+    if anp:
+        return anp.get('municipalities', [])
+    return []
+
+
+def get_all_coastal_municipalities() -> Dict[str, List[Dict]]:
+    """Get municipality mapping for all coastal ANPs.
+    Returns dict of anp_id -> [{municipio, state}]."""
+    return {anp['id']: anp.get('municipalities', []) for anp in get_coastal_anps()}
 
 
 def get_coastal_anps_by_category(category: str) -> List[Dict]:
