@@ -46,15 +46,22 @@ python3 add_mangrove_data.py                    # ESA WorldCover mangroves
 python3 add_coneval_poverty.py                  # CONEVAL social lag index
 python3 add_inaturalist_data.py                 # iNaturalist observations
 python3 extract_external_data.py --all          # GBIF, SIMEC, INEGI
+python3 add_ndvi_trend.py                       # NDVI vegetation trend analysis
+python3 add_soil_water.py                       # Soil moisture & surface water
+python3 add_mangrove_change.py                  # Mangrove extent change detection
+python3 add_hurricane_exposure.py               # Hurricane/tropical storm exposure
+python3 add_master_list_data.py                 # CONANP master list metadata
 
 # Coastal ANP data layers
 python3 add_cenapred_disasters.py                    # CENAPRED hydrometeorological events
 python3 add_declaratorias_riesgo.py                  # Federal disaster/emergency declarations
 python3 add_sea_level_rise.py                        # IPCC AR6 SLR + Copernicus DEM inundation
+python3 identify_coastal_anps.py                     # Identify which ANPs are coastal
 
 # Climate data (3 separate systems - see Climate Data Architecture)
 python3 add_climate_projections.py "sierra_gorda"   # GEE multi-period projections
 python3 scrape_climate_ssr.py "sierra_gorda"        # SSR API 19 indicators
+python3 add_ssr_climate_indicators.py               # SSR climate indicators batch import
 python3 extract_climate_timeseries.py "sierra_gorda" # Heatmap grid timeseries
 python3 compare_climate_sources.py                   # Validate SSR vs GEE
 
@@ -72,12 +79,19 @@ python3 <script>.py --test
 # Static file server for HTML dashboards
 python3 -m http.server 8000
 
-# Main dashboard:  http://localhost:8000/index.html
-# Admin panel:     http://localhost:8000/admin.html
-# Climate heatmap: http://localhost:8000/climate_heatmap.html
-# Coastal risk:    http://localhost:8000/coastal_risk_table.html
-# L&D proposal:   http://localhost:8000/loss_damage_proposal.html
-# Data dictionary: http://localhost:8000/data_dictionary.html
+# Main dashboard:     http://localhost:8000/index.html
+# Admin panel:        http://localhost:8000/admin.html
+# Climate heatmap:    http://localhost:8000/climate_heatmap.html
+# Coastal risk:       http://localhost:8000/coastal_risk_table.html
+# L&D proposal:       http://localhost:8000/loss_damage_proposal.html
+# Data dictionary:    http://localhost:8000/data_dictionary.html
+# Static dictionary:  http://localhost:8000/data_dictionary_static.html
+# ANP diagnosis:      http://localhost:8000/anp_diagnosis_tables.html
+# Coastal diagnosis:  http://localhost:8000/coastal_diagnosis_report.html
+# Coastal summary:    http://localhost:8000/coastal_summary_tables.html
+# Diagnóstico:        http://localhost:8000/diagnostico.html
+# GCF ESA report:     http://localhost:8000/gcf_esa_report.html
+# GCF ESA appendix:   http://localhost:8000/gcf_esa_appendix_formal.html
 ```
 
 ## Architecture
@@ -270,9 +284,15 @@ Do NOT run GEE batch operations via automated tool calls - they will timeout.
   - `scripts/export_db_to_json.py` - Batch DB → JSON export
   - `scripts/build_proposal_data.py` - Build loss & damage proposal data JSON
   - `scripts/build_correlations.py` - Calculate vulnerability-disaster correlations
+  - `scripts/batch_ssr_coastal.py` - Batch SSR climate extraction for coastal ANPs
+  - `scripts/validate_data.py` - Validate ANP data integrity
+  - `scripts/validate_db_json.py` - Validate DB ↔ JSON consistency
 - `reference_data/` - Static reference files (census, SIMEC, official ANP list)
   - `reference_data/coastal_anp_municipalities.json` - **Authoritative** list of 39 coastal ANPs with 90 ANP-municipality-state pairs (source of truth for coastal municipality matching)
   - `reference_data/coastal_municipality_coords.json` - Municipality centroid coordinates for map visualizations
+  - `reference_data/cenapred/` - CENAPRED disaster data files
+  - `reference_data/coneval_irs/` - CONEVAL social lag index data
+  - `reference_data/simec_anp_list.json` - SIMEC ANP reference list
 - `reference_data/fondo/` - Private FONDO internal data (gitignored)
 - `reference_data/declaratorias/` - Federal disaster/emergency declaration data files
 - `coastal_anps_subset.json` - Master reference file for 39 coastal ANPs (IDs, categories, municipalities)
@@ -282,6 +302,13 @@ Do NOT run GEE batch operations via automated tool calls - they will timeout.
 - `loss_damage_proposal.html` - Formal loss & damage proposal document for FMCN
 - `loss_damage_proposal_data.json` - Generated data backing the proposal
 - `loss_damage_correlations.json` - Correlation analysis results (scatter plot data)
+- `data_dictionary.json` - Data dictionary definitions (backing data_dictionary.html)
+- `gcf_esa_report.html` - GCF ESA report document
+- `gcf_esa_appendix_formal.html` - GCF ESA formal appendix
+- `diagnostico.html` - ANP diagnostic report (Spanish)
+- `anp_diagnosis_tables.html` - ANP diagnosis summary tables
+- `coastal_diagnosis_report.html` - Coastal ANP diagnosis report
+- `coastal_summary_tables.html` - Coastal ANP summary tables
 - `service_account.json` - GEE service account key (gitignored)
 
 ### ANP Name Normalization
