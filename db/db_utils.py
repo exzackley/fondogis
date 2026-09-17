@@ -15,11 +15,11 @@ Usage:
     rows = execute_query("SELECT id, name FROM anps WHERE designation_type = %s", ['RB'])
 
 Environment variables:
-    FONDOGIS_DB_HOST - Database host (default: 172.232.163.60)
+    FONDOGIS_DB_HOST - Database host (default: 100.71.53.127, corpus-db over Tailscale)
     FONDOGIS_DB_PORT - Database port (default: 5432)
     FONDOGIS_DB_NAME - Database name (default: fondogis)
-    FONDOGIS_DB_USER - Database user (default: zack)
-    POSTGRES_PASSWORD - Database password (from ~/.zshrc)
+    FONDOGIS_DB_USER - Database user (default: fondogis)
+    FONDOGIS_DB_PASSWORD - Database password (from repos/fondogis/.env)
 """
 
 import os
@@ -35,13 +35,31 @@ except ImportError:
     PSYCOPG2_AVAILABLE = False
     print("Warning: psycopg2 not installed. Run: pip install psycopg2-binary")
 
+# The database moved to corpus-db on 2026-09-16; settings live in repos/fondogis/.env
+# so no credential has to be exported by hand or hardcoded here.
+def _load_env() -> None:
+    env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
+    try:
+        with open(env_path) as fh:
+            for line in fh:
+                line = line.strip()
+                if not line or line.startswith('#') or '=' not in line:
+                    continue
+                key, val = line.split('=', 1)
+                os.environ.setdefault(key.strip(), val.strip().strip('\'"'))
+    except FileNotFoundError:
+        pass
+
+
+_load_env()
+
 # Database configuration with defaults
 DB_CONFIG = {
-    'host': os.environ.get('FONDOGIS_DB_HOST', '172.232.163.60'),
+    'host': os.environ.get('FONDOGIS_DB_HOST', '100.71.53.127'),
     'port': int(os.environ.get('FONDOGIS_DB_PORT', 5432)),
     'dbname': os.environ.get('FONDOGIS_DB_NAME', 'fondogis'),
-    'user': os.environ.get('FONDOGIS_DB_USER', 'postgres'),
-    'password': os.environ.get('POSTGRES_PASSWORD', ''),
+    'user': os.environ.get('FONDOGIS_DB_USER', 'fondogis'),
+    'password': os.environ.get('FONDOGIS_DB_PASSWORD') or os.environ.get('POSTGRES_PASSWORD', ''),
 }
 
 # Connection pool (simple implementation)
